@@ -13,24 +13,26 @@ catálogo → solicitud → evaluación → formalización → seguimiento post-
 ## 1. Contenido de este repositorio
 
 ```
-ADOPTA-YA 1.0/                     ← raíz del entregable
+ADOPTA-YA 1.0/                     ← raíz del repositorio
 ├── README.md                      ← este documento
+├── .gitignore
+├── package.json                   ← sólo dependencias directas (@capacitor/*) + jsdom (dev)
+├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
+├── adopta-ya.code-workspace       ← espacio de trabajo de VS Code (conexión MySQL local)
+├── test_estatico_adopta_ya.js     ← script de pruebas P-01…P-14 (usa npm test)
+├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── docs/
 │   ├── 01_INFORME_DE_AUDITORIA.md ← auditoría técnica: hallazgos, severidad y estado
 │   ├── 02_ARQUITECTURA.md         ← arquitectura actual vs. objetivo, herramientas, cliente, alojamiento
-│   └── 03_MODULOS.md              ← módulos implementados/pendientes y trazabilidad de requisitos
-├── ACA 1 ¡ADOPTA YA!.pdf          ← Entrega 1 (idea de proyecto)
-├── ENTREGA_2_AJUSTE_AVANZADO_ADOPTA_YA.pdf  ← Entrega 2 (ajuste avanzado y sustentación)
-├── test_estatico_adopta_ya.js      ← copia original del script de pruebas (Anexo B)
-└── ADOPTA-YA 1.0/                 ← proyecto de software
-    ├── package.json               ← sólo dependencias directas (@capacitor/*) + jsdom (dev)
-    ├── capacitor.config.json      ← appId com.adoptaya.app · webDir www
-    ├── adopta_ya.session.sql      ← evidencia de la intención de uso de MySQL
-    ├── test_estatico_adopta_ya.js ← script de pruebas P-01…P-14 (canónico, usa npm test)
-    ├── resultados_pruebas.json    ← resultados de la última ejecución de npm test
-    ├── www/                       ← código fuente web (index.html, css/, js/, img/)
-    ├── android/                   ← proyecto Android/Capacitor (incluye APK debug)
-    └── node_modules/              ← dependencias instaladas (no versionadas)
+│   ├── 03_MODULOS.md              ← módulos implementados/pendientes y trazabilidad de requisitos
+│   └── entregas/                  ← evidencias documentales
+│       ├── ACA 1 ¡ADOPTA YA!.pdf  ← Entrega 1 (idea de proyecto)
+│       └── ENTREGA_2_AJUSTE_AVANZADO_ADOPTA_YA.pdf  ← Entrega 2 (ajuste avanzado y sustentación)
+├── sql/
+│   └── adopta_ya.session.sql      ← evidencia de la intención de uso de MySQL
+├── www/                           ← código fuente web (index.html, css/, js/, img/)
+├── android/                       ← proyecto Android/Capacitor (incluye APK debug)
+└── node_modules/                  ← dependencias instaladas (no versionadas)
 ```
 
 ## 2. Cómo ejecutar la aplicación
@@ -40,7 +42,7 @@ ADOPTA-YA 1.0/                     ← raíz del entregable
 No hay paso de compilación: `www/` es una web estática.
 
 ```powershell
-# desde ADOPTA-YA 1.0/ADOPTA-YA 1.0
+# desde la raíz del repositorio
 npx serve www          # o cualquier servidor estático; también abre www/index.html directamente
 ```
 
@@ -60,7 +62,7 @@ Requisitos de build (NO incluidos en esta máquina): Android SDK (compileSdk 36,
 JDK 17+ (la máquina actual sólo tiene JDK 11) y red para descargar Gradle 8.14.3.
 
 Un APK debug prerrobotado se conserva como evidencia en
-`ADOPTA-YA 1.0/android/app/build/outputs/apk/debug/app-debug.apk` (~3,9 MB).
+`android/app/build/outputs/apk/debug/app-debug.apk` (~3,9 MB).
 **Atención:** ese APK fue compilado antes de la corrección de rutas (ver §4);
 debe regenerarse con `npm run sync` + build antes de instalarlo de nuevo.
 
@@ -102,8 +104,12 @@ módulos pendientes, no a defectos de la interfaz.
    `psl@1.9.0`, `ws@8.20.1` y `tough-cookie@4.1.3` vía `overrides` (versiones disponibles
    en caché y compatibles con el rango de jsdom 23). Con conexión a internet se puede
    eliminar ese bloque y actualizar jsdom.
-5. **Script de pruebas movido al proyecto:** `test_estatico_adopta_ya.js` vive ahora dentro
-   de `ADOPTA-YA 1.0/` para que `npm test` funcione; la copia original de la raíz se conserva como anexo.
+5. **Script de pruebas único:** `test_estatico_adopta_ya.js` vive en la raíz del
+   repositorio y se ejecuta con `npm test`; se eliminó la copia duplicada.
+6. **Reorganización de carpetas (08/10/2026):** el proyecto se aplanó a un solo nivel
+   (fin de la carpeta anidada `ADOPTA-YA 1.0/ADOPTA-YA 1.0/`); los PDFs de las entregas
+   pasaron a `docs/entregas/`, el script SQL a `sql/` y el espacio de trabajo se renombró
+   a `adopta-ya.code-workspace`. Los movimientos se hicieron con `git mv` (historial preservado).
 
 Detalle completo (severidad, evidencias y pendientes): `docs/01_INFORME_DE_AUDITORIA.md`.
 

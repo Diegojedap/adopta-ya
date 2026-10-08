@@ -35,7 +35,7 @@ la Entrega 3, no defectos ocultos del prototipo actual.
 
 | # | Funcionalidad | Evidencia |
 |---|---|---|
-| 1 | Página de inicio con encabezado, propuesta y CTA | `ADOPTA-YA 1.0/www/index.html:13-31` |
+| 1 | Página de inicio con encabezado, propuesta y CTA | `www/index.html:13-31` |
 | 2 | Catálogo de 3 mascotas (Max, Luna, Rocky) con nombre, edad, descripción y botón | `www/index.html:33-71` (P-04) |
 | 3 | Navegación con desplazamiento suave al catálogo | `www/js/script.js:1-7` (P-08) |
 | 4 | Interacción de adopción: mensaje de agradecimiento con el nombre de la mascota | `www/js/script.js:9-14` (P-06) |
@@ -152,7 +152,7 @@ Siguen faltando LICENSE y CONTRIBUTING en la raíz del repositorio.
 | P-13 Copia Android == `www/` | REQ-04 | **PASA** | Verificado tras `npm run sync` |
 | P-14 APK debug existe | REQ-04 | **PASA** | 3,93 MB (desactualizado, ver F-08) |
 
-Evidencia: `ADOPTA-YA 1.0/resultados_pruebas.json`.
+Evidencia: `resultados_pruebas.json`.
 
 ## 6. Recomendaciones priorizadas
 

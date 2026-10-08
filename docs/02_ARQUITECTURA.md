@@ -58,7 +58,7 @@ servidor, ni estado, ni persistencia: todo el «dato» vive en el HTML.
 
 | Componente | Archivo | Rol |
 |---|---|---|
-| Página única | `ADOPTA-YA 1.0/www/index.html` | Header, inicio, catálogo, responsabilidad, footer |
+| Página única | `www/index.html` | Header, inicio, catálogo, responsabilidad, footer |
 | Estilos | `www/css/style.css` | Paleta naranja (#ff7043), tarjetas flex, media query 700 px |
 | Lógica | `www/js/script.js` | Navegación y confirmación de adopción (sin persistencia) |
 | Configuración Capacitor | `capacitor.config.json` | `appId com.adoptaya.app`, `webDir www` |

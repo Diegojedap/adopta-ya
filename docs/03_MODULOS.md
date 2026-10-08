@@ -83,7 +83,7 @@ App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y
 | M-17 | Persistencia MySQL | Esquema y acceso a datos de todas las entidades | RNF-01 | ✗ |
 | M-18 | Despliegue cloud | Publicación web (Vercel + Render free tier) y APK de producción | Viabilidad Entrega 1 | ✗ |
 
-> Evidencia indirecta de intención MySQL: `ADOPTA-YA 1.0/adopta_ya.session.sql`
+> Evidencia indirecta de intención MySQL: `sql/adopta_ya.session.sql`
 > (`SELECT * FROM mascotas;`) y la conexión SQLTools configurada en el `.code-workspace`.
 
 ---
