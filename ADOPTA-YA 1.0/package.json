@@ -1,0 +1,33 @@
+{
+  "name": "adopta-ya-1.0",
+  "version": "1.0.0",
+  "description": "Prototipo web/Android del sistema de gestión de adopciones de mascotas y seguimiento post-adopción «¡ADOPTA YA!».",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "node test_estatico_adopta_ya.js",
+    "sync": "cap sync android",
+    "open:android": "cap open android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.2",
+    "@capacitor/cli": "^8.5.2",
+    "@capacitor/core": "^8.5.2"
+  },
+  "devDependencies": {
+    "jsdom": "23.0.1"
+  },
+  "overrides": {
+    "psl": "1.9.0",
+    "ws": "8.20.1",
+    "tough-cookie": "4.1.3"
+  },
+  "keywords": [
+    "adopcion",
+    "mascotas",
+    "capacitor",
+    "prototipo"
+  ],
+  "author": "Kelly Johanna Soto Yela — CUN Ingeniería de Sistemas",
+  "license": "ISC"
+}

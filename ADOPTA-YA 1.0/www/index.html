@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adopta Ya</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>🐾 ADOPTA YA</h1>
+        <p>Encuentra un amigo que necesita un hogar</p>
+    </header>
+
+    <main>
+
+        <section class="inicio">
+            <h2>Encuentra a tu nuevo compañero</h2>
+
+            <p>
+                Conoce mascotas que están esperando una familia
+                que les brinde amor, cuidado y un hogar.
+            </p>
+
+            <button onclick="mostrarMascotas()">
+                Ver mascotas
+            </button>
+        </section>
+
+        <section id="mascotas" class="mascotas">
+
+            <h2>Mascotas en adopción</h2>
+
+            <div class="contenedor-mascotas">
+
+                <div class="tarjeta">
+                    <div class="emoji">🐶</div>
+                    <h3>Max</h3>
+                    <p><strong>Edad:</strong> 2 años</p>
+                    <p>Amigable, cariñoso y lleno de energía.</p>
+                    <button onclick="adoptar('Max')">
+                        Quiero adoptarlo
+                    </button>
+                </div>
+
+                <div class="tarjeta">
+                    <div class="emoji">🐱</div>
+                    <h3>Luna</h3>
+                    <p><strong>Edad:</strong> 1 año</p>
+                    <p>Tranquila, tierna y busca una familia amorosa.</p>
+                    <button onclick="adoptar('Luna')">
+                        Quiero adoptarla
+                    </button>
+                </div>
+
+                <div class="tarjeta">
+                    <div class="emoji">🐶</div>
+                    <h3>Rocky</h3>
+                    <p><strong>Edad:</strong> 3 años</p>
+                    <p>Juguetón, obediente y muy cariñoso.</p>
+                    <button onclick="adoptar('Rocky')">
+                        Quiero adoptarlo
+                    </button>
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="responsabilidad">
+
+            <h2>❤️ Adopta con responsabilidad</h2>
+
+            <p>
+                Adoptar significa brindar amor, protección, alimentación,
+                atención veterinaria y un hogar seguro durante toda la vida.
+            </p>
+
+            <div class="cuidados">
+
+                <div>
+                    <span>🏠</span>
+                    <h3>Hogar</h3>
+                    <p>Un espacio seguro y lleno de cariño.</p>
+                </div>
+
+                <div>
+                    <span>🩺</span>
+                    <h3>Salud</h3>
+                    <p>Visitas veterinarias, vacunas y desparasitación.</p>
+                </div>
+
+                <div>
+                    <span>❤️</span>
+                    <h3>Amor</h3>
+                    <p>Tiempo, paciencia y cuidado todos los días.</p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>🐾 ADOPTA YA — Una segunda oportunidad comienza contigo.</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+
+</body>
+</html>

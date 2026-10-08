@@ -1,0 +1,100 @@
+[
+  {
+    "id": "P-01",
+    "req": "REQ-04",
+    "desc": "Recursos CSS/JS de index.html resuelven con mayúsculas exactas",
+    "resultado": "PASA",
+    "detalle": "referencias: css/style.css, js/script.js; carpetas reales en www/: css, img, js"
+  },
+  {
+    "id": "P-02",
+    "req": "REQ-04",
+    "desc": "Meta viewport responsivo y lang=\"es\"",
+    "resultado": "PASA",
+    "detalle": "viewport=width=device-width, initial-scale=1.0; lang=es"
+  },
+  {
+    "id": "P-03",
+    "req": "REQ-04",
+    "desc": "Existe regla @media para pantallas pequeñas",
+    "resultado": "PASA",
+    "detalle": "@media (max-width: 700px)"
+  },
+  {
+    "id": "P-04",
+    "req": "REQ-01",
+    "desc": "El catálogo muestra mascotas con nombre, edad y botón de acción",
+    "resultado": "PASA",
+    "detalle": "3 tarjetas"
+  },
+  {
+    "id": "P-05",
+    "req": "REQ-01",
+    "desc": "El catálogo se carga desde la base de datos vía API (no está escrito en el HTML)",
+    "resultado": "FALLA",
+    "detalle": "sin fetch/XHR en script.js: las mascotas están fijas en index.html"
+  },
+  {
+    "id": "P-06",
+    "req": "REQ-02",
+    "desc": "adoptar(nombre) informa al usuario el nombre de la mascota",
+    "resultado": "PASA",
+    "detalle": "alert: \"¡Gracias por querer adoptar a Max! 🐾\\n\\nMuy pronto podrás continuar con el proceso de adopción.\""
+  },
+  {
+    "id": "P-07",
+    "req": "REQ-02",
+    "desc": "adoptar(nombre) crea una solicitud \"En revisión\" (petición al backend)",
+    "resultado": "FALLA",
+    "detalle": "peticiones de red realizadas: 0; sin formulario ni estado de solicitud"
+  },
+  {
+    "id": "P-08",
+    "req": "REQ-04",
+    "desc": "mostrarMascotas() desplaza la vista a la sección #mascotas",
+    "resultado": "PASA",
+    "detalle": "scrollIntoView sobre #mascotas"
+  },
+  {
+    "id": "P-09",
+    "req": "REQ-05",
+    "desc": "Existe librería de hashing/autenticación para credenciales",
+    "resultado": "FALLA",
+    "detalle": "dependencias: 3; sin bcrypt/jsonwebtoken"
+  },
+  {
+    "id": "P-10",
+    "req": "RNF-02",
+    "desc": "No hay credenciales en texto plano en el repositorio",
+    "resultado": "PASA",
+    "detalle": "sin hallazgos"
+  },
+  {
+    "id": "P-11",
+    "req": "RNF-03",
+    "desc": "package.json solo declara dependencias directas",
+    "resultado": "PASA",
+    "detalle": "3 declaradas; 3 directas (@capacitor/*)"
+  },
+  {
+    "id": "P-12",
+    "req": "RNF-03",
+    "desc": "package.json define un script de pruebas real",
+    "resultado": "PASA",
+    "detalle": "scripts.test = \"node test_estatico_adopta_ya.js\""
+  },
+  {
+    "id": "P-13",
+    "req": "REQ-04",
+    "desc": "La copia de index.html empaquetada en Android coincide con www/",
+    "resultado": "PASA",
+    "detalle": "idéntica"
+  },
+  {
+    "id": "P-14",
+    "req": "REQ-04",
+    "desc": "Existe un APK debug generado",
+    "resultado": "PASA",
+    "detalle": "3.93 MB, 2026-10-08"
+  }
+]

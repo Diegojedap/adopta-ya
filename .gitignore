@@ -1,0 +1,18 @@
+# Dependencias
+**/node_modules/
+
+# Artefactos de build de Android
+# (el APK debug se conserva como evidencia vía android/.gitignore y android/app/.gitignore)
+**/android/.gradle/
+**/android/build/
+**/android/capacitor-cordova-android-plugins/build/
+
+# Configuración local (rutas de SDK propias de cada máquina)
+**/android/local.properties
+
+# Sistema
+**/.DS_Store
+Thumbs.db
+
+# Registros de npm
+npm-debug.log*

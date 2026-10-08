@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Adopta Ya</string>
+    <string name="title_activity_main">Adopta Ya</string>
+    <string name="package_name">com.adoptaya.app</string>
+    <string name="custom_url_scheme">com.adoptaya.app</string>
+</resources>
