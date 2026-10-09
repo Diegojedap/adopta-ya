@@ -75,9 +75,13 @@ const hallazgos = [];
 })(ROOT);
 add('P-10', 'RNF-02', 'No hay credenciales en texto plano en el repositorio', hallazgos.length === 0, hallazgos.length ? `credenciales en: ${hallazgos.join('; ')}` : 'sin hallazgos');
 
-// P-11 higiene de dependencias
-const propias = Object.keys(deps).filter(k => k.startsWith('@capacitor/'));
-add('P-11', 'RNF-03', 'package.json solo declara dependencias directas', Object.keys(deps).length === propias.length, `${Object.keys(deps).length} declaradas; ${propias.length} directas (@capacitor/*)`);
+// P-11 higiene de dependencias: solo directas, sin transitivas filtradas.
+// Allowlist de dependencias directas conocidas del proyecto. Evita la falsa
+// contradicción con P-09 (que exige una librería de auth en "dependencies").
+const directasPermitidas = ['@capacitor/core', '@capacitor/cli', '@capacitor/android', 'bcryptjs', 'jsonwebtoken'];
+const declaradas = Object.keys(deps);
+const noDirectas = declaradas.filter(k => !directasPermitidas.includes(k));
+add('P-11', 'RNF-03', 'package.json solo declara dependencias directas (sin transitivas)', noDirectas.length === 0, noDirectas.length ? `posibles transitivas: ${noDirectas.join(', ')}` : `${declaradas.length} directas: ${declaradas.join(', ')}`);
 
 // P-12 script de pruebas del proyecto
 const scripts = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8')).scripts || {};

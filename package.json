@@ -6,6 +6,7 @@
   "type": "commonjs",
   "scripts": {
     "test": "node test_estatico_adopta_ya.js",
+    "start": "node server/index.js",
     "sync": "cap sync android",
     "open:android": "cap open android"
   },

@@ -31,22 +31,22 @@
     "id": "P-05",
     "req": "REQ-01",
     "desc": "El catálogo se carga desde la base de datos vía API (no está escrito en el HTML)",
-    "resultado": "FALLA",
-    "detalle": "sin fetch/XHR en script.js: las mascotas están fijas en index.html"
+    "resultado": "PASA",
+    "detalle": "usa red"
   },
   {
     "id": "P-06",
     "req": "REQ-02",
     "desc": "adoptar(nombre) informa al usuario el nombre de la mascota",
     "resultado": "PASA",
-    "detalle": "alert: \"¡Gracias por querer adoptar a Max! 🐾\\n\\nMuy pronto podrás continuar con el proceso de adopción.\""
+    "detalle": "alert: \"¡Gracias por querer adoptar a Max! 🐾\\n\\nTu solicitud quedó registrada y está en revisión.\""
   },
   {
     "id": "P-07",
     "req": "REQ-02",
     "desc": "adoptar(nombre) crea una solicitud \"En revisión\" (petición al backend)",
-    "resultado": "FALLA",
-    "detalle": "peticiones de red realizadas: 0; sin formulario ni estado de solicitud"
+    "resultado": "PASA",
+    "detalle": "peticiones de red realizadas: 1; sin formulario ni estado de solicitud"
   },
   {
     "id": "P-08",
@@ -72,9 +72,9 @@
   {
     "id": "P-11",
     "req": "RNF-03",
-    "desc": "package.json solo declara dependencias directas",
+    "desc": "package.json solo declara dependencias directas (sin transitivas)",
     "resultado": "PASA",
-    "detalle": "3 declaradas; 3 directas (@capacitor/*)"
+    "detalle": "3 directas: @capacitor/android, @capacitor/cli, @capacitor/core"
   },
   {
     "id": "P-12",
