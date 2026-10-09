@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken');
 const PUERTO = Number(process.env['PORT'] || 3000);
 const CLAVE_JWT = process.env['JWT_SECRET'] || 'adopta-ya-desarrollo';
 const ROLES = ['administrador', 'adoptante', 'veterinario'];
+const ESTADOS_REVISION = ['aprobada', 'rechazada'];
 
 const mascotas = [
   { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible' },
@@ -96,30 +97,86 @@ async function listarMascotas() {
   return mascotas;
 }
 
-async function crearSolicitud(datos) {
-  const idMascota = Number(datos.mascota_id);
-  const nombreMascota = datos.mascota || null;
+async function resolverMascota(datos) {
+  const id = Number(datos.mascota_id);
   if (pool) {
-    let id = idMascota;
-    if (!id && nombreMascota) {
-      const [filas] = await pool.query('SELECT id FROM mascotas WHERE nombre = ? LIMIT 1', [nombreMascota]);
-      id = filas.length ? filas[0].id : null;
+    if (id) {
+      const [filas] = await pool.query('SELECT id, nombre FROM mascotas WHERE id = ? LIMIT 1', [id]);
+      return filas.length ? filas[0] : null;
     }
-    if (!id) return null;
+    if (datos.mascota) {
+      const [filas] = await pool.query('SELECT id, nombre FROM mascotas WHERE nombre = ? LIMIT 1', [datos.mascota]);
+      return filas.length ? filas[0] : null;
+    }
+    return null;
+  }
+  if (id) return mascotas.find(m => m.id === id) || null;
+  if (datos.mascota) return mascotas.find(m => m.nombre === datos.mascota) || null;
+  return null;
+}
+
+async function crearSolicitud(datos, sesion) {
+  const mascota = await resolverMascota(datos);
+  if (!mascota) return null;
+
+  const base = {
+    mascota_id: mascota.id,
+    mascota: mascota.nombre,
+    adoptante_id: sesion ? sesion.id : null,
+    solicitante_nombre: (datos.nombre || '').trim() || null,
+    solicitante_email: (datos.email || '').trim().toLowerCase() || null,
+    solicitante_telefono: (datos.telefono || '').trim() || null,
+    motivacion: (datos.motivacion || '').trim() || null,
+    consentimiento: datos.consentimiento === true,
+    estado: 'en_revision'
+  };
+
+  if (pool) {
     const [resultado] = await pool.query(
-      'INSERT INTO solicitudes (mascota_id, estado) VALUES (?, ?)',
-      [id, 'en_revision']
+      'INSERT INTO solicitudes (mascota_id, adoptante_id, solicitante_nombre, solicitante_email, solicitante_telefono, motivacion, consentimiento, estado) VALUES (?,?,?,?,?,?,?,?)',
+      [base.mascota_id, base.adoptante_id, base.solicitante_nombre, base.solicitante_email, base.solicitante_telefono, base.motivacion, base.consentimiento ? 1 : 0, 'en_revision']
     );
-    return { id: resultado.insertId, mascota_id: id, estado: 'en_revision' };
+    return Object.assign({ id: resultado.insertId, creado_en: new Date().toISOString() }, base);
   }
-  let id = idMascota;
-  if (!id && nombreMascota) {
-    const encontrada = mascotas.find(m => m.nombre === nombreMascota);
-    id = encontrada ? encontrada.id : null;
-  }
-  if (!id) return null;
-  const solicitud = { id: siguienteSolicitud++, mascota_id: id, estado: 'en_revision', creado_en: new Date().toISOString() };
+
+  const solicitud = Object.assign({
+    id: siguienteSolicitud++,
+    creado_en: new Date().toISOString(),
+    revisado_en: null,
+    historial: [{ estado: 'en_revision', nota: null, revisor: null, creado_en: new Date().toISOString() }]
+  }, base);
   solicitudes.push(solicitud);
+  return solicitud;
+}
+
+async function listarSolicitudes() {
+  if (pool) {
+    const [filas] = await pool.query(
+      'SELECT s.*, m.nombre AS mascota FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id ORDER BY s.id DESC'
+    );
+    return filas;
+  }
+  return solicitudes.slice().reverse();
+}
+
+async function actualizarEstado(id, estado, nota, sesion) {
+  if (pool) {
+    await pool.query('UPDATE solicitudes SET estado = ?, revisado_en = NOW() WHERE id = ?', [estado, id]);
+    await pool.query('INSERT INTO historial_estados (solicitud_id, estado, nota, revisor_id) VALUES (?,?,?,?)',
+      [id, estado, nota || null, sesion ? sesion.id : null]);
+    const [filas] = await pool.query('SELECT * FROM solicitudes WHERE id = ?', [id]);
+    return filas.length ? filas[0] : null;
+  }
+  const solicitud = solicitudes.find(s => s.id === id);
+  if (!solicitud) return null;
+  solicitud.estado = estado;
+  solicitud.revisado_en = new Date().toISOString();
+  solicitud.historial.push({
+    estado: estado,
+    nota: nota || null,
+    revisor: sesion ? sesion.email : null,
+    creado_en: new Date().toISOString()
+  });
   return solicitud;
 }
 
@@ -194,11 +251,29 @@ const servidor = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'POST' && ruta === '/solicitudes') {
-      const datos = await leerCuerpo(req);
-      const solicitud = await crearSolicitud(datos);
+      const sesion = autenticar(req);
+      const solicitud = await crearSolicitud(await leerCuerpo(req), sesion);
       return solicitud
         ? enviar(res, 201, solicitud)
         : enviar(res, 400, { error: 'Mascota inválida' });
+    }
+
+    if (req.method === 'GET' && ruta === '/solicitudes') {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      if (sesion.rol !== 'administrador') return enviar(res, 403, { error: 'Solo administradores' });
+      return enviar(res, 200, await listarSolicitudes());
+    }
+
+    const revision = ruta.match(/^\/solicitudes\/(\d+)\/estado$/);
+    if (req.method === 'POST' && revision) {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      if (sesion.rol !== 'administrador') return enviar(res, 403, { error: 'Solo administradores' });
+      const cuerpo = await leerCuerpo(req);
+      if (!ESTADOS_REVISION.includes(cuerpo.estado)) return enviar(res, 400, { error: 'Estado inválido' });
+      const solicitud = await actualizarEstado(Number(revision[1]), cuerpo.estado, cuerpo.nota, sesion);
+      return solicitud ? enviar(res, 200, solicitud) : enviar(res, 404, { error: 'Solicitud no encontrada' });
     }
 
     return enviar(res, 404, { error: 'Ruta no encontrada' });

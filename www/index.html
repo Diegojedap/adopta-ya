@@ -84,6 +84,40 @@
 
         </section>
 
+        <section id="postulacion" class="postulacion">
+            <h2>Formulario de postulación</h2>
+
+            <p>
+                Cuéntanos sobre ti para evaluar la adopción. Al enviar, autorizas el
+                tratamiento de tus datos conforme a la Ley 1581 de 2012.
+            </p>
+
+            <div class="formulario">
+                <input id="post-nombre" type="text" placeholder="Nombre completo">
+                <input id="post-email" type="email" placeholder="Correo electrónico">
+                <input id="post-telefono" type="tel" placeholder="Teléfono">
+                <input id="post-mascota" type="text" placeholder="Mascota de interés">
+                <textarea id="post-motivacion" placeholder="¿Por qué quieres adoptar?"></textarea>
+                <label class="consentimiento">
+                    <input id="post-consentimiento" type="checkbox">
+                    Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012)
+                </label>
+                <button onclick="enviarPostulacion()">Enviar postulación</button>
+            </div>
+
+            <p id="post-estado"></p>
+        </section>
+
+        <section id="panel" class="panel">
+            <h2>Panel de evaluación (refugio)</h2>
+
+            <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
+
+            <button onclick="cargarSolicitudes()">Cargar solicitudes</button>
+
+            <div id="lista-solicitudes"></div>
+        </section>
+
         <section class="responsabilidad">
 
             <h2>❤️ Adopta con responsabilidad</h2>

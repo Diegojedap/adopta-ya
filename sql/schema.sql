@@ -28,13 +28,29 @@ CREATE TABLE IF NOT EXISTS mascotas (
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS solicitudes (
-  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  mascota_id    INT UNSIGNED  NOT NULL,
-  adoptante_id  INT UNSIGNED  NULL,
-  estado        ENUM('en_revision','aprobada','rechazada') NOT NULL DEFAULT 'en_revision',
-  creado_en     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_solicitud_mascota  FOREIGN KEY (mascota_id)   REFERENCES mascotas(id) ON DELETE CASCADE,
+  id                    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  mascota_id            INT UNSIGNED  NOT NULL,
+  adoptante_id          INT UNSIGNED  NULL,
+  solicitante_nombre    VARCHAR(120)  NULL,
+  solicitante_email     VARCHAR(160)  NULL,
+  solicitante_telefono  VARCHAR(40)   NULL,
+  motivacion            TEXT          NULL,
+  consentimiento        TINYINT(1)    NOT NULL DEFAULT 0,
+  estado                ENUM('en_revision','aprobada','rechazada') NOT NULL DEFAULT 'en_revision',
+  creado_en             TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  revisado_en           TIMESTAMP     NULL,
+  CONSTRAINT fk_solicitud_mascota   FOREIGN KEY (mascota_id)   REFERENCES mascotas(id) ON DELETE CASCADE,
   CONSTRAINT fk_solicitud_adoptante FOREIGN KEY (adoptante_id) REFERENCES usuarios(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS historial_estados (
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  solicitud_id  INT UNSIGNED  NOT NULL,
+  estado        ENUM('en_revision','aprobada','rechazada') NOT NULL,
+  nota          VARCHAR(255)  NULL,
+  revisor_id    INT UNSIGNED  NULL,
+  creado_en     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_historial_solicitud FOREIGN KEY (solicitud_id) REFERENCES solicitudes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS evidencias (
