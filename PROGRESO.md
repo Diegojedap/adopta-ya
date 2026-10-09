@@ -6,6 +6,21 @@
 
 ---
 
+## 2026-10-09 (Fase 1 — M-13)
+
+- **M-13 contrato PDF:** `server/contrato.js` escribe un PDF 1.4 válido sin dependencias
+  (Helvetica base, WinAnsi); ruta `GET /solicitudes/:id/contrato` (sólo solicitudes
+  «aprobada»; administrador o el adoptante dueño, JWT). Botón «Descargar contrato» en el
+  panel (`descargarContrato()` descarga el blob con token).
+- **Verificación:** `npm test` → **14/14**; `npm run sync` OK; endpoint probado: PDF
+  `%PDF-` de ~2,6 KB con cláusulas Ley 1581; 401 sin token, 409 si la solicitud no está
+  aprobada.
+
+**Siguiente paso:** APK (M-18, requiere Android Studio/JDK 17) → luego seguimiento con
+evidencias (M-14/M-15) antes de UAT.
+
+---
+
 ## 2026-10-09 (Fase 1 — M-11/M-12)
 
 - **M-11 formulario de postulación:** captura datos del adoptante (nombre, email, teléfono,

@@ -79,8 +79,10 @@ Registro, login con hashing y control de acceso por JWT; roles administrador/ado
 - **Requisitos:** REQ-05
 
 ### M-16 · API REST (◐ Prototipo)
-Servidor con el módulo `http` de Node (sin framework): `GET /mascotas`, `GET /mascotas/:id`,
-`POST /solicitudes` (estado «en_revision») y `GET /health`; CORS habilitado.
+Servidor con el módulo `http` de Node (sin framework): `GET /health`, `GET /mascotas`,
+`GET /mascotas/:id`, `POST /solicitudes`, `GET /solicitudes` y `POST /solicitudes/:id/estado`
+(admin), `GET /solicitudes/:id/contrato`, y `/auth/registro`, `/auth/login`, `/auth/perfil`;
+CORS habilitado.
 - **Archivos:** `server/index.js`; script `npm start`; config `server/.env.example`
 - **Funciona:** store en memoria con las mascotas de semilla; hook **opcional** a `mysql2`
   (se activa si está instalado y hay conexión a MySQL).
@@ -111,6 +113,16 @@ Panel del refugio para revisar y resolver solicitudes.
 - **Limitación:** sin notificación al adoptante ni asignación de veterinario.
 - **Requisitos:** REQ-02 / RNF-01
 
+### M-13 · Contrato PDF (◐ Prototipo)
+Genera el contrato de adopción en PDF sin dependencias externas.
+- **Archivos:** `server/contrato.js` (escritor PDF 1.4 con fuentes base Helvetica);
+  ruta `GET /solicitudes/:id/contrato` en `server/index.js`; botón «Descargar contrato» en
+  `www/js/script.js` (`descargarContrato`) dentro del panel.
+- **Funciona:** sólo sobre solicitudes «aprobada»; el adoptante dueño o un administrador con
+  JWT descarga el PDF (datos del adoptante, mascota y 5 cláusulas con referencia a la Ley 1581).
+- **Limitación:** plantilla fija, sin firma digital ni anexos.
+- **Requisitos:** Alcance Entrega 1 (contrato y aceptación formal)
+
 ---
 
 ## 2. Módulos diseñados aún NO implementados
@@ -118,7 +130,6 @@ Panel del refugio para revisar y resolver solicitudes.
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
 | M-10 | Gestión de mascotas (CRUD) | Panel admin para registrar/editar mascotas con ficha clínica y estado | REQ-01 | ✗ |
-| M-13 | Contrato PDF | Generación automática del contrato de adopción y aceptación formal | Alcance Entrega 1 | ✗ |
 | M-14 | Seguimiento post-adopción | Registro de reportes con fotos/evidencias durante los primeros 6 meses | REQ-03 | ✗ |
 | M-15 | Alertas automáticas | Recordatorios programados (p. ej. 30 días) para cargar evidencias | REQ-03 | ✗ |
 | M-16 | API REST | Endpoints de mascotas, solicitudes, usuarios, evidencias y estados | RNF-01 | ◐ (mascotas y solicitudes) |
@@ -158,7 +169,7 @@ REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Prueba
 | 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | ✅ Hecho 08/10/2026 (`server/index.js`; P-09) |
 | 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | ✅ Hecho 08/10/2026 (datos + consentimiento + historial) |
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
-| 7 | Contrato PDF con plantilla | M-13 | P2 | — |
+| 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | REQ-03 |
 | 9 | UAT con el refugio y línea base de tiempos | — | P2 | Indicadores Entrega 2 |
 
@@ -167,8 +178,8 @@ REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Prueba
 ## 5. Resumen para sustentación
 
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
-  solicitud «en revisión», login/registro con JWT, navegación, empaquetado Android y
-  14 pruebas automatizadas en verde.
+  solicitud «en revisión», login/registro con JWT, panel de evaluación con descarga del
+  contrato de adopción en PDF, navegación, empaquetado Android y 14 pruebas automatizadas en verde.
 - **Se puede probar con evidencia:** `npm test` (tabla P-01…P-14), `resultados_pruebas.json`
   y la API local (`npm start`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones; hoy es la capa de

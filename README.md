@@ -55,8 +55,9 @@ Funcionalidades visibles: catálogo que se carga desde la API (`GET /mascotas`) 
 las 3 tarjetas estáticas de ejemplo (Max, Luna, Rocky) si el servidor no responde; botón
 «Ver mascotas» (desplazamiento suave), botones «Quiero adoptar…» (crean una solicitud
 «en revisión» vía `POST /solicitudes`); acceso con registro/login; formulario de postulación
-del adoptante (datos + consentimiento Ley 1581) y panel de evaluación del refugio para
-aprobar o rechazar solicitudes. Responsivo a 700 px.
+del adoptante (datos + consentimiento Ley 1581), panel de evaluación del refugio para
+aprobar o rechazar solicitudes y descarga del contrato de adopción en PDF para las aprobadas.
+Responsivo a 700 px.
 
 ### 2.2 API local (opcional)
 
@@ -66,6 +67,7 @@ Levanta en `http://localhost:3000`:
 ```powershell
 npm start   # GET /health · GET /mascotas[:id] · POST /solicitudes
             # GET /solicitudes · POST /solicitudes/:id/estado  (solo administrador, JWT)
+            # GET /solicitudes/:id/contrato (PDF; aprobada y admin o adoptante dueño, JWT)
             # POST /auth/registro · POST /auth/login · GET /auth/perfil (JWT Bearer)
 ```
 
