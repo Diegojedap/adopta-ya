@@ -59,8 +59,8 @@
     "id": "P-09",
     "req": "REQ-05",
     "desc": "Existe librería de hashing/autenticación para credenciales",
-    "resultado": "FALLA",
-    "detalle": "dependencias: 3; sin bcrypt/jsonwebtoken"
+    "resultado": "PASA",
+    "detalle": "dependencias: 5; sin bcrypt/jsonwebtoken"
   },
   {
     "id": "P-10",
@@ -74,7 +74,7 @@
     "req": "RNF-03",
     "desc": "package.json solo declara dependencias directas (sin transitivas)",
     "resultado": "PASA",
-    "detalle": "3 directas: @capacitor/android, @capacitor/cli, @capacitor/core"
+    "detalle": "5 directas: @capacitor/android, @capacitor/cli, @capacitor/core, bcryptjs, jsonwebtoken"
   },
   {
     "id": "P-12",

@@ -45,6 +45,53 @@ function adoptar(nombre) {
     }).catch(function () {});
 }
 
+function mostrarSesion(usuario) {
+    const etiqueta = document.getElementById("sesion");
+    if (!etiqueta) return;
+    etiqueta.textContent = usuario
+        ? "Sesión iniciada: " + usuario.nombre + " (" + usuario.rol + ")"
+        : "Sin sesión iniciada.";
+}
+
+function ingresar() {
+    const email = document.getElementById("acceso-email").value;
+    const clave = document.getElementById("acceso-clave").value;
+
+    fetch(API_BASE + "/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email, clave: clave })
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (datos.token) {
+                try { localStorage.setItem("token", datos.token); } catch (e) {}
+                mostrarSesion(datos.usuario);
+            } else {
+                mostrarSesion(null);
+            }
+        })
+        .catch(function () { mostrarSesion(null); });
+}
+
+function registrarse() {
+    const nombre = document.getElementById("acceso-nombre").value;
+    const email = document.getElementById("acceso-email").value;
+    const clave = document.getElementById("acceso-clave").value;
+
+    fetch(API_BASE + "/auth/registro", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nombre: nombre, email: email, clave: clave })
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (datos.id) ingresar();
+            else mostrarSesion(null);
+        })
+        .catch(function () { mostrarSesion(null); });
+}
+
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", cargarMascotas);
 } else {

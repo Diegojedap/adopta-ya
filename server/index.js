@@ -1,6 +1,10 @@
 const http = require('http');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const PUERTO = Number(process.env['PORT'] || 3000);
+const CLAVE_JWT = process.env['JWT_SECRET'] || 'adopta-ya-desarrollo';
+const ROLES = ['administrador', 'adoptante', 'veterinario'];
 
 const mascotas = [
   { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible' },
@@ -11,8 +15,22 @@ const mascotas = [
 const solicitudes = [];
 let siguienteSolicitud = 1;
 
+const usuarios = [];
+let siguienteUsuario = 1;
+
 let pool = null;
 let fuenteDatos = 'memoria';
+
+function sembrarUsuarios() {
+  if (usuarios.length) return;
+  usuarios.push({
+    id: siguienteUsuario++,
+    nombre: 'Administrador',
+    email: 'admin@adoptaya.local',
+    clave_hash: bcrypt.hashSync(process.env['CLAVE_ADMIN'] || 'admin123', 10),
+    rol: 'administrador'
+  });
+}
 
 async function conectarBaseDatos() {
   const cfg = {
@@ -39,7 +57,7 @@ function enviar(res, codigo, datos) {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type'
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization'
   });
   res.end(cuerpo);
 }
@@ -53,6 +71,21 @@ function leerCuerpo(req) {
       try { resolve(JSON.parse(datos)); } catch (e) { resolve({}); }
     });
   });
+}
+
+function publico(usuario) {
+  return { id: usuario.id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol };
+}
+
+function autenticar(req) {
+  const cabecera = req.headers['authorization'] || '';
+  const partes = cabecera.split(' ');
+  if (partes.length !== 2 || partes[0] !== 'Bearer') return null;
+  try {
+    return jwt.verify(partes[1], CLAVE_JWT);
+  } catch (e) {
+    return null;
+  }
 }
 
 async function listarMascotas() {
@@ -90,6 +123,35 @@ async function crearSolicitud(datos) {
   return solicitud;
 }
 
+function registrar(datos) {
+  const nombre = (datos.nombre || '').trim();
+  const email = (datos.email || '').trim().toLowerCase();
+  const clave = datos.clave || '';
+  if (!nombre || !email || !clave) return { error: 'Nombre, email y clave son obligatorios' };
+  if (usuarios.some(u => u.email === email)) return { error: 'El email ya está registrado', codigo: 409 };
+  const rol = ROLES.includes(datos.rol) ? datos.rol : 'adoptante';
+  const usuario = {
+    id: siguienteUsuario++,
+    nombre,
+    email,
+    clave_hash: bcrypt.hashSync(clave, 10),
+    rol
+  };
+  usuarios.push(usuario);
+  return { usuario: publico(usuario) };
+}
+
+function ingresar(datos) {
+  const email = (datos.email || '').trim().toLowerCase();
+  const clave = datos.clave || '';
+  const usuario = usuarios.find(u => u.email === email);
+  if (!usuario || !bcrypt.compareSync(clave, usuario.clave_hash)) {
+    return { error: 'Credenciales inválidas', codigo: 401 };
+  }
+  const token = jwt.sign({ id: usuario.id, email: usuario.email, rol: usuario.rol }, CLAVE_JWT, { expiresIn: '1d' });
+  return { token, usuario: publico(usuario) };
+}
+
 const servidor = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const ruta = url.pathname;
@@ -99,6 +161,25 @@ const servidor = http.createServer(async (req, res) => {
   try {
     if (req.method === 'GET' && ruta === '/health') {
       return enviar(res, 200, { ok: true, fuente: fuenteDatos });
+    }
+
+    if (req.method === 'POST' && ruta === '/auth/registro') {
+      const resultado = registrar(await leerCuerpo(req));
+      if (resultado.error) return enviar(res, resultado.codigo || 400, { error: resultado.error });
+      return enviar(res, 201, resultado.usuario);
+    }
+
+    if (req.method === 'POST' && ruta === '/auth/login') {
+      const resultado = ingresar(await leerCuerpo(req));
+      if (resultado.error) return enviar(res, resultado.codigo, { error: resultado.error });
+      return enviar(res, 200, resultado);
+    }
+
+    if (req.method === 'GET' && ruta === '/auth/perfil') {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      const usuario = usuarios.find(u => u.id === sesion.id);
+      return usuario ? enviar(res, 200, publico(usuario)) : enviar(res, 401, { error: 'No autenticado' });
     }
 
     if (req.method === 'GET' && ruta === '/mascotas') {
@@ -126,6 +207,7 @@ const servidor = http.createServer(async (req, res) => {
   }
 });
 
+sembrarUsuarios();
 conectarBaseDatos().finally(() => {
   servidor.listen(PUERTO, () => {
     console.log('API ¡ADOPTA YA! en http://localhost:' + PUERTO + ' (datos: ' + fuenteDatos + ')');

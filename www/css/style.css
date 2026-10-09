@@ -171,6 +171,45 @@ footer {
     margin-top: 60px;
 }
 
+/* ACCESO */
+.acceso {
+    text-align: center;
+}
+
+.acceso .formulario {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.acceso input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.acceso button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #ff7043;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.acceso button:hover {
+    background-color: #f4511e;
+}
+
+#sesion {
+    font-weight: bold;
+    color: #555;
+}
+
 /* CELULARES */
 @media (max-width: 700px) {
 
