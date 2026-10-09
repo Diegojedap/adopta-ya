@@ -33,7 +33,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── PROGRESO.md                    ← bitácora viva de avance (se actualiza en cada paso)
 ├── opencode.json                  ← config de opencode (autoupdate, instructions, share off)
 ├── README.md                      ← documento principal del entregable
-├── package.json                   ← deps: @capacitor/*; dev: jsdom@23.0.1
+├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken; dev: jsdom@23.0.1
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
 ├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-14 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
@@ -57,29 +57,35 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 
 ## 3. Estado verificado (08/10/2026)
 
-- **Pruebas:** `npm test` → **PASA 13 / FALLA 1** de 14.
-  - **P-09** sigue fallando: sin hashing/autenticación (M-09, Fase 1).
-  - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) **ya pasan**.
+- **Pruebas:** `npm test` → **PASA 14 / FALLA 0** de 14 (tras `npm run sync`).
+  - **P-09** ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
+  - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) pasan.
   - **Nota:** el check P-11 del test fue corregido (allowlist de dependencias directas) para
-    no contradecir a P-09, que exige una librería de auth en `dependencies`.
+    no contradecir a P-09. Ojo con el orden: si editas `www/`, ejecuta `npm run sync` antes
+    de `npm test` o P-13 fallará por la copia Android desfasada.
 - **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
   M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas ·
+  M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) ·
   M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
-- **Módulos NO implementados (diseñados):** M-09 auth/roles · M-10 CRUD mascotas ·
+- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas ·
   M-11 formulario postulación · M-12 motor de evaluación · M-13 contrato PDF ·
   M-14 seguimiento · M-15 alertas · M-18 cloud.
 - **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-01/REQ-02 ◐ (con API) ·
-  REQ-03/REQ-05 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
+  REQ-05 ✅ (auth) · REQ-03 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
 - **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
   en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
+  Rutas: `GET /health`, `GET /mascotas[:id]`, `POST /solicitudes` y
+  `POST /auth/registro`, `POST /auth/login`, `GET /auth/perfil` (JWT Bearer).
+  Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
   minúsculas (`css/`, `js/`) · F-02 credenciales MySQL vaciadas · F-03 `package.json`
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
   Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
   puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
-- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-3 (esquema, API, consumir
-  API). Siguiente: auth (M-09) → formularios (M-11/M-12) → APK → PDF → seguimiento → UAT.
+- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-4 (esquema, API, consumir
+  API, auth). Siguiente: formularios postulación/evaluación (M-11/M-12) → APK → PDF →
+  seguimiento → UAT.
 
 ## 4. Comandos clave
 
@@ -104,6 +110,8 @@ Verificación rápida de integridad: comparar hashes de `www/index.html`,
 3. **npm offline**: registry.npmjs.org no es accesible desde esta máquina; `package.json`
    fija `psl@1.9.0`, `ws@8.201` (verificar: 8.20.1) y `tough-cookie@4.1.3` vía `overrides`
    porque son las versiones en caché local. No quitar esos overrides sin conexión.
+   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) se instalaron desde
+   la caché local con `--offline`.
 4. **APK**: el único binario versionado es `android/app/build/outputs/apk/debug/app-debug.apk`
    (excepción deliberada en `.gitignore`, como evidencia). No borrar.
 5. **Datos legales**: al capturar datos reales de adoptantes aplica la **Ley 1581 de 2012**

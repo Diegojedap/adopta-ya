@@ -68,8 +68,18 @@ App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y
   para que no contradiga a P-09.
 - **Requisitos:** RNF-03; soporta REQ-01/02/04/05 y RNF-02
 
+### M-09 · Autenticación y roles (◐ Prototipo)
+Registro, login con hashing y control de acceso por JWT; roles administrador/adoptante/veterinario.
+- **Archivos:** `server/index.js` (`/auth/registro`, `/auth/login`, `/auth/perfil`);
+  UI `www/index.html` + `www/js/script.js` (`ingresar`, `registrarse`, `mostrarSesion`).
+- **Funciona:** hash con `bcryptjs` (10 rondas) y token `jsonwebtoken` (24 h); admin de demo
+  `admin@adoptaya.local` / `admin123`.
+- **Limitación:** usuarios en memoria (no persisten en MySQL) y sin panel por rol todavía.
+- **Pruebas:** P-09 ✅
+- **Requisitos:** REQ-05
+
 ### M-16 · API REST (◐ Prototipo)
-Servidor con el módulo `http` de Node (sin dependencias): `GET /mascotas`, `GET /mascotas/:id`,
+Servidor con el módulo `http` de Node (sin framework): `GET /mascotas`, `GET /mascotas/:id`,
 `POST /solicitudes` (estado «en_revision») y `GET /health`; CORS habilitado.
 - **Archivos:** `server/index.js`; script `npm start`; config `server/.env.example`
 - **Funciona:** store en memoria con las mascotas de semilla; hook **opcional** a `mysql2`
@@ -85,11 +95,10 @@ Esquema e inserción de datos de ejemplo para todas las entidades.
 
 ---
 
-## 2. Módulos diseñados y NO implementados
+## 2. Módulos diseñados aún NO implementados
 
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
-| M-09 | Autenticación y roles | Login/registro con hashing bcrypt, roles administrador / adoptante / veterinario | REQ-05 | ✗ |
 | M-10 | Gestión de mascotas (CRUD) | Panel admin para registrar/editar mascotas con ficha clínica y estado | REQ-01 | ✗ |
 | M-11 | Formulario de postulación | Captura de datos del adoptante, anexos y consentimiento (Ley 1581) | REQ-02 | ✗ |
 | M-12 | Motor de evaluación | Panel del refugio para aprobar/rechazar solicitudes con historial | REQ-02 / RNF-01 | ✗ |
@@ -113,13 +122,13 @@ Esquema e inserción de datos de ejemplo para todas las entidades.
 | REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Crea solicitud «en_revision»; falta formulario del adoptante |
 | REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | — | ✗ Sólo mensaje educativo (M-05) |
 | REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK pendiente de regenerar) |
-| REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✗ Sin librerías ni pantalla de acceso |
+| REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
 | RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✗ Sin persistencia |
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
 | RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12 | ✅ `npm test` ejecutable |
 
-**Cobertura hoy:** REQ-04 cumplido; REQ-01 y REQ-02 parciales (con API); REQ-03, REQ-05 y
-RNF-01 pendientes (RNF-01 con prototipo de API); RNF-02 y RNF-03 cumplidos. Pruebas: **13/14**.
+**Cobertura hoy:** REQ-04 y REQ-05 cumplidos; REQ-01 y REQ-02 parciales (con API);
+REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **14/14**.
 
 ---
 
@@ -130,7 +139,7 @@ RNF-01 pendientes (RNF-01 con prototipo de API); RNF-02 y RNF-03 cumplidos. Prue
 | 1 | Modelar el esquema MySQL (usuarios, mascotas, solicitudes, estados, evidencias) y versionarlo en SQL | M-17 | P0 | ✅ Hecho 08/10/2026 (`sql/schema.sql`, `sql/seed.sql`) |
 | 2 | API REST mínima: `GET /mascotas`, `POST /solicitudes` (estado «En revisión») | M-16 | P0 | ✅ Hecho 08/10/2026 (`server/index.js`; habilita P-05/P-07) |
 | 3 | Consumir la API en `script.js` (reemplazar catálogo hardcodeado y `alert`) | M-03, M-04 | P0 | ✅ Hecho 08/10/2026 (con reserva estática) |
-| 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | Cumple REQ-05 (P-09) |
+| 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | ✅ Hecho 08/10/2026 (`server/index.js`; P-09) |
 | 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | Corazón del proceso |
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | — |
@@ -142,7 +151,8 @@ RNF-01 pendientes (RNF-01 con prototipo de API); RNF-02 y RNF-03 cumplidos. Prue
 ## 5. Resumen para sustentación
 
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
-  solicitud «en revisión», navegación, empaquetado Android y 13 pruebas automatizadas en verde.
+  solicitud «en revisión», login/registro con JWT, navegación, empaquetado Android y
+  14 pruebas automatizadas en verde.
 - **Se puede probar con evidencia:** `npm test` (tabla P-01…P-14), `resultados_pruebas.json`
   y la API local (`npm start`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones; hoy es la capa de

@@ -6,6 +6,23 @@
 
 ---
 
+## 2026-10-09 (Fase 1)
+
+- **M-09 auth/roles completado (prototipo):** `bcryptjs` + `jsonwebtoken` instalados desde
+  la caché offline; endpoints `POST /auth/registro`, `POST /auth/login` (JWT Bearer) y
+  `GET /auth/perfil`; roles administrador/adoptante/veterinario; admin de demo
+  `admin@adoptaya.local` / `admin123` (usuarios en memoria).
+- **UI de acceso** en `www/index.html` + `www/js/script.js` + estilos (ingresar/registrarse).
+- **Verificación:** `npm test` → **14/14** (P-09 cierra); auth probada end-to-end
+  (login OK, registro OK, perfil con token OK, credenciales malas → 401); `npm run sync` OK;
+  hashes idénticos; sin credenciales.
+- **Docs actualizadas:** AGENTS.md, README.md, docs/01, docs/02, docs/03.
+
+**Siguiente paso (Fase 1):** formulario de postulación del adoptante (M-11, con
+consentimiento Ley 1581) + panel de evaluación (M-12).
+
+---
+
 ## 2026-10-09
 
 - **Fase 0 completada (backlog P0):** esquema MySQL versionado (`sql/schema.sql`,

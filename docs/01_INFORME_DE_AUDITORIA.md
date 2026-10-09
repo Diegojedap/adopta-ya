@@ -94,18 +94,17 @@ resolución offline se fijaron por `overrides` `psl@1.9.0`, `ws@8.20.1` y
 `tough-cookie@4.1.3` (versiones presentes en caché, compatibles con el rango de jsdom 23).
 Con internet: `npm install` normal y eliminación del bloque `overrides`.
 
-### F-06 · Sin capa de API/persistencia (ALTO — PENDIENTE, CONOCIDO)
-`www/js/script.js` (14 líneas) no contiene `fetch`/XHR (P-05 falla) y `adoptar()` no
-persiste nada (P-07 falla). Existe sólo un indicio de intención MySQL:
-`adopta_ya.session.sql` con `SELECT * FROM mascotas;`.
-**Acción recomendada:** implementar API (Node/Express o Python/Flask) + MySQL siguiendo
-la arquitectura objetivo (ver `docs/02_ARQUITECTURA.md`), priorizando el flujo
-mínimo: mascotas → solicitudes → estados.
+### F-06 · Capa de API/persistencia (ALTO — RESUELTO en prototipo, 08/10/2026)
+`www/js/script.js` carga el catálogo con `fetch` desde `GET /mascotas` (P-05 PASA) y
+`adoptar()` crea una solicitud «en_revision» vía `POST /solicitudes` (P-07 PASA). La API
+(`server/index.js`, sin framework) usa un store en memoria con hook **opcional** a MySQL;
+el esquema quedó versionado en `sql/schema.sql` + `sql/seed.sql`.
+**Pendiente:** conectar MySQL real y el formulario de postulación (M-11).
 
-### F-07 · Sin autenticación ni hashing (ALTO — PENDIENTE, CONOCIDO)
-No hay librería de hashing/JWT (P-09 falla) ni pantalla de login. REQ-05 sin cumplir.
-**Acción recomendada:** bcrypt + JWT/roles (admin, adoptante, veterinario) antes de
-capturar datos personales reales.
+### F-07 · Autenticación y hashing (ALTO — RESUELTO en prototipo, 08/10/2026)
+`bcryptjs` + `jsonwebtoken` en `dependencies`; endpoints `/auth/registro`, `/auth/login` y
+`/auth/perfil` con roles administrador/adoptante/veterinario (P-09 PASA) y pantalla de acceso
+en `www/`. **Pendiente:** persistir usuarios en MySQL y habilitar paneles por rol.
 
 ### F-08 · APK desactualizado respecto de la fuente (MEDIO — PENDIENTE)
 El APK vigente se compiló con la versión anterior de `www/` (referencias `CSS/`/`JS/`).
@@ -141,11 +140,11 @@ Siguen faltando LICENSE y CONTRIBUTING en la raíz del repositorio.
 | P-02 Viewport y `lang="es"` | REQ-04 | **PASA** | — |
 | P-03 Media query móvil | REQ-04 | **PASA** | `@media (max-width: 700px)` |
 | P-04 Catálogo con nombre/acción | REQ-01 | **PASA** | 3 tarjetas |
-| P-05 Catálogo desde API | REQ-01 | **FALLA** | Sin fetch/XHR: catálogo hardcodeado (F-06) |
+| P-05 Catálogo desde API | REQ-01 | **PASA** | `GET /mascotas` con reserva estática (F-06) |
 | P-06 `adoptar()` informa al usuario | REQ-02 | **PASA** | — |
-| P-07 `adoptar()` persiste solicitud | REQ-02 | **FALLA** | Sin backend (F-06) |
+| P-07 `adoptar()` persiste solicitud | REQ-02 | **PASA** | `POST /solicitudes` «en_revision» (F-06) |
 | P-08 `mostrarMascotas()` desplaza | REQ-04 | **PASA** | — |
-| P-09 Hashing/autenticación | REQ-05 | **FALLA** | Sin librerías de auth (F-07) |
+| P-09 Hashing/autenticación | REQ-05 | **PASA** | bcrypt + JWT (F-07) |
 | P-10 Sin secretos en claro | RNF-02 | **PASA** | Corregido (F-02) |
 | P-11 Dependencias directas | RNF-03 | **PASA** | Corregido (F-03) |
 | P-12 Script de pruebas real | RNF-03 | **PASA** | Corregido (F-04) |
@@ -158,10 +157,10 @@ Evidencia: `resultados_pruebas.json`.
 
 | Prioridad | Acción | Esfuerzo |
 |---|---|---|
-| P0 | Definir modelo de datos (mascotas, usuarios, solicitudes, estados, evidencias) y crear el esquema MySQL | Bajo |
-| P0 | API REST mínima: CRUD de mascotas + creación de solicitudes con estado «En revisión» | Medio |
-| P0 | Consumir la API desde `script.js` (reemplazar el catálogo hardcodeado y el `alert`) | Medio |
-| P1 | Autenticación con roles (admin/adoptante/veterinario) y hashing bcrypt (REQ-05) | Medio |
+| P0 | ✅ (08/10/2026) Definir modelo de datos (mascotas, usuarios, solicitudes, estados, evidencias) y crear el esquema MySQL | Bajo |
+| P0 | ✅ (08/10/2026) API REST mínima: consulta de mascotas + creación de solicitudes con estado «En revisión» | Medio |
+| P0 | ✅ (08/10/2026) Consumir la API desde `script.js` | Medio |
+| P1 | ✅ (08/10/2026) Autenticación con roles (admin/adoptante/veterinario) y hashing bcrypt (REQ-05) | Medio |
 | P1 | Formulario de postulación + panel de evaluación del refugio | Medio |
 | P1 | Regenerar APK tras cambios y publicar demo web (Vercel + Render free tier) | Bajo |
 | P2 | Contrato PDF con plantilla y firma/aceptación | Medio |
@@ -175,3 +174,7 @@ evidencia de APK y pruebas automatizables. Tras esta auditoría, el paquete es *
 (las pruebas se ejecutan con `npm test`), **sin secretos versionados** y con la fuente
 coherente entre `www/` y el proyecto Android. El salto de calidad siguiente no es cosmético:
 es construir la capa de datos y seguridad que la Entrega 2 ya declara como pendiente.
+
+**Avance posterior (08/10/2026):** se implementaron la API REST local, el consumo desde el
+frontend, el esquema MySQL versionado y la autenticación con bcrypt+JWT; la suite pasó de
+11/14 a **14/14** y los hallazgos F-06/F-07 quedaron resueltos en su versión de prototipo.

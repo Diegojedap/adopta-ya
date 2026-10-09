@@ -58,15 +58,18 @@ las 3 tarjetas estáticas de ejemplo (Max, Luna, Rocky) si el servidor no respon
 
 ### 2.2 API local (opcional)
 
-Sin dependencias externas (módulo `http` de Node). Levanta en `http://localhost:3000`:
+Servidor con el módulo `http` de Node (sin framework) y auth con `bcryptjs` + `jsonwebtoken`.
+Levanta en `http://localhost:3000`:
 
 ```powershell
-npm start              # GET /mascotas · GET /mascotas/:id · POST /solicitudes · GET /health
+npm start   # GET /health · GET /mascotas[:id] · POST /solicitudes
+            # POST /auth/registro · POST /auth/login · GET /auth/perfil (JWT Bearer)
 ```
 
-Por defecto usa un store **en memoria** con las mascotas de ejemplo. Si hay MySQL (puerto
-3307) y `mysql2` instalado, se conecta y persiste en la base (`sql/schema.sql` + `sql/seed.sql`);
-las credenciales se definen en `server/.env` (no versionado).
+Por defecto usa un store **en memoria** (mascotas y usuarios) con el admin de demo
+`admin@adoptaya.local` / `admin123`. Si hay MySQL (puerto 3307) y `mysql2` instalado, conecta
+y persiste mascotas/solicitudes (`sql/schema.sql` + `sql/seed.sql`); las credenciales se
+definen en `server/.env` (no versionado).
 
 ### 2.3 Android
 
@@ -90,9 +93,8 @@ debe regenerarse con `npm run sync` + build antes de instalarlo de nuevo.
 npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-14) y genera resultados_pruebas.json
 ```
 
-Resultado vigente: **PASA 13 / FALLA 1**. La única falla es P-09 (hashing/autenticación),
-correspondiente al módulo pendiente M-09 (Fase 1), no a un defecto de la interfaz.
-P-05 (catálogo desde API) y P-07 (solicitud persistida) ya pasan.
+Resultado vigente: **PASA 14 / FALLA 0**. Todas las comprobaciones P-01…P-14 pasan,
+incluidas P-05 (catálogo desde API), P-07 (solicitud persistida) y P-09 (hashing/autenticación).
 
 ## 3. Herramientas y versiones
 
