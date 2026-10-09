@@ -1,6 +1,7 @@
 const http = require('http');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { generarContrato } = require('./contrato');
 
 const PUERTO = Number(process.env['PORT'] || 3000);
 const CLAVE_JWT = process.env['JWT_SECRET'] || 'adopta-ya-desarrollo';
@@ -159,6 +160,14 @@ async function listarSolicitudes() {
   return solicitudes.slice().reverse();
 }
 
+async function obtenerSolicitud(id) {
+  if (pool) {
+    const [filas] = await pool.query('SELECT s.*, m.nombre AS mascota FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id WHERE s.id = ? LIMIT 1', [id]);
+    return filas.length ? filas[0] : null;
+  }
+  return solicitudes.find(s => s.id === id) || null;
+}
+
 async function actualizarEstado(id, estado, nota, sesion) {
   if (pool) {
     await pool.query('UPDATE solicitudes SET estado = ?, revisado_en = NOW() WHERE id = ?', [estado, id]);
@@ -274,6 +283,26 @@ const servidor = http.createServer(async (req, res) => {
       if (!ESTADOS_REVISION.includes(cuerpo.estado)) return enviar(res, 400, { error: 'Estado inválido' });
       const solicitud = await actualizarEstado(Number(revision[1]), cuerpo.estado, cuerpo.nota, sesion);
       return solicitud ? enviar(res, 200, solicitud) : enviar(res, 404, { error: 'Solicitud no encontrada' });
+    }
+
+    const contrato = ruta.match(/^\/solicitudes\/(\d+)\/contrato$/);
+    if (req.method === 'GET' && contrato) {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      const id = Number(contrato[1]);
+      const solicitud = await obtenerSolicitud(id);
+      if (!solicitud) return enviar(res, 404, { error: 'Solicitud no encontrada' });
+      const esAdmin = sesion.rol === 'administrador';
+      const esDueno = solicitud.adoptante_id != null && solicitud.adoptante_id === sesion.id;
+      if (!esAdmin && !esDueno) return enviar(res, 403, { error: 'Sin permiso' });
+      if (solicitud.estado !== 'aprobada') return enviar(res, 409, { error: 'La solicitud no está aprobada' });
+      const pdf = generarContrato(solicitud);
+      res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': 'attachment; filename="contrato-adopta-ya-' + id + '.pdf"',
+        'Access-Control-Allow-Origin': '*'
+      });
+      return res.end(pdf);
     }
 
     return enviar(res, 404, { error: 'Ruta no encontrada' });

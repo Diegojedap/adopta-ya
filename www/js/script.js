@@ -139,10 +139,13 @@ function enviarPostulacion() {
 }
 
 function tarjetaSolicitud(s) {
-    const botones = s.estado === "en_revision"
-        ? '<button onclick="cambiarEstado(' + s.id + ',\'aprobada\')">Aprobar</button>' +
-          '<button onclick="cambiarEstado(' + s.id + ',\'rechazada\')">Rechazar</button>'
-        : '';
+    let botones = "";
+    if (s.estado === "en_revision") {
+        botones = '<button onclick="cambiarEstado(' + s.id + ',\'aprobada\')">Aprobar</button>' +
+                  '<button onclick="cambiarEstado(' + s.id + ',\'rechazada\')">Rechazar</button>';
+    } else if (s.estado === "aprobada") {
+        botones = '<button onclick="descargarContrato(' + s.id + ')">Descargar contrato</button>';
+    }
     return '<div class="solicitud">' +
         '<strong>' + (s.mascota || ("#" + s.mascota_id)) + '</strong> · ' + s.estado +
         '<br>' + (s.solicitante_nombre || "Sin datos") +
@@ -184,6 +187,32 @@ function cambiarEstado(id, estado) {
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
         body: JSON.stringify({ estado: estado })
     }).then(cargarSolicitudes).catch(function () {});
+}
+
+function descargarContrato(id) {
+    const info = document.getElementById("panel-estado");
+    let token = null;
+    try { token = localStorage.getItem("token"); } catch (e) {}
+    fetch(API_BASE + "/solicitudes/" + id + "/contrato", {
+        headers: { "Authorization": "Bearer " + token }
+    })
+        .then(function (respuesta) {
+            if (!respuesta.ok) throw new Error("sin contrato");
+            return respuesta.blob();
+        })
+        .then(function (blob) {
+            const enlace = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            enlace.href = url;
+            enlace.download = "contrato-adopta-ya-" + id + ".pdf";
+            document.body.appendChild(enlace);
+            enlace.click();
+            document.body.removeChild(enlace);
+            URL.revokeObjectURL(url);
+        })
+        .catch(function () {
+            if (info) info.textContent = "No se pudo descargar el contrato.";
+        });
 }
 
 if (document.readyState === "loading") {
