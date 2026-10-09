@@ -93,6 +93,24 @@ Esquema e inserción de datos de ejemplo para todas las entidades.
 - **Limitación:** sin conexión activa en esta máquina (MySQL no confirmado); la API opera en memoria.
 - **Requisitos:** RNF-01
 
+### M-11 · Formulario de postulación (◐ Parcial)
+Captura los datos del adoptante y su consentimiento para iniciar el proceso.
+- **Archivos:** `www/index.html` (`#postulacion`), `www/js/script.js` (`enviarPostulacion`);
+  backend `POST /solicitudes` (extendido con datos del solicitante).
+- **Funciona:** valida nombre, correo y mascota, exige el consentimiento (Ley 1581) y crea
+  la solicitud «en_revision» con los datos del postulante.
+- **Limitación:** sin carga de anexos ni verificación de identidad.
+- **Requisitos:** REQ-02
+
+### M-12 · Panel de evaluación (◐ Parcial)
+Panel del refugio para revisar y resolver solicitudes.
+- **Archivos:** `www/index.html` (`#panel`), `www/js/script.js` (`cargarSolicitudes`,
+  `cambiarEstado`); backend `GET /solicitudes` y `POST /solicitudes/:id/estado`.
+- **Funciona:** lista las solicitudes (solo rol administrador) y permite aprobar o rechazar
+  con registro de historial de estados.
+- **Limitación:** sin notificación al adoptante ni asignación de veterinario.
+- **Requisitos:** REQ-02 / RNF-01
+
 ---
 
 ## 2. Módulos diseñados aún NO implementados
@@ -100,8 +118,6 @@ Esquema e inserción de datos de ejemplo para todas las entidades.
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
 | M-10 | Gestión de mascotas (CRUD) | Panel admin para registrar/editar mascotas con ficha clínica y estado | REQ-01 | ✗ |
-| M-11 | Formulario de postulación | Captura de datos del adoptante, anexos y consentimiento (Ley 1581) | REQ-02 | ✗ |
-| M-12 | Motor de evaluación | Panel del refugio para aprobar/rechazar solicitudes con historial | REQ-02 / RNF-01 | ✗ |
 | M-13 | Contrato PDF | Generación automática del contrato de adopción y aceptación formal | Alcance Entrega 1 | ✗ |
 | M-14 | Seguimiento post-adopción | Registro de reportes con fotos/evidencias durante los primeros 6 meses | REQ-03 | ✗ |
 | M-15 | Alertas automáticas | Recordatorios programados (p. ej. 30 días) para cargar evidencias | REQ-03 | ✗ |
@@ -119,7 +135,7 @@ Esquema e inserción de datos de ejemplo para todas las entidades.
 | Requisito | Prioridad | Módulo(s) | Prueba | Estado real |
 |---|---|---|---|---|
 | REQ-01 · Registrar y mostrar mascotas con información básica y estado | Alta | M-03, M-10, M-17 | P-04, P-05 | ◐ Conectado a la API; faltan ficha clínica y estado editable |
-| REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Crea solicitud «en_revision»; falta formulario del adoptante |
+| REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Formulario de postulación + evaluación con historial; falta ficha y notificaciones |
 | REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | — | ✗ Sólo mensaje educativo (M-05) |
 | REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK pendiente de regenerar) |
 | REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
@@ -140,7 +156,7 @@ REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Prueba
 | 2 | API REST mínima: `GET /mascotas`, `POST /solicitudes` (estado «En revisión») | M-16 | P0 | ✅ Hecho 08/10/2026 (`server/index.js`; habilita P-05/P-07) |
 | 3 | Consumir la API en `script.js` (reemplazar catálogo hardcodeado y `alert`) | M-03, M-04 | P0 | ✅ Hecho 08/10/2026 (con reserva estática) |
 | 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | ✅ Hecho 08/10/2026 (`server/index.js`; P-09) |
-| 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | Corazón del proceso |
+| 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | ✅ Hecho 08/10/2026 (datos + consentimiento + historial) |
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | — |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | REQ-03 |

@@ -6,6 +6,24 @@
 
 ---
 
+## 2026-10-09 (Fase 1 — M-11/M-12)
+
+- **M-11 formulario de postulación:** captura datos del adoptante (nombre, email, teléfono,
+  motivación) + consentimiento Ley 1581; `POST /solicitudes` ampliado; sección nueva en
+  `www/index.html` + `enviarPostulacion()`.
+- **M-12 panel de evaluación:** `GET /solicitudes` y `POST /solicitudes/:id/estado`
+  (solo administrador, JWT) con historial de estados; panel en la web (`cargarSolicitudes`,
+  `cambiarEstado`). Esquema ampliado: columnas de solicitante/consentimiento +
+  tabla `historial_estados`.
+- **Verificación:** `npm test` → **14/14**; API probada end-to-end (postulación OK,
+  401 sin token, lista admin OK, aprobación con historial OK); `npm run sync` OK; hashes
+  idénticos; sin credenciales.
+
+**Siguiente paso:** APK (M-18, requiere Android Studio/JDK 17) o desplegar demo web; luego
+contrato PDF (M-13) y seguimiento con evidencias/alertas (M-14/M-15).
+
+---
+
 ## 2026-10-09 (Fase 1)
 
 - **M-09 auth/roles completado (prototipo):** `bcryptjs` + `jsonwebtoken` instalados desde

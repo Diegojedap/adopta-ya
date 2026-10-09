@@ -161,7 +161,7 @@ Evidencia: `resultados_pruebas.json`.
 | P0 | ✅ (08/10/2026) API REST mínima: consulta de mascotas + creación de solicitudes con estado «En revisión» | Medio |
 | P0 | ✅ (08/10/2026) Consumir la API desde `script.js` | Medio |
 | P1 | ✅ (08/10/2026) Autenticación con roles (admin/adoptante/veterinario) y hashing bcrypt (REQ-05) | Medio |
-| P1 | Formulario de postulación + panel de evaluación del refugio | Medio |
+| P1 | ✅ (08/10/2026) Formulario de postulación + panel de evaluación del refugio | Medio |
 | P1 | Regenerar APK tras cambios y publicar demo web (Vercel + Render free tier) | Bajo |
 | P2 | Contrato PDF con plantilla y firma/aceptación | Medio |
 | P2 | Seguimiento post-adopción: carga de evidencias y alertas a los 30 días (REQ-03) | Alto |

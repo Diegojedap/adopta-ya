@@ -67,15 +67,17 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
   M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas ·
   M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) ·
+  M-11 formulario postulación (◐ datos + consentimiento Ley 1581) ·
+  M-12 panel de evaluación (◐ aprobar/rechazar con historial) ·
   M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
-- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas ·
-  M-11 formulario postulación · M-12 motor de evaluación · M-13 contrato PDF ·
+- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas · M-13 contrato PDF ·
   M-14 seguimiento · M-15 alertas · M-18 cloud.
-- **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-01/REQ-02 ◐ (con API) ·
-  REQ-05 ✅ (auth) · REQ-03 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
+- **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-05 ✅ (auth) ·
+  REQ-01/REQ-02 ◐ (con API) · REQ-03 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
 - **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
   en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
-  Rutas: `GET /health`, `GET /mascotas[:id]`, `POST /solicitudes` y
+  Rutas: `GET /health`, `GET /mascotas[:id]`, `POST /solicitudes`,
+  `GET /solicitudes` y `POST /solicitudes/:id/estado` (solo admin), y
   `POST /auth/registro`, `POST /auth/login`, `GET /auth/perfil` (JWT Bearer).
   Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
@@ -83,9 +85,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
   Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
   puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
-- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-4 (esquema, API, consumir
-  API, auth). Siguiente: formularios postulación/evaluación (M-11/M-12) → APK → PDF →
-  seguimiento → UAT.
+- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5 (esquema, API, consumir
+  API, auth, formularios/evaluación). Siguiente: APK (M-18) → PDF (M-13) → seguimiento
+  (M-14/M-15) → UAT.
 
 ## 4. Comandos clave
 
