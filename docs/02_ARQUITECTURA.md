@@ -111,9 +111,9 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 
 | Capa | Estado | Evidencia |
 |---|---|---|
-| Presentación | **Implementada (parcial)** — catálogo estático y navegación | `www/` (P-02, P-03, P-04, P-06, P-08) |
-| Aplicación/API | **No implementada** | sin `fetch`/servidor (P-05, P-07) |
-| Persistencia | **No implementada** (sólo intención MySQL) | `adopta_ya.session.sql` |
+| Presentación | **Implementada (parcial)** — catálogo dinámico vía API con reserva estática y navegación | `www/` (P-02, P-03, P-04, P-06, P-08) |
+| Aplicación/API | **Implementada (prototipo)** — `GET /mascotas` y `POST /solicitudes` sobre store en memoria (hook opcional a MySQL) | `server/index.js`, `npm start` (P-05, P-07) |
+| Persistencia | **Esquema versionado**, sin conexión activa (sin MySQL confirmado) | `sql/schema.sql`, `sql/seed.sql` |
 | Seguridad | **No implementada** | sin auth/hashing (P-09); sin secretos versionados (P-10) |
 | Servicios (PDF/alertas) | **No implementados** | — |
 | Empaquetado Android | **Implementado** — APK debug; requiere rebuild tras correcciones | `android/`, P-13, P-14 |
@@ -130,7 +130,8 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 | Java | JDK instalado en la máquina | 11.0.24 (insuficiente: AGP requiere 17+) | `java -version` |
 | Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-14 | `npm test` |
 | Paquetes | npm 11.13 | resolución offline (registro npmjs.org inaccesible) | `package-lock.json` |
-| Base de datos prevista | MySQL en 127.0.0.1:3307 (SQLTools) | sin esquema todavía | `ADOPTA-YA 1.0.code-workspace` |
+| Base de datos prevista | MySQL en 127.0.0.1:3307 (SQLTools) | esquema en `sql/schema.sql` + `sql/seed.sql`, sin conexión activa | `adopta-ya.code-workspace`, `server/index.js` |
+| API local | Node.js (módulo `http`, sin dependencias) | puerto 3000 · `npm start` | `server/index.js` |
 | IDE | Visual Studio Code | `launch.json` apunta a `http://localhost:8080` | `.vscode/` |
 
 ## 6. ¿Dónde está alojada la aplicación?
@@ -138,7 +139,9 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 **Hoy: en ningún servidor.** No existe despliegue web (no hay configuración de Vercel,
 Netlify, Render, Fly.io, IIS ni hosting alguno en el paquete). La única forma de usarla es:
 
-1. **Local en navegador:** abriendo `www/index.html` o sirviendo la carpeta `www/`.
+1. **Local en navegador:** abriendo `www/index.html` o sirviendo la carpeta `www/`;
+   con la API encendida (`npm start` en otra terminal) el catálogo se carga desde
+   `http://localhost:3000/mascotas`; sin ella, la web usa las tarjetas estáticas de reserva.
 2. **App Android:** instalando el APK debug generado
    (`android/app/build/outputs/apk/debug/app-debug.apk`, 3,93 MB), que embebe los
    archivos web dentro del paquete (`assets/public/`). El manifiesto sólo pone el

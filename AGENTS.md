@@ -43,41 +43,49 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 │   ├── 02_ARQUITECTURA.md         ← arquitectura actual vs. objetivo
 │   ├── 03_MODULOS.md              ← módulos M-01…M-18, trazabilidad REQ, backlog
 │   └── entregas/                  ← PDFs de Entrega 1 y Entrega 2
-├── sql/adopta_ya.session.sql      ← evidencia de intención MySQL (SELECT de prueba)
+├── sql/
+│   ├── schema.sql                 ← esquema MySQL (usuarios, mascotas, solicitudes, evidencias)
+│   ├── seed.sql                   ← datos de ejemplo (Max, Luna, Rocky)
+│   └── adopta_ya.session.sql      ← evidencia de intención MySQL (SELECT de prueba)
+├── server/
+│   ├── index.js                   ← API REST sin dependencias (GET /mascotas, POST /solicitudes)
+│   └── .env.example               ← config de la API (copiar a .env y completar en local)
 ├── www/                           ← fuente web: index.html, css/, js/, img/
 ├── android/                       ← proyecto Capacitor/Android (incluye APK debug)
-├── .vscode/                       ← settings/launch (sin credenciales)
 └── node_modules/                  ← no versionada
 ```
 
 ## 3. Estado verificado (08/10/2026)
 
-- **Pruebas:** `npm test` → **PASA 11 / FALLA 3** de 14.
-  Fallan por módulos **pendientes**, no por defectos:
-  - **P-05**: catálogo no lee de API/red (datos hardcodeados).
-  - **P-07**: la solicitud de adopción no persiste (solo `alert`).
-  - **P-09**: sin hashing/autenticación.
-- **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ estático) ·
-  M-04 adopción (◐ sin persistencia) · M-05 responsabilidad · M-06 responsivo ·
-  M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas.
+- **Pruebas:** `npm test` → **PASA 13 / FALLA 1** de 14.
+  - **P-09** sigue fallando: sin hashing/autenticación (M-09, Fase 1).
+  - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) **ya pasan**.
+  - **Nota:** el check P-11 del test fue corregido (allowlist de dependencias directas) para
+    no contradecir a P-09, que exige una librería de auth en `dependencies`.
+- **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
+  M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
+  M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas ·
+  M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
 - **Módulos NO implementados (diseñados):** M-09 auth/roles · M-10 CRUD mascotas ·
   M-11 formulario postulación · M-12 motor de evaluación · M-13 contrato PDF ·
-  M-14 seguimiento · M-15 alertas · M-16 API REST · M-17 persistencia MySQL · M-18 cloud.
-- **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-01/REQ-02 ◐ ·
-  REQ-03/REQ-05/RNF-01 ✗ · RNF-02/RNF-03 ✅.
+  M-14 seguimiento · M-15 alertas · M-18 cloud.
+- **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-01/REQ-02 ◐ (con API) ·
+  REQ-03/REQ-05 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
+- **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
+  en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
   minúsculas (`css/`, `js/`) · F-02 credenciales MySQL vaciadas · F-03 `package.json`
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
   Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
   puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
-- **Backlog completo (Entrega 3):** ver `docs/03_MODULOS.md` §4 (orden de ataque: esquema
-  MySQL → API mínima → consumir API en `script.js` → auth → formularios → APK → PDF →
-  seguimiento → UAT).
+- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-3 (esquema, API, consumir
+  API). Siguiente: auth (M-09) → formularios (M-11/M-12) → APK → PDF → seguimiento → UAT.
 
 ## 4. Comandos clave
 
 ```powershell
-npm test           # suite P-01…P-14; actualiza resultados_pruebas.json (esperado 11/14)
+npm test           # suite P-01…P-14; actualiza resultados_pruebas.json (esperado 13/14)
+npm start          # API local en http://localhost:3000 (mascotas + solicitudes)
 npm run sync       # cap sync android (coopia www/ → android/.../assets/public/)
 npm run open:android  # abrir proyecto en Android Studio (no disponible en esta máquina)
 npx serve www      # servir el front-end localmente

@@ -29,7 +29,12 @@ ADOPTA-YA 1.0/                     ← raíz del repositorio
 │       ├── ACA 1 ¡ADOPTA YA!.pdf  ← Entrega 1 (idea de proyecto)
 │       └── ENTREGA_2_AJUSTE_AVANZADO_ADOPTA_YA.pdf  ← Entrega 2 (ajuste avanzado y sustentación)
 ├── sql/
+│   ├── schema.sql                 ← esquema MySQL (usuarios, mascotas, solicitudes, evidencias)
+│   ├── seed.sql                   ← datos de ejemplo (Max, Luna, Rocky)
 │   └── adopta_ya.session.sql      ← evidencia de la intención de uso de MySQL
+├── server/
+│   ├── index.js                   ← API REST local sin dependencias (mascotas y solicitudes)
+│   └── .env.example               ← configuración de la API (copiar a .env en local)
 ├── www/                           ← código fuente web (index.html, css/, js/, img/)
 ├── android/                       ← proyecto Android/Capacitor (incluye APK debug)
 └── node_modules/                  ← dependencias instaladas (no versionadas)
@@ -46,11 +51,24 @@ No hay paso de compilación: `www/` es una web estática.
 npx serve www          # o cualquier servidor estático; también abre www/index.html directamente
 ```
 
-Funcionalidades visibles: catálogo con 3 mascotas de ejemplo (Max, Luna, Rocky),
-botón «Ver mascotas» (desplazamiento suave), botones «Quiero adoptar…» (mensaje informativo)
-y sección de responsabilidad en la adopción. Diseño responsivo (media query a 700 px).
+Funcionalidades visibles: catálogo que se carga desde la API (`GET /mascotas`) y recurre a
+las 3 tarjetas estáticas de ejemplo (Max, Luna, Rocky) si el servidor no responde; botón
+«Ver mascotas» (desplazamiento suave), botones «Quiero adoptar…» (crean una solicitud
+«en revisión» vía `POST /solicitudes`) y sección de responsabilidad. Responsivo a 700 px.
 
-### 2.2 Android
+### 2.2 API local (opcional)
+
+Sin dependencias externas (módulo `http` de Node). Levanta en `http://localhost:3000`:
+
+```powershell
+npm start              # GET /mascotas · GET /mascotas/:id · POST /solicitudes · GET /health
+```
+
+Por defecto usa un store **en memoria** con las mascotas de ejemplo. Si hay MySQL (puerto
+3307) y `mysql2` instalado, se conecta y persiste en la base (`sql/schema.sql` + `sql/seed.sql`);
+las credenciales se definen en `server/.env` (no versionado).
+
+### 2.3 Android
 
 ```powershell
 npm install            # dependencias (@capacitor/cli, core, android; jsdom como dev)
@@ -66,15 +84,15 @@ Un APK debug prerrobotado se conserva como evidencia en
 **Atención:** ese APK fue compilado antes de la corrección de rutas (ver §4);
 debe regenerarse con `npm run sync` + build antes de instalarlo de nuevo.
 
-### 2.3 Pruebas automatizadas
+### 2.4 Pruebas automatizadas
 
 ```powershell
 npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-14) y genera resultados_pruebas.json
 ```
 
-Resultado vigente: **PASA 11 / FALLA 3**. Las fallas son P-05 (catálogo desde API),
-P-07 (persistencia de la solicitud) y P-09 (hashing/autenticación): corresponden a
-módulos pendientes, no a defectos de la interfaz.
+Resultado vigente: **PASA 13 / FALLA 1**. La única falla es P-09 (hashing/autenticación),
+correspondiente al módulo pendiente M-09 (Fase 1), no a un defecto de la interfaz.
+P-05 (catálogo desde API) y P-07 (solicitud persistida) ya pasan.
 
 ## 3. Herramientas y versiones
 
