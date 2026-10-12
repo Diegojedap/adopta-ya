@@ -108,14 +108,39 @@
             <p id="post-estado"></p>
         </section>
 
+        <section id="seguimiento" class="seguimiento">
+            <h2>Mi seguimiento post-adopción</h2>
+
+            <p>
+                Si tu adopción fue aprobada, registra evidencias (fotos y notas) durante los
+                primeros meses. El refugio recibe recordatorios a los 30, 60 y 90 días.
+            </p>
+
+            <div class="formulario">
+                <input id="seg-solicitud" type="number" placeholder="N.º de tu solicitud">
+                <input id="seg-descripcion" type="text" placeholder="¿Cómo va tu mascota? (nota)">
+                <label class="consentimiento">
+                    <span>Foto (opcional):</span>
+                    <input id="seg-foto" type="file" accept="image/*">
+                </label>
+                <button onclick="registrarEvidencia()">Registrar evidencia</button>
+            </div>
+
+            <p id="seg-estado"></p>
+
+            <div id="lista-evidencias"></div>
+        </section>
+
         <section id="panel" class="panel">
             <h2>Panel de evaluación (refugio)</h2>
 
             <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
 
             <button onclick="cargarSolicitudes()">Cargar solicitudes</button>
+            <button onclick="cargarAlertas()">Cargar alertas de seguimiento</button>
 
             <div id="lista-solicitudes"></div>
+            <div id="lista-alertas"></div>
         </section>
 
         <section class="responsabilidad">

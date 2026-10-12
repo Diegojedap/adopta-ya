@@ -1,6 +1,6 @@
 # Arquitectura y entorno — ¡ADOPTA YA! 1.0
 
-**Fecha de la descripción:** 08 de octubre de 2026. Se describe primero la arquitectura
+**Fecha de la descripción:** 12 de octubre de 2026. Se describe primero la arquitectura
 **actual** (la que se puede verificar en el código) y luego la **objetivo** (la diseñada
 en las Entregas 1 y 2). No deben confundirse.
 
@@ -111,11 +111,11 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 
 | Capa | Estado | Evidencia |
 |---|---|---|
-| Presentación | **Implementada (parcial)** — catálogo dinámico vía API con reserva estática y navegación | `www/` (P-02, P-03, P-04, P-06, P-08) |
-| Aplicación/API | **Implementada (prototipo)** — mascotas, solicitudes y evaluación sobre store en memoria (hook opcional a MySQL) | `server/index.js`, `npm start` (P-05, P-07) |
+| Presentación | **Implementada (parcial)** — catálogo dinámico vía API con reserva estática, navegación, acceso, postulación, panel de evaluación y seguimiento | `www/` (P-02, P-03, P-04, P-06, P-08, P-15, P-16) |
+| Aplicación/API | **Implementada (prototipo)** — mascotas, solicitudes, evaluación, evidencias y alertas sobre store en memoria (hook opcional a MySQL) | `server/index.js`, `npm start` (P-05, P-07) |
 | Persistencia | **Esquema versionado**, sin conexión activa (sin MySQL confirmado) | `sql/schema.sql`, `sql/seed.sql` |
 | Seguridad | **Implementada (prototipo)** | auth con `bcryptjs` + JWT (P-09); sin secretos versionados (P-10) |
-| Servicios (PDF/alertas) | **No implementados** | — |
+| Servicios (PDF/alertas) | **Implementados (prototipo)** — contrato PDF sin dependencias (M-13) y alertas de seguimiento 30/60/90 calculadas (M-15, sin scheduler ni correo) | `server/contrato.js`, rutas `/contrato` y `/seguimiento/alertas` |
 | Empaquetado Android | **Implementado** — APK debug; requiere rebuild tras correcciones | `android/`, P-13, P-14 |
 
 ## 5. Herramientas y versiones (inventario verificado)
@@ -128,7 +128,7 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 | SDK Android | compileSdk / targetSdk / minSdk | 36 / 36 / 24 | `android/variables.gradle` |
 | App ID | com.adoptaya.app · versionName 1.0 | versionCode 1 | `capacitor.config.json`, `android/app/build.gradle` |
 | Java | JDK instalado en la máquina | 11.0.24 (insuficiente: AGP requiere 17+) | `java -version` |
-| Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-14 | `npm test` |
+| Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-16 | `npm test` |
 | Paquetes | npm 11.13 | resolución offline (registro npmjs.org inaccesible) | `package-lock.json` |
 | Base de datos prevista | MySQL en 127.0.0.1:3307 (SQLTools) | esquema en `sql/schema.sql` + `sql/seed.sql`, sin conexión activa | `adopta-ya.code-workspace`, `server/index.js` |
 | API local | Node.js (módulo `http`, sin dependencias) | puerto 3000 · `npm start` | `server/index.js` |

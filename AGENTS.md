@@ -35,7 +35,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── README.md                      ← documento principal del entregable
 ├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken; dev: jsdom@23.0.1
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
-├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-14 (única copia)
+├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-16 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── adopta-ya.code-workspace       ← espacio VS Code (conexión SQLTools MySQL local)
 ├── docs/
@@ -55,10 +55,11 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 └── node_modules/                  ← no versionada
 ```
 
-## 3. Estado verificado (08/10/2026)
+## 3. Estado verificado (12/10/2026)
 
-- **Pruebas:** `npm test` → **PASA 14 / FALLA 0** de 14 (tras `npm run sync`).
-  - **P-09** ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
+- **Pruebas:** `npm test` → **PASA 16 / FALLA 0** de 16 (tras `npm run sync`).
+  - P-09 ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
+  - P-15/P-16 (REQ-03) cierran el módulo de seguimiento (evidencias + alertas 30/60/90).
   - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) pasan.
   - **Nota:** el check P-11 del test fue corregido (allowlist de dependencias directas) para
     no contradecir a P-09. Ojo con el orden: si editas `www/`, ejecuta `npm run sync` antes
@@ -70,16 +71,20 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-11 formulario postulación (◐ datos + consentimiento Ley 1581) ·
   M-12 panel de evaluación (◐ aprobar/rechazar con historial) ·
   M-13 contrato PDF (◐ generado sin dependencias para aprobadas) ·
+  M-14 seguimiento (◐ evidencias de adopción aprobada, dueño o admin) ·
+  M-15 alertas (◐ hitos 30/60/90 calculados, sin scheduler/correo) ·
   M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
-- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas ·
-  M-14 seguimiento · M-15 alertas · M-18 cloud.
+- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas · M-18 cloud.
 - **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-05 ✅ (auth) ·
-  REQ-01/REQ-02 ◐ (con API) · REQ-03 ✗ · RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
+  REQ-01/REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
+  RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
 - **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
   en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
   Rutas: `GET /health`, `GET /mascotas[:id]`, `POST /solicitudes`,
   `GET /solicitudes` y `POST /solicitudes/:id/estado` (solo admin),
-  `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF) y
+  `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF),
+  `POST/GET /solicitudes/:id/evidencias` (aprobada, admin o dueño) y
+  `GET /seguimiento/alertas` (solo admin),
   `POST /auth/registro`, `POST /auth/login`, `GET /auth/perfil` (JWT Bearer).
   Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
@@ -87,14 +92,14 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
   Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
   puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
-- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5 y #7 (esquema, API,
-  consumir API, auth, formularios/evaluación, contrato PDF). Siguiente: APK (M-18) →
-  seguimiento (M-14/M-15) → UAT.
+- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7 y #8 (esquema, API,
+  consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas).
+  Siguiente: APK (M-18) → UAT.
 
 ## 4. Comandos clave
 
 ```powershell
-npm test           # suite P-01…P-14; actualiza resultados_pruebas.json (esperado 13/14)
+npm test           # suite P-01…P-16; actualiza resultados_pruebas.json (esperado 16/16)
 npm start          # API local en http://localhost:3000 (mascotas + solicitudes)
 npm run sync       # cap sync android (coopia www/ → android/.../assets/public/)
 npm run open:android  # abrir proyecto en Android Studio (no disponible en esta máquina)
@@ -146,7 +151,7 @@ Al **iniciar una sesión** en este proyecto, hacer antes de responder sobre el e
 4. Si hay deriva (la memoria dice algo que ya no es cierto), **corregir AGENTS.md y/o
    PROGRESO.md en ese momento** y reflejarlo en el commit. Nunca dar por bueno un dato
    desactualizado sin avisar.
-5. Si el usuario lo pide o hay duda de integridad, ejecutar `npm test` (11/14 esperado).
+5. Si el usuario lo pide o hay duda de integridad, ejecutar `npm test` (16/16 esperado).
 
 ## Regla 2 — Actualización automática de progreso (anti-apagón)
 

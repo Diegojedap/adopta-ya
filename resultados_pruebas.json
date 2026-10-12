@@ -96,5 +96,19 @@
     "desc": "Existe un APK debug generado",
     "resultado": "PASA",
     "detalle": "3.93 MB, 2026-10-08"
+  },
+  {
+    "id": "P-15",
+    "req": "REQ-03",
+    "desc": "El frontend permite registrar evidencias post-adopción",
+    "resultado": "PASA",
+    "detalle": "sección #seguimiento=true; evidencias en script.js=true"
+  },
+  {
+    "id": "P-16",
+    "req": "REQ-03",
+    "desc": "Existen alertas/recordatorios de seguimiento a 30/60/90 días",
+    "resultado": "PASA",
+    "detalle": "referencias a /seguimiento/alertas y cargarAlertas"
   }
 ]

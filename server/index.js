@@ -17,6 +17,9 @@ const mascotas = [
 const solicitudes = [];
 let siguienteSolicitud = 1;
 
+const evidencias = [];
+let siguienteEvidencia = 1;
+
 const usuarios = [];
 let siguienteUsuario = 1;
 
@@ -189,6 +192,82 @@ async function actualizarEstado(id, estado, nota, sesion) {
   return solicitud;
 }
 
+function diasEntre(desde, hasta) {
+  if (!desde || !hasta) return 0;
+  const inicio = new Date(desde);
+  const fin = new Date(hasta);
+  const ms = fin - inicio;
+  return ms > 0 ? Math.floor(ms / 86400000) : 0;
+}
+
+async function listarEvidencias(solicitudId) {
+  if (pool) {
+    const [filas] = await pool.query(
+      'SELECT id, solicitud_id, url, descripcion, creado_en FROM evidencias WHERE solicitud_id = ? ORDER BY id',
+      [solicitudId]
+    );
+    const [sols] = await pool.query('SELECT revisado_en, creado_en FROM solicitudes WHERE id = ? LIMIT 1', [solicitudId]);
+    const base = sols.length ? (sols[0].revisado_en || sols[0].creado_en) : null;
+    return filas.map(f => Object.assign({}, f, { dia: diasEntre(base, f.creado_en) }));
+  }
+  return evidencias.filter(e => e.solicitud_id === solicitudId);
+}
+
+async function crearEvidencia(solicitud, datos) {
+  const descripcion = (datos.descripcion || '').trim();
+  const url = (datos.url || '').trim();
+  if (!descripcion && !url) return null;
+  if (solicitud.estado !== 'aprobada') return { error: 'La adopción debe estar aprobada', codigo: 409 };
+  const dia = diasEntre(solicitud.revisado_en || solicitud.creado_en, new Date().toISOString());
+  if (pool) {
+    const [resultado] = await pool.query(
+      'INSERT INTO evidencias (solicitud_id, url, descripcion) VALUES (?,?,?)',
+      [solicitud.id, url || null, descripcion || null]
+    );
+    return { id: resultado.insertId, solicitud_id: solicitud.id, url: url || null, descripcion: descripcion || null, dia, creado_en: new Date().toISOString() };
+  }
+  const evidencia = {
+    id: siguienteEvidencia++,
+    solicitud_id: solicitud.id,
+    url: url || null,
+    descripcion: descripcion || null,
+    dia,
+    creado_en: new Date().toISOString()
+  };
+  evidencias.push(evidencia);
+  return evidencia;
+}
+
+async function alertasSeguimiento() {
+  const aprobadas = (await listarSolicitudes()).filter(s => s.estado === 'aprobada');
+  const resultado = [];
+  for (const s of aprobadas) {
+    const evs = await listarEvidencias(s.id);
+    const diasAcumulados = diasEntre(s.revisado_en || s.creado_en, new Date().toISOString());
+    const ultimoDia = evs.reduce((a, e) => Math.max(a, Number(e.dia) || 0), 0);
+    let estadoAlerta = 'al_dia';
+    if (diasAcumulados >= 90) {
+      estadoAlerta = ultimoDia >= 90 ? 'completada' : 'vencida_final';
+    } else if (diasAcumulados >= 60) {
+      estadoAlerta = ultimoDia >= 60 ? 'al_dia' : 'vencida';
+    } else if (diasAcumulados >= 30) {
+      estadoAlerta = ultimoDia >= 30 ? 'al_dia' : 'vencida';
+    }
+    const proximoHito = diasAcumulados < 30 ? 30 : diasAcumulados < 60 ? 60 : diasAcumulados < 90 ? 90 : null;
+    resultado.push({
+      solicitud_id: s.id,
+      mascota: s.mascota || ('#' + s.mascota_id),
+      adoptante: s.solicitante_nombre || null,
+      dias_acumulados: diasAcumulados,
+      proximo_hito: proximoHito,
+      dias_para_hito: proximoHito ? Math.max(0, proximoHito - diasAcumulados) : null,
+      cantidad_evidencias: evs.length,
+      estado_alerta: estadoAlerta
+    });
+  }
+  return resultado;
+}
+
 function registrar(datos) {
   const nombre = (datos.nombre || '').trim();
   const email = (datos.email || '').trim().toLowerCase();
@@ -303,6 +382,40 @@ const servidor = http.createServer(async (req, res) => {
         'Access-Control-Allow-Origin': '*'
       });
       return res.end(pdf);
+    }
+
+    const evidencia = ruta.match(/^\/solicitudes\/(\d+)\/evidencias$/);
+    if (req.method === 'POST' && evidencia) {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      const id = Number(evidencia[1]);
+      const solicitud = await obtenerSolicitud(id);
+      if (!solicitud) return enviar(res, 404, { error: 'Solicitud no encontrada' });
+      const esAdmin = sesion.rol === 'administrador';
+      const esDueno = solicitud.adoptante_id != null && solicitud.adoptante_id === sesion.id;
+      if (!esAdmin && !esDueno) return enviar(res, 403, { error: 'Sin permiso' });
+      const creada = await crearEvidencia(solicitud, await leerCuerpo(req));
+      if (creada && creada.error) return enviar(res, creada.codigo, { error: creada.error });
+      return creada ? enviar(res, 201, creada) : enviar(res, 400, { error: 'Descripción o URL requeridas' });
+    }
+
+    if (req.method === 'GET' && evidencia) {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      const id = Number(evidencia[1]);
+      const solicitud = await obtenerSolicitud(id);
+      if (!solicitud) return enviar(res, 404, { error: 'Solicitud no encontrada' });
+      const esAdmin = sesion.rol === 'administrador';
+      const esDueno = solicitud.adoptante_id != null && solicitud.adoptante_id === sesion.id;
+      if (!esAdmin && !esDueno) return enviar(res, 403, { error: 'Sin permiso' });
+      return enviar(res, 200, await listarEvidencias(id));
+    }
+
+    if (req.method === 'GET' && ruta === '/seguimiento/alertas') {
+      const sesion = autenticar(req);
+      if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
+      if (sesion.rol !== 'administrador') return enviar(res, 403, { error: 'Solo administradores' });
+      return enviar(res, 200, await alertasSeguimiento());
     }
 
     return enviar(res, 404, { error: 'Ruta no encontrada' });

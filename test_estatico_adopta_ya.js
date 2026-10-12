@@ -97,6 +97,17 @@ if (fs.existsSync(pubDir)) {
 const apk = path.join(ROOT, 'android/app/build/outputs/apk/debug/app-debug.apk');
 add('P-14', 'REQ-04', 'Existe un APK debug generado', fs.existsSync(apk), fs.existsSync(apk) ? `${(fs.statSync(apk).size / 1048576).toFixed(2)} MB, ${fs.statSync(apk).mtime.toISOString().slice(0, 10)}` : 'no encontrado');
 
+// P-15 seguimiento post-adopción (evidencias) REQ-03
+const tieneSeguimiento = !!doc0.querySelector('#seguimiento');
+const usaEvidencias = /\/solicitudes\/\d+\/evidencias|\/evidencias/.test(scriptSrc) && /registrarEvidencia|tarjetaEvidencia/.test(scriptSrc);
+add('P-15', 'REQ-03', 'El frontend permite registrar evidencias post-adopción', tieneSeguimiento && usaEvidencias,
+  `sección #seguimiento=${tieneSeguimiento}; evidencias en script.js=${usaEvidencias}`);
+
+// P-16 alertas automáticas de seguimiento (30/60/90) REQ-03
+const usaAlertas = /\/seguimiento\/alertas/.test(scriptSrc) && /cargarAlertas/.test(scriptSrc) && /alertas/.test(fs.readFileSync(path.join(WWW, 'index.html'), 'utf8').toLowerCase());
+add('P-16', 'REQ-03', 'Existen alertas/recordatorios de seguimiento a 30/60/90 días', usaAlertas,
+  usaAlertas ? 'referencias a /seguimiento/alertas y cargarAlertas' : 'sin alertas en frontend');
+
 console.table(res.map(r => ({ id: r.id, req: r.req, resultado: r.resultado, descripcion: r.desc })));
 const pasa = res.filter(r => r.resultado === 'PASA').length;
 console.log(`Total ${res.length} | PASA ${pasa} | FALLA ${res.length - pasa}`);

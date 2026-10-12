@@ -2,7 +2,7 @@
 
 Inventario de módulos funcionales con su **estado real de implementación**, trazabilidad
 a requisitos (REQ-01…REQ-05, RNF-01…RNF-03 de las Entregas 1 y 2) y a las pruebas
-automatizadas P-01…P-14. Estado verificado el 08/10/2026 mediante `npm test` y revisión
+automatizadas P-01…P-16. Estado verificado el 12/10/2026 mediante `npm test` y revisión
 de código.
 
 **Leyenda de estado:** ✅ Implementado · ◐ Parcial · ✗ No implementado (diseñado)
@@ -123,6 +123,32 @@ Genera el contrato de adopción en PDF sin dependencias externas.
 - **Limitación:** plantilla fija, sin firma digital ni anexos.
 - **Requisitos:** Alcance Entrega 1 (contrato y aceptación formal)
 
+### M-14 · Seguimiento post-adopción (◐ Parcial)
+Registro de reportes con notas y fotos durante los primeros meses tras la adopción aprobada.
+- **Archivos:** `server/index.js` (`POST/GET /solicitudes/:id/evidencias`); sección
+  `#seguimiento` en `www/index.html`; `www/js/script.js` (`registrarEvidencia`,
+  `cargarEvidencias`, `tarjetaEvidencia`); tabla `evidencias` en `sql/schema.sql`.
+- **Funciona:** una adopción «aprobada» permite al adoptante dueño o al administrador (JWT)
+  registrar evidencias (descripción obligatoria u opcional + foto data-URL leída con
+  FileReader, tope 300 KB) con su `dia` desde la aprobación; se listan en un timeline.
+  Sin token → 401; sin permiso → 403; solicitud no aprobada → 409.
+- **Limitación:** la foto viaja como base64 en el JSON (sin almacenamiento de archivos real);
+  no hay subida a blob/CDN.
+- **Pruebas:** P-15 ✅
+- **Requisitos:** REQ-03
+
+### M-15 · Alertas automáticas (◐ Parcial)
+Recordatorios de seguimiento a los 30/60/90 días para cargar evidencias.
+- **Archivos:** `server/index.js` (`GET /seguimiento/alertas`, solo admin); botón
+  «Cargar alertas de seguimiento» en el panel + `cargarAlertas()`/`tarjetaAlerta()`.
+- **Funciona:** calcula por cada adopción aprobada `dias_acumulados`, próximo hito (30/60/90)
+  y `estado_alerta` (`al_dia`/`vencida`/`vencida_final`/`completada`) comparando el calendario
+  con las evidencias registradas en cada ventana; insignias de color en la UI.
+- **Limitación:** no hay scheduler ni notificación real (correo/push); en producción sería
+  un cron + proveedor de correo (diseñado en Entregas 1-2).
+- **Pruebas:** P-16 ✅
+- **Requisitos:** REQ-03
+
 ---
 
 ## 2. Módulos diseñados aún NO implementados
@@ -130,8 +156,6 @@ Genera el contrato de adopción en PDF sin dependencias externas.
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
 | M-10 | Gestión de mascotas (CRUD) | Panel admin para registrar/editar mascotas con ficha clínica y estado | REQ-01 | ✗ |
-| M-14 | Seguimiento post-adopción | Registro de reportes con fotos/evidencias durante los primeros 6 meses | REQ-03 | ✗ |
-| M-15 | Alertas automáticas | Recordatorios programados (p. ej. 30 días) para cargar evidencias | REQ-03 | ✗ |
 | M-16 | API REST | Endpoints de mascotas, solicitudes, usuarios, evidencias y estados | RNF-01 | ◐ (mascotas y solicitudes) |
 | M-17 | Persistencia MySQL | Esquema y acceso a datos de todas las entidades | RNF-01 | ◐ (esquema versionado, sin conexión) |
 | M-18 | Despliegue cloud | Publicación web (Vercel + Render free tier) y APK de producción | Viabilidad Entrega 1 | ✗ |
@@ -147,15 +171,15 @@ Genera el contrato de adopción en PDF sin dependencias externas.
 |---|---|---|---|---|
 | REQ-01 · Registrar y mostrar mascotas con información básica y estado | Alta | M-03, M-10, M-17 | P-04, P-05 | ◐ Conectado a la API; faltan ficha clínica y estado editable |
 | REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Formulario de postulación + evaluación con historial; falta ficha y notificaciones |
-| REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | — | ✗ Sólo mensaje educativo (M-05) |
+| REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | P-15, P-16 | ◐ Evidencias cargadas por el adoptante y alertas 30/60/90 calculadas; falta notificación real |
 | REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK pendiente de regenerar) |
 | REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
 | RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✗ Sin persistencia |
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
 | RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12 | ✅ `npm test` ejecutable |
 
-**Cobertura hoy:** REQ-04 y REQ-05 cumplidos; REQ-01 y REQ-02 parciales (con API);
-REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **14/14**.
+**Cobertura hoy:** REQ-04 y REQ-05 cumplidos; REQ-01, REQ-02 y REQ-03 parciales (con API);
+RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **16/16**.
 
 ---
 
@@ -170,7 +194,7 @@ REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Prueba
 | 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | ✅ Hecho 08/10/2026 (datos + consentimiento + historial) |
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
-| 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | REQ-03 |
+| 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
 | 9 | UAT con el refugio y línea base de tiempos | — | P2 | Indicadores Entrega 2 |
 
 ---
@@ -179,8 +203,11 @@ REQ-03 pendiente; RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Prueba
 
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
   solicitud «en revisión», login/registro con JWT, panel de evaluación con descarga del
-  contrato de adopción en PDF, navegación, empaquetado Android y 14 pruebas automatizadas en verde.
-- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-14), `resultados_pruebas.json`
+  contrato de adopción en PDF, seguimiento post-adopción con evidencias (notas y fotos) y
+  alertas del refugio a los 30/60/90 días, navegación, empaquetado Android y 16 pruebas
+  automatizadas en verde.
+- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-16), `resultados_pruebas.json`
   y la API local (`npm start`).
-- **No se puede afirmar:** que exista un sistema integral de adopciones; hoy es la capa de
-  presentación con la arquitectura y el backlog definidos para completarlo.
+- **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy
+  es la capa de presentación con una API de prototipo (datos en memoria, notificaciones reales
+  pendientes) y la arquitectura/backlog definidos para completarlo.

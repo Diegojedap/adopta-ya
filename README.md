@@ -4,9 +4,10 @@ Prototipo académico (CUN — Ingeniería de Sistemas, Proyecto de Ingeniería I
 centralizar el proceso de adopción de mascotas en fundaciones y refugios independientes:
 catálogo → solicitud → evaluación → formalización → seguimiento post-adopción.
 
-> **Estado actual (08/10/2026):** prototipo verificable de **interfaz web responsive + empaquetado Android**.
-> La capa de datos (API, base de datos, autenticación, contratos y seguimiento) está **diseñada pero no implementada**.
-> Pruebas automatizadas: **11/14 PASS** (`npm test`).
+> **Estado actual (12/10/2026):** prototipo verificable de **interfaz web responsive + empaquetado Android**.
+> La capa de datos (API, base de datos, autenticación, contratos y seguimiento) está **diseñada** y
+> **parcialmente implementada** (api en memoria, auth JWT, contrato PDF y seguimiento con evidencias/alertas).
+> Pruebas automatizadas: **16/16 PASS** (`npm test`).
 
 ---
 
@@ -19,7 +20,7 @@ ADOPTA-YA 1.0/                     ← raíz del repositorio
 ├── package.json                   ← sólo dependencias directas (@capacitor/*) + jsdom (dev)
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
 ├── adopta-ya.code-workspace       ← espacio de trabajo de VS Code (conexión MySQL local)
-├── test_estatico_adopta_ya.js     ← script de pruebas P-01…P-14 (usa npm test)
+├── test_estatico_adopta_ya.js     ← script de pruebas P-01…P-16 (usa npm test)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── docs/
 │   ├── 01_INFORME_DE_AUDITORIA.md ← auditoría técnica: hallazgos, severidad y estado
@@ -56,8 +57,9 @@ las 3 tarjetas estáticas de ejemplo (Max, Luna, Rocky) si el servidor no respon
 «Ver mascotas» (desplazamiento suave), botones «Quiero adoptar…» (crean una solicitud
 «en revisión» vía `POST /solicitudes`); acceso con registro/login; formulario de postulación
 del adoptante (datos + consentimiento Ley 1581), panel de evaluación del refugio para
-aprobar o rechazar solicitudes y descarga del contrato de adopción en PDF para las aprobadas.
-Responsivo a 700 px.
+aprobar o rechazar solicitudes y descarga del contrato de adopción en PDF para las aprobadas;
+seguimiento post-adopción con registro de evidencias (notas y fotos) y alertas del refugio a
+los 30/60/90 días. Responsivo a 700 px.
 
 ### 2.2 API local (opcional)
 
@@ -68,6 +70,8 @@ Levanta en `http://localhost:3000`:
 npm start   # GET /health · GET /mascotas[:id] · POST /solicitudes
             # GET /solicitudes · POST /solicitudes/:id/estado  (solo administrador, JWT)
             # GET /solicitudes/:id/contrato (PDF; aprobada y admin o adoptante dueño, JWT)
+            # POST/GET /solicitudes/:id/evidencias (aprobada; admin o adoptante dueño, JWT)
+            # GET /seguimiento/alertas (solo administrador, JWT)
             # POST /auth/registro · POST /auth/login · GET /auth/perfil (JWT Bearer)
 ```
 
@@ -95,11 +99,12 @@ debe regenerarse con `npm run sync` + build antes de instalarlo de nuevo.
 ### 2.4 Pruebas automatizadas
 
 ```powershell
-npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-14) y genera resultados_pruebas.json
+npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-16) y genera resultados_pruebas.json
 ```
 
-Resultado vigente: **PASA 14 / FALLA 0**. Todas las comprobaciones P-01…P-14 pasan,
-incluidas P-05 (catálogo desde API), P-07 (solicitud persistida) y P-09 (hashing/autenticación).
+Resultado vigente: **PASA 16 / FALLA 0**. Todas las comprobaciones P-01…P-16 pasan,
+incluidas P-05 (catálogo desde API), P-07 (solicitud persistida), P-09 (hashing/autenticación),
+P-15 (evidencias post-adopción) y P-16 (alertas 30/60/90).
 
 ## 3. Herramientas y versiones
 
@@ -142,7 +147,8 @@ Detalle completo (severidad, evidencias y pendientes): `docs/01_INFORME_DE_AUDIT
 
 - **No desplegar el paquete actual en hosting público sin antes** eliminar `local.properties`
   (apunta al SDK de otra máquina) y revisar que no haya secretos.
-- La app **no tiene backend**: las «adopciones» sólo muestran un `alert`. No hay cuentas,
-  ni solicitudes persistidas, ni contratos PDF, ni alertas de seguimiento (ver `docs/03_MODULOS.md`).
+- La app es **prototipo sin producción**: la API funciona en memoria (sin persistencia real
+  salvo MySQL local si está configurado), el seguimiento calcula alertas por fecha pero **no
+  hay notificación real (correo/push)** ni generación de fichas clínicas (ver `docs/03_MODULOS.md`).
 - Tratamiento de datos personales: prever consentimiento expreso y minimización conforme a la
   **Ley 1581 de 2012** antes de capturar datos reales de adoptantes.

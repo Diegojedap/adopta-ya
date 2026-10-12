@@ -215,6 +215,140 @@ function descargarContrato(id) {
         });
 }
 
+function leerArchivoComoDataUrl(archivo, maxBytes, completado) {
+    if (!archivo) { completado(null); return; }
+    if (archivo.size > maxBytes) { completado("excede"); return; }
+    const lector = new FileReader();
+    lector.onload = function () { completado(lector.result); };
+    lector.onerror = function () { completado(null); };
+    lector.readAsDataURL(archivo);
+}
+
+function registrarEvidencia() {
+    const id = document.getElementById("seg-solicitud").value;
+    const descripcion = document.getElementById("seg-descripcion").value.trim();
+    const archivo = document.getElementById("seg-foto").files[0];
+    const etiqueta = document.getElementById("seg-estado");
+    let token = null;
+    try { token = localStorage.getItem("token"); } catch (e) {}
+    if (!token) {
+        if (etiqueta) etiqueta.textContent = "Inicia sesión para registrar evidencias.";
+        return;
+    }
+    if (!id) {
+        if (etiqueta) etiqueta.textContent = "Indica el número de tu solicitud.";
+        return;
+    }
+    if (!descripcion && !archivo) {
+        if (etiqueta) etiqueta.textContent = "Describe un avance o adjunta una foto.";
+        return;
+    }
+
+    leerArchivoComoDataUrl(archivo, 300 * 1024, function (url) {
+        if (url === "excede") {
+            if (etiqueta) etiqueta.textContent = "La foto supera 300 KB; prueba con una más pequeña.";
+            return;
+        }
+        const cuerpo = { descripcion: descripcion };
+        if (url) cuerpo.url = url;
+
+        fetch(API_BASE + "/solicitudes/" + id + "/evidencias", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+            body: JSON.stringify(cuerpo)
+        })
+            .then(function (respuesta) { return respuesta.json(); })
+            .then(function (datos) {
+                if (datos && datos.id) {
+                    if (etiqueta) etiqueta.textContent = "Evidencia registrada (día " + (datos.dia || "?") + ").";
+                    cargarEvidencias(id);
+                } else if (datos && datos.error) {
+                    if (etiqueta) etiqueta.textContent = datos.error;
+                } else {
+                    if (etiqueta) etiqueta.textContent = "No se pudo registrar la evidencia.";
+                }
+            })
+            .catch(function () {
+                if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
+            });
+    });
+}
+
+function tarjetaEvidencia(e) {
+    const foto = e.url
+        ? '<div class="evidencia-foto"><img src="' + e.url + '" alt="Evidencia del seguimiento"></div>'
+        : "";
+    return '<div class="evidencia">' +
+        '<strong>Día ' + (e.dia || "?") + '</strong> · ' +
+        new Date(e.creado_en || Date.now()).toLocaleDateString() +
+        (e.descripcion ? '<br>' + e.descripcion : '') +
+        foto +
+        '</div>';
+}
+
+function cargarEvidencias(id) {
+    const lista = document.getElementById("lista-evidencias");
+    let token = null;
+    try { token = localStorage.getItem("token"); } catch (e) {}
+    if (!token || !id) return;
+    fetch(API_BASE + "/solicitudes/" + id + "/evidencias", {
+        headers: { "Authorization": "Bearer " + token }
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (!lista) return;
+            lista.innerHTML = Array.isArray(datos) && datos.length
+                ? datos.map(tarjetaEvidencia).join("")
+                : "<p>Sin evidencias registradas todavía.</p>";
+        })
+        .catch(function () {});
+}
+
+function tarjetaAlerta(a) {
+    const estado = a.estado_alerta || "al_dia";
+    const etiquetas = {
+        al_dia: "Al día",
+        vencida: "Vencida",
+        vencida_final: "Vencida final",
+        completada: "Completada"
+    };
+    const textoHito = a.proximo_hito
+        ? " · Próximo hito: día " + a.proximo_hito + " (en " + a.dias_para_hito + " día(s))"
+        : "";
+    return '<div class="alerta">' +
+        '<strong>' + (a.mascota || ("#" + a.solicitud_id)) + '</strong> · ' + (a.adoptante || "sin datos") +
+        '<br>Día ' + a.dias_acumulados + ' de seguimiento · ' + a.cantidad_evidencias + ' evidencia(s)' +
+        textoHito +
+        ' <span class="estado estado-' + estado + '">' + (etiquetas[estado] || estado) + '</span>' +
+        '</div>';
+}
+
+function cargarAlertas() {
+    const lista = document.getElementById("lista-alertas");
+    const info = document.getElementById("panel-estado");
+    let token = null;
+    try { token = localStorage.getItem("token"); } catch (e) {}
+    if (!token) {
+        if (info) info.textContent = "Inicia sesión como administrador.";
+        return;
+    }
+    fetch(API_BASE + "/seguimiento/alertas", { headers: { "Authorization": "Bearer " + token } })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (!Array.isArray(datos)) {
+                if (info) info.textContent = "No autorizado.";
+                return;
+            }
+            if (info) info.textContent = datos.length + " adopción(es) en seguimiento.";
+            if (lista) lista.innerHTML = datos.length
+                ? datos.map(tarjetaAlerta).join("")
+                : "<p>No hay adopciones aprobadas en seguimiento.</p>";
+        })
+        .catch(function () {
+            if (info) info.textContent = "No se pudo conectar con el servidor.";
+        });
+}
+
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", cargarMascotas);
 } else {

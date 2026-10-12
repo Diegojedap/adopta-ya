@@ -6,6 +6,29 @@
 
 ---
 
+## 2026-10-12 (Fase 1 — M-14/M-15)
+
+- **M-14 seguimiento post-adopción:** `server/index.js` con store `evidencias` y rutas
+  `POST/GET /solicitudes/:id/evidencias` (admin o adoptante dueño con JWT, sólo solicitudes
+  «aprobada»; 409 si no está aprobada, 403 sin permiso, 401 sin token). La evidencia guarda
+  `descripcion` opcional o `url` (foto data-URL generada con FileReader en el frontend,
+  límite 300 KB) y su `dia` desde la aprobación (`revisado_en`). Sección nueva `#seguimiento`
+  en `www/index.html` + `registrarEvidencia()`, `cargarEvidencias()`. Tabla `evidencias`
+  de `sql/schema.sql` sincronizada si hay pool MySQL.
+- **M-15 alertas automáticas:** `GET /seguimiento/alertas` (solo admin) calcula por cada
+  adopción aprobada `dias_acumulados`, próximo hito 30/60/90 y `estado_alerta`
+  (`al_dia`/`vencida`/`vencida_final`/`completada`) según las evidencias registradas en cada
+  ventana. Botón «Cargar alertas de seguimiento» en el panel + tarjetas con insignias.
+  Sin scheduler ni correo (límite del prototipo: en producción sería cron + notificación).
+- **Verificación:** suite ampliada a **P-01…P-16 → 16/16** (P-15 evidencias, P-16 alertas,
+  ambos REQ-03); `npm run sync` OK; API probada end-to-end (login, registro, solicitud,
+  aprobación, evidencias 401/409/201, alertas admin/401/403).
+
+**Siguiente paso:** APK (M-18, requiere Android Studio/JDK 17, bloqueado en esta máquina)
+→ luego UAT con el refugio (Entregas 2 y 3).
+
+---
+
 ## 2026-10-09 (Fase 1 — M-13)
 
 - **M-13 contrato PDF:** `server/contrato.js` escribe un PDF 1.4 válido sin dependencias
