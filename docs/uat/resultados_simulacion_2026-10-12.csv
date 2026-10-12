@@ -1,0 +1,13 @@
+fecha,sesion,escenario,requisito,rol,resultado,defecto,severidad,tiempo_seg,observacion
+2026-10-12,SIM-01,UAT-01,REQ-04,Adoptante,Aceptado,,,18,Simulacion opencode - tiempo de referencia; navegacion verificada por P-08
+2026-10-12,SIM-01,UAT-02,REQ-01,Adoptante,Aceptado,,,22,Simulacion opencode - GET /mascotas HTTP 200 con 3 mascotas
+2026-10-12,SIM-01,UAT-03,REQ-02,Adoptante,Aceptado,,,15,Simulacion opencode - POST /solicitudes HTTP 201 estado en_revision
+2026-10-12,SIM-01,UAT-04,REQ-02,Adoptante,Condicional,D-001,Medio,64,Simulacion opencode - exige consentimiento; no muestra el numero de solicitud creado
+2026-10-12,SIM-01,UAT-05,REQ-05,Adoptante,Aceptado,,,27,Simulacion opencode - registro HTTP 201 y login HTTP 200
+2026-10-12,SIM-01,UAT-06,REQ-05,Admin,Aceptado,,,12,Simulacion opencode - login admin HTTP 200 rol administrador
+2026-10-12,SIM-01,UAT-07,REQ-02,Admin,Aceptado,,,35,Simulacion opencode - lista 200 y aprobar 200; sin token 401 y adoptante 403
+2026-10-12,SIM-01,UAT-08,M-13,Admin,Aceptado,,,19,Simulacion opencode - PDF %PDF- 2669 bytes; no aprobada 409 y sin token 401
+2026-10-12,SIM-01,UAT-09,REQ-03,Adoptante,Aceptado,,,41,Simulacion opencode - evidencia 201 dia 0; sin token 401 y no aprobada 409
+2026-10-12,SIM-01,UAT-10,REQ-03,Admin,Aceptado,,,14,Simulacion opencode - alertas 200 con 1 adopcion; sin token 401
+2026-10-12,SIM-01,UAT-11,REQ-04,Cualquiera,Aceptado,,,20,Simulacion opencode - media query 700px verificada por P-02 y P-03
+2026-10-12,SIM-01,UAT-12,RNF-01,Admin,Condicional,D-002,Bajo,33,Simulacion opencode - rechazo 200 con historial; la nota no se ve en la tarjeta sin abrir detalle

@@ -6,6 +6,31 @@
 
 ---
 
+## 2026-10-12 (Fase 2 — UAT y línea base de tiempos)
+
+- **Kit de UAT creado:** `docs/04_UAT.md` (plan de aceptación con el refugio: objetivo,
+  alcance y límites, actores, entorno, criterios de salida, clasificación de defectos y
+  protocolo de **línea base de tiempos**); `docs/uat/guion_escenarios.md` con **12
+  escenarios (UAT-01…UAT-12)** trazados a REQ-01…REQ-05/RNF-01/M-13;
+  `docs/uat/plantilla_registro.csv` para capturar resultados, defectos y tiempos.
+- **Medición reproducible:** `uat/medir_linea_base.js` (Node sin dependencias) + script
+  `npm run uat:medir`; lee el CSV y genera `docs/uat/linea_base_tiempos.json`
+  (mín/prom/máx por tarea y % de éxito).
+- **Simulación opencode (no sustituye al refugio):** `docs/uat/resultados_simulacion_2026-10-12.csv`
+  con los 12 escenarios; la API se probó end-to-end (mascotas, registro/login admin y
+  adoptante, solicitud, aprobar/rechazar, contrato PDF `%PDF-` de 2669 bytes, evidencia
+  `día 0`, alertas y los rechazos 401/403/409). Tiempos de la simulación = **referencia**;
+  la sesión real con usuarios debe reemplazarlos.
+- **Suite:** nueva prueba **P-17** (existe el kit UAT y el script `uat:medir`) → **17/17**
+  tras `npm run sync` (P-13 requiere la copia Android, que está en `.gitignore`).
+- **Defectos de simulación (mejoras sugeridas):** D-001 Medio (la UI no muestra el n.º de
+  solicitud creado tras postular) y D-002 Bajo (la nota de rechazo no se ve en la tarjeta).
+
+**Siguiente paso:** ejecutar la UAT real con el refugio usando el kit → cargar resultados y
+correr `npm run uat:medir`; en paralelo, APK (M-18, requiere Android Studio/JDK 17).
+
+---
+
 ## 2026-10-12 (Fase 1 — APK)
 
 - **APK:** intento de regeneración fallido por entorno (sin Android SDK, sin JDK 17; JDK 11 presente,
@@ -23,6 +48,8 @@
 prototipo web + APK con assets actualizados cuando sea posible).
 
 ---
+
+## 2026-10-12 (Fase 1 — M-14/M-15)
 
 - **M-14 seguimiento post-adopción:** `server/index.js` con store `evidencias` y rutas
   `POST/GET /solicitudes/:id/evidencias` (admin o adoptante dueño con JWT, sólo solicitudes

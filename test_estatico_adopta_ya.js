@@ -108,6 +108,16 @@ const usaAlertas = /\/seguimiento\/alertas/.test(scriptSrc) && /cargarAlertas/.t
 add('P-16', 'REQ-03', 'Existen alertas/recordatorios de seguimiento a 30/60/90 días', usaAlertas,
   usaAlertas ? 'referencias a /seguimiento/alertas y cargarAlertas' : 'sin alertas en frontend');
 
+// P-17 kit de UAT con linea base de tiempos (RNF-03): artefactos y script de medicion
+const rutaUat = f => path.join(ROOT, f);
+const existeUat = ['docs/04_UAT.md', 'docs/uat/guion_escenarios.md', 'docs/uat/plantilla_registro.csv', 'uat/medir_linea_base.js']
+  .every(f => fs.existsSync(rutaUat(f)));
+const guionUat = fs.existsSync(rutaUat('docs/uat/guion_escenarios.md')) ? fs.readFileSync(rutaUat('docs/uat/guion_escenarios.md'), 'utf8') : '';
+const tieneEscenarios = /UAT-01/.test(guionUat) && /UAT-12/.test(guionUat);
+const mideUat = !!scripts['uat:medir'];
+add('P-17', 'RNF-03', 'Existe el kit UAT (plan, guion, plantilla y script de linea base)', existeUat && tieneEscenarios && mideUat,
+  `artefactos=${existeUat}; escenarios UAT-01/12=${tieneEscenarios}; scripts.uat:medir=${JSON.stringify(scripts['uat:medir'])}`);
+
 console.table(res.map(r => ({ id: r.id, req: r.req, resultado: r.resultado, descripcion: r.desc })));
 const pasa = res.filter(r => r.resultado === 'PASA').length;
 console.log(`Total ${res.length} | PASA ${pasa} | FALLA ${res.length - pasa}`);

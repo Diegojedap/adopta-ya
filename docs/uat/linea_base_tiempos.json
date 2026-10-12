@@ -1,0 +1,180 @@
+{
+  "resumen": {
+    "fuente": "docs/uat/resultados_simulacion_2026-10-12.csv",
+    "generado_en": "2026-10-12T23:22:52.113Z",
+    "total_ejecuciones": 12,
+    "escenarios_evaluados": 12,
+    "porcentaje_exito_global": 100,
+    "tiempo_prom_global_seg": 26.7,
+    "defectos": [
+      {
+        "escenario": "UAT-04",
+        "id": "D-001",
+        "severidad": "Medio"
+      },
+      {
+        "escenario": "UAT-12",
+        "id": "D-002",
+        "severidad": "Bajo"
+      }
+    ]
+  },
+  "escenarios": [
+    {
+      "escenario": "UAT-01",
+      "requisito": "REQ-04",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 18,
+      "tiempo_prom_seg": 18,
+      "tiempo_max_seg": 18,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-02",
+      "requisito": "REQ-01",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 22,
+      "tiempo_prom_seg": 22,
+      "tiempo_max_seg": 22,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-03",
+      "requisito": "REQ-02",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 15,
+      "tiempo_prom_seg": 15,
+      "tiempo_max_seg": 15,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-04",
+      "requisito": "REQ-02",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 64,
+      "tiempo_prom_seg": 64,
+      "tiempo_max_seg": 64,
+      "defectos": [
+        {
+          "id": "D-001",
+          "severidad": "Medio",
+          "nota": "Simulacion opencode - exige consentimiento; no muestra el numero de solicitud creado"
+        }
+      ]
+    },
+    {
+      "escenario": "UAT-05",
+      "requisito": "REQ-05",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 27,
+      "tiempo_prom_seg": 27,
+      "tiempo_max_seg": 27,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-06",
+      "requisito": "REQ-05",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 12,
+      "tiempo_prom_seg": 12,
+      "tiempo_max_seg": 12,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-07",
+      "requisito": "REQ-02",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 35,
+      "tiempo_prom_seg": 35,
+      "tiempo_max_seg": 35,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-08",
+      "requisito": "M-13",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 19,
+      "tiempo_prom_seg": 19,
+      "tiempo_max_seg": 19,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-09",
+      "requisito": "REQ-03",
+      "rol": "Adoptante",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 41,
+      "tiempo_prom_seg": 41,
+      "tiempo_max_seg": 41,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-10",
+      "requisito": "REQ-03",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 14,
+      "tiempo_prom_seg": 14,
+      "tiempo_max_seg": 14,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-11",
+      "requisito": "REQ-04",
+      "rol": "Cualquiera",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 20,
+      "tiempo_prom_seg": 20,
+      "tiempo_max_seg": 20,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-12",
+      "requisito": "RNF-01",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 33,
+      "tiempo_prom_seg": 33,
+      "tiempo_max_seg": 33,
+      "defectos": [
+        {
+          "id": "D-002",
+          "severidad": "Bajo",
+          "nota": "Simulacion opencode - rechazo 200 con historial; la nota no se ve en la tarjeta sin abrir detalle"
+        }
+      ]
+    }
+  ]
+}
