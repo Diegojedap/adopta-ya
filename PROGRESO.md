@@ -6,7 +6,23 @@
 
 ---
 
-## 2026-10-12 (Fase 1 — M-14/M-15)
+## 2026-10-12 (Fase 1 — APK)
+
+- **APK:** intento de regeneración fallido por entorno (sin Android SDK, sin JDK 17; JDK 11 presente,
+  Gradle 8.14.3 descargado localmente, pero AGP 8.13.0 necesita dependencias de Google/Maven
+  que no son accesibles desde esta máquina / sin certificados válidos para dl.google.com).
+  `npm run sync` copió correctamente los assets web nuevos (www/ → `android/app/src/main/assets/public/`)
+  y sus hashes coinciden. El APK debug existente (`4119956 bytes`, SHA256
+  3EECEE0E052346B848C74F80F5197FEC83ADB794BA20BAFDE156A1913737B3E9) **es anterior a M-14/M-15**
+  (no incluye la sección `#seguimiento`, botón «Cargar alertas» ni lógica JS/CSS asociada).
+- **Estado:** M-07 sigue como ◐ (APK viejo). Hallazgo **F-08** se mantiene pendiente.
+- **Acción recomendada:** regenerar APK en un entorno con Android Studio + SDK instalado (conexión
+  a internet) usando `npm run sync` + build, o bien generar en otra máquina y sustituirlo.
+
+**Siguiente paso:** UAT con el refugio (entregables: README, pruebas 16/16, API funcionando,
+prototipo web + APK con assets actualizados cuando sea posible).
+
+---
 
 - **M-14 seguimiento post-adopción:** `server/index.js` con store `evidencias` y rutas
   `POST/GET /solicitudes/:id/evidencias` (admin o adoptante dueño con JWT, sólo solicitudes
