@@ -127,11 +127,12 @@ Verificación rápida de integridad: comparar hashes de `www/index.html`,
    mayúsculas; `CSS/` o `JS/` dejan la app sin estilos ni JS.
 2. **Nunca versionar credenciales**: ni en `.vscode/settings.json`, ni workspace, ni
    `.env`. La contraseña de MySQL (puerto 3307, usuario root) se configura localmente.
-3. **npm offline**: registry.npmjs.org no es accesible desde esta máquina; `package.json`
-   fija `psl@1.9.0`, `ws@8.20.1` y `tough-cookie@4.1.3` vía `overrides`
-   porque son las versiones en caché local. No quitar esos overrides sin conexión.
-   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) se instalaron desde
-   la caché local con `--offline`.
+3. **npm**: en la **máquina Windows original** registry.npmjs.org no es accesible y por eso
+   `package.json` fija `psl@1.9.0`, `ws@8.20.1` y `tough-cookie@4.1.3` vía `overrides`
+   (versiones en caché local). En el **codespace de opencode** el registro **sí** es accesible:
+   `npm install` normal instala la cadena completa (`node_modules/` está en `.gitignore`). Los
+   `overrides` siguen siendo válidos con conexión y no estorban.
+   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) también están en `dependencies`.
 4. **APK**: el único binario versionado es `android/app/build/outputs/apk/debug/app-debug.apk`
    (excepción deliberada en `.gitignore`, como evidencia). No borrar.
 5. **Datos legales**: al capturar datos reales de adoptantes aplica la **Ley 1581 de 2012**
