@@ -128,7 +128,7 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 | SDK Android | compileSdk / targetSdk / minSdk | 36 / 36 / 24 | `android/variables.gradle` |
 | App ID | com.adoptaya.app · versionName 1.0 | versionCode 1 | `capacitor.config.json`, `android/app/build.gradle` |
 | Java | JDK instalado en la máquina | 11.0.24 (insuficiente: AGP requiere 17+) | `java -version` |
-| Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-16 | `npm test` |
+| Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-17 | `npm test` |
 | Paquetes | npm 11.13 | resolución offline (registro npmjs.org inaccesible) | `package-lock.json` |
 | Base de datos prevista | MySQL en 127.0.0.1:3307 (SQLTools) | esquema en `sql/schema.sql` + `sql/seed.sql`, sin conexión activa | `adopta-ya.code-workspace`, `server/index.js` |
 | API local | Node.js (módulo `http`, sin dependencias) | puerto 3000 · `npm start` | `server/index.js` |

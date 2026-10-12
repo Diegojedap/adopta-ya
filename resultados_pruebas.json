@@ -4,7 +4,7 @@
     "req": "REQ-04",
     "desc": "Recursos CSS/JS de index.html resuelven con mayúsculas exactas",
     "resultado": "PASA",
-    "detalle": "referencias: css/style.css, js/script.js; carpetas reales en www/: css, img, js"
+    "detalle": "referencias: css/style.css, js/script.js; carpetas reales en www/: css, js"
   },
   {
     "id": "P-02",
@@ -95,7 +95,7 @@
     "req": "REQ-04",
     "desc": "Existe un APK debug generado",
     "resultado": "PASA",
-    "detalle": "3.93 MB, 2026-10-08"
+    "detalle": "3.93 MB, 2026-10-12"
   },
   {
     "id": "P-15",
@@ -110,5 +110,12 @@
     "desc": "Existen alertas/recordatorios de seguimiento a 30/60/90 días",
     "resultado": "PASA",
     "detalle": "referencias a /seguimiento/alertas y cargarAlertas"
+  },
+  {
+    "id": "P-17",
+    "req": "RNF-03",
+    "desc": "Existe el kit UAT (plan, guion, plantilla y script de linea base)",
+    "resultado": "PASA",
+    "detalle": "artefactos=true; escenarios UAT-01/12=true; scripts.uat:medir=\"node uat/medir_linea_base.js\""
   }
 ]

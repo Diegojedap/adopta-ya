@@ -2,7 +2,7 @@
 
 Inventario de módulos funcionales con su **estado real de implementación**, trazabilidad
 a requisitos (REQ-01…REQ-05, RNF-01…RNF-03 de las Entregas 1 y 2) y a las pruebas
-automatizadas P-01…P-16. Estado verificado el 12/10/2026 mediante `npm test` y revisión
+automatizadas P-01…P-17. Estado verificado el 12/10/2026 mediante `npm test` y revisión
 de código.
 
 **Leyenda de estado:** ✅ Implementado · ◐ Parcial · ✗ No implementado (diseñado)
@@ -62,7 +62,7 @@ App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y
 - **Requisitos:** REQ-04
 
 ### M-08 · Suite de pruebas automatizadas (✅ Implementado)
-14 comprobaciones estáticas y de comportamiento con jsdom; genera `resultados_pruebas.json`.
+17 comprobaciones estáticas y de comportamiento con jsdom (P-01…P-17); genera `resultados_pruebas.json`.
 - **Archivos:** `test_estatico_adopta_ya.js`, script `npm test`
 - **Nota P-11:** verificación corregida a allowlist de dependencias directas (08/10/2026)
   para que no contradiga a P-09.
@@ -176,10 +176,11 @@ Recordatorios de seguimiento a los 30/60/90 días para cargar evidencias.
 | REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
 | RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✗ Sin persistencia |
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
-| RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12 | ✅ `npm test` ejecutable |
+| RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12, P-17 | ✅ `npm test` ejecutable + kit UAT |
 
 **Cobertura hoy:** REQ-04 y REQ-05 cumplidos; REQ-01, REQ-02 y REQ-03 parciales (con API);
-RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **16/16**.
+RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **17/17**. UAT: kit y
+línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con el refugio.
 
 ---
 
@@ -195,7 +196,7 @@ RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **16/16**.
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
-| 9 | UAT con el refugio y línea base de tiempos | — | P2 | Indicadores Entrega 2 |
+| 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026; ejecución con el refugio pendiente (`docs/04_UAT.md`) |
 
 ---
 
@@ -204,10 +205,11 @@ RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **16/16**.
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
   solicitud «en revisión», login/registro con JWT, panel de evaluación con descarga del
   contrato de adopción en PDF, seguimiento post-adopción con evidencias (notas y fotos) y
-  alertas del refugio a los 30/60/90 días, navegación, empaquetado Android y 16 pruebas
-  automatizadas en verde.
-- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-16), `resultados_pruebas.json`
-  y la API local (`npm start`).
+  alertas del refugio a los 30/60/90 días, navegación, empaquetado Android y 17 pruebas
+  automatizadas en verde; además, el **kit de UAT con línea base de tiempos** (12 escenarios
+  y medición reproducible con `npm run uat:medir`).
+- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-17), `resultados_pruebas.json`,
+  la API local (`npm start`) y los artefactos UAT (`docs/04_UAT.md`, `docs/uat/`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy
   es la capa de presentación con una API de prototipo (datos en memoria, notificaciones reales
   pendientes) y la arquitectura/backlog definidos para completarlo.
