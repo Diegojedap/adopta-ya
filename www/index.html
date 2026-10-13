@@ -7,6 +7,19 @@
     <meta name="theme-color" content="#0f766e">
     <title>Adopta Ya</title>
 
+    <script>
+        (function () {
+            try {
+                var tema = localStorage.getItem("tema");
+                if (tema === "dark" || tema === "light") {
+                    document.documentElement.setAttribute("data-theme", tema);
+                } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                }
+            } catch (e) {}
+        })();
+    </script>
+
     <link rel="stylesheet" href="css/style.css">
 </head>
 
@@ -18,11 +31,17 @@
                 <span class="marca-icono">🐾</span>
                 <h1 class="marca-texto">Adopta <strong>Ya</strong></h1>
             </a>
+
+            <p id="sesion" class="sesion">Sin sesión iniciada.</p>
+
             <nav class="menu">
                 <a href="#mascotas">Mascotas</a>
-                <a href="#postulacion">Postular</a>
-                <a href="#seguimiento">Seguimiento</a>
-                <a href="#panel">Panel</a>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-postulacion')">Postular</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-seguimiento')">Seguimiento</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-panel')">Panel</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-gestion')">Gestión</button>
+                <button type="button" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')">Iniciar sesión</button>
+                <button type="button" id="btn-tema" class="menu-btn menu-btn--icono" onclick="alternarTema()" aria-label="Cambiar tema">🌙</button>
             </nav>
         </div>
     </header>
@@ -41,21 +60,6 @@
             <button onclick="mostrarMascotas()">
                 Ver mascotas
             </button>
-        </section>
-
-        <section id="acceso" class="acceso">
-            <span class="etiqueta">Tu cuenta</span>
-            <h2>Acceso a tu cuenta</h2>
-
-            <p id="sesion">Sin sesión iniciada.</p>
-
-            <div class="formulario">
-                <input id="acceso-nombre" type="text" placeholder="Nombre (solo registro)">
-                <input id="acceso-email" type="email" placeholder="Correo electrónico">
-                <input id="acceso-clave" type="password" placeholder="Contraseña">
-                <button onclick="ingresar()">Ingresar</button>
-                <button onclick="registrarse()">Registrarse</button>
-            </div>
         </section>
 
         <section id="mascotas" class="mascotas">
@@ -98,109 +102,6 @@
 
         </section>
 
-        <section id="postulacion" class="postulacion">
-            <span class="etiqueta">Quiero adoptar</span>
-            <h2>Formulario de postulación</h2>
-
-            <p>
-                Cuéntanos sobre ti para evaluar la adopción. Al enviar, autorizas el
-                tratamiento de tus datos conforme a la Ley 1581 de 2012.
-            </p>
-
-            <div class="formulario">
-                <input id="post-nombre" type="text" placeholder="Nombre completo">
-                <input id="post-email" type="email" placeholder="Correo electrónico">
-                <input id="post-telefono" type="tel" placeholder="Teléfono">
-                <input id="post-mascota" type="text" placeholder="Mascota de interés">
-                <textarea id="post-motivacion" placeholder="¿Por qué quieres adoptar?"></textarea>
-                <label class="consentimiento">
-                    <input id="post-consentimiento" type="checkbox">
-                    Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012)
-                </label>
-                <button onclick="enviarPostulacion()">Enviar postulación</button>
-            </div>
-
-            <p id="post-estado"></p>
-        </section>
-
-        <section id="seguimiento" class="seguimiento">
-            <span class="etiqueta">Post-adopción</span>
-            <h2>Mi seguimiento post-adopción</h2>
-
-            <p>
-                Si tu adopción fue aprobada, registra evidencias (fotos y notas) durante los
-                primeros meses. El refugio recibe recordatorios a los 30, 60 y 90 días.
-            </p>
-
-            <div class="formulario">
-                <input id="seg-solicitud" type="number" placeholder="N.º de tu solicitud">
-                <input id="seg-descripcion" type="text" placeholder="¿Cómo va tu mascota? (nota)">
-                <label class="consentimiento">
-                    <span>Foto (opcional):</span>
-                    <input id="seg-foto" type="file" accept="image/*">
-                </label>
-                <button onclick="registrarEvidencia()">Registrar evidencia</button>
-            </div>
-
-            <p id="seg-estado"></p>
-
-            <div id="lista-evidencias"></div>
-        </section>
-
-        <section id="panel" class="panel">
-            <span class="etiqueta">Refugio</span>
-            <h2>Panel de evaluación (refugio)</h2>
-
-            <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
-
-            <button onclick="cargarSolicitudes()">Cargar solicitudes</button>
-            <button onclick="cargarAlertas()">Cargar alertas de seguimiento</button>
-
-            <div id="lista-solicitudes"></div>
-            <div id="lista-alertas"></div>
-        </section>
-
-        <section id="gestion-mascotas" class="gestion-mascotas">
-            <span class="etiqueta">Refugio</span>
-            <h2>Gestión de mascotas (refugio)</h2>
-
-            <p>
-                Registra, edita o retira mascotas del catálogo, incluyendo su ficha clínica.
-                Requiere sesión de administrador.
-            </p>
-
-            <div class="formulario">
-                <input id="mascota-id" type="hidden">
-                <input id="mascota-nombre" type="text" placeholder="Nombre">
-                <select id="mascota-especie">
-                    <option value="perro">Perro</option>
-                    <option value="gato">Gato</option>
-                    <option value="otro">Otro</option>
-                </select>
-                <input id="mascota-edad" type="text" placeholder="Edad (ej. 2 años)">
-                <input id="mascota-emoji" type="text" placeholder="Emoji (ej. 🐶)">
-                <select id="mascota-estado">
-                    <option value="disponible">Disponible</option>
-                    <option value="en_revision">En revisión</option>
-                    <option value="adoptado">Adoptado</option>
-                </select>
-                <input id="mascota-salud" type="text" placeholder="Salud (ficha clínica)">
-                <input id="mascota-vacunas" type="text" placeholder="Vacunas">
-                <label class="consentimiento">
-                    <input id="mascota-esterilizado" type="checkbox">
-                    Esterilizado
-                </label>
-                <textarea id="mascota-descripcion" placeholder="Descripción"></textarea>
-                <button onclick="guardarMascota()">Guardar mascota</button>
-                <button onclick="limpiarFormularioMascota()">Limpiar</button>
-            </div>
-
-            <p id="gestion-estado"></p>
-
-            <button onclick="cargarMascotasAdmin()">Cargar mascotas</button>
-            <div id="lista-mascotas-admin"></div>
-        </section>
-
         <section class="responsabilidad">
             <span class="etiqueta">Compromiso</span>
             <h2>❤️ Adopta con responsabilidad</h2>
@@ -235,6 +136,152 @@
         </section>
 
     </main>
+
+    <div class="modal" id="modal-login" onclick="cerrarModalFondo(event, 'modal-login')">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-login">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-login')" aria-label="Cerrar">✕</button>
+
+            <section id="acceso" class="acceso">
+                <span class="etiqueta">Tu cuenta</span>
+                <h2 id="titulo-login">Acceso a tu cuenta</h2>
+
+                <div class="formulario">
+                    <input id="acceso-nombre" type="text" placeholder="Nombre (solo registro)">
+                    <input id="acceso-email" type="email" placeholder="Correo electrónico">
+                    <input id="acceso-clave" type="password" placeholder="Contraseña">
+                    <button onclick="ingresar()">Ingresar</button>
+                    <button onclick="registrarse()">Registrarse</button>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-postulacion" onclick="cerrarModalFondo(event, 'modal-postulacion')">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-postulacion">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-postulacion')" aria-label="Cerrar">✕</button>
+
+            <section id="postulacion" class="postulacion">
+                <span class="etiqueta">Quiero adoptar</span>
+                <h2 id="titulo-postulacion">Formulario de postulación</h2>
+
+                <p>
+                    Cuéntanos sobre ti para evaluar la adopción. Al enviar, autorizas el
+                    tratamiento de tus datos conforme a la Ley 1581 de 2012.
+                </p>
+
+                <div class="formulario">
+                    <input id="post-nombre" type="text" placeholder="Nombre completo">
+                    <input id="post-email" type="email" placeholder="Correo electrónico">
+                    <input id="post-telefono" type="tel" placeholder="Teléfono">
+                    <input id="post-mascota" type="text" placeholder="Mascota de interés">
+                    <textarea id="post-motivacion" placeholder="¿Por qué quieres adoptar?"></textarea>
+                    <label class="consentimiento">
+                        <input id="post-consentimiento" type="checkbox">
+                        Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012)
+                    </label>
+                    <button onclick="enviarPostulacion()">Enviar postulación</button>
+                </div>
+
+                <p id="post-estado"></p>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-seguimiento" onclick="cerrarModalFondo(event, 'modal-seguimiento')">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-seguimiento">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-seguimiento')" aria-label="Cerrar">✕</button>
+
+            <section id="seguimiento" class="seguimiento">
+                <span class="etiqueta">Post-adopción</span>
+                <h2 id="titulo-seguimiento">Mi seguimiento post-adopción</h2>
+
+                <p>
+                    Si tu adopción fue aprobada, registra evidencias (fotos y notas) durante los
+                    primeros meses. El refugio recibe recordatorios a los 30, 60 y 90 días.
+                </p>
+
+                <div class="formulario">
+                    <input id="seg-solicitud" type="number" placeholder="N.º de tu solicitud">
+                    <input id="seg-descripcion" type="text" placeholder="¿Cómo va tu mascota? (nota)">
+                    <label class="consentimiento">
+                        <span>Foto (opcional):</span>
+                        <input id="seg-foto" type="file" accept="image/*">
+                    </label>
+                    <button onclick="registrarEvidencia()">Registrar evidencia</button>
+                </div>
+
+                <p id="seg-estado"></p>
+
+                <div id="lista-evidencias"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-panel" onclick="cerrarModalFondo(event, 'modal-panel')">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-panel">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-panel')" aria-label="Cerrar">✕</button>
+
+            <section id="panel" class="panel">
+                <span class="etiqueta">Refugio</span>
+                <h2 id="titulo-panel">Panel de evaluación (refugio)</h2>
+
+                <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
+
+                <button onclick="cargarSolicitudes()">Cargar solicitudes</button>
+                <button onclick="cargarAlertas()">Cargar alertas de seguimiento</button>
+
+                <div id="lista-solicitudes"></div>
+                <div id="lista-alertas"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="modal-gestion" onclick="cerrarModalFondo(event, 'modal-gestion')">
+        <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="titulo-gestion">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-gestion')" aria-label="Cerrar">✕</button>
+
+            <section id="gestion-mascotas" class="gestion-mascotas">
+                <span class="etiqueta">Refugio</span>
+                <h2 id="titulo-gestion">Gestión de mascotas (refugio)</h2>
+
+                <p>
+                    Registra, edita o retira mascotas del catálogo, incluyendo su ficha clínica.
+                    Requiere sesión de administrador.
+                </p>
+
+                <div class="formulario">
+                    <input id="mascota-id" type="hidden">
+                    <input id="mascota-nombre" type="text" placeholder="Nombre">
+                    <select id="mascota-especie">
+                        <option value="perro">Perro</option>
+                        <option value="gato">Gato</option>
+                        <option value="otro">Otro</option>
+                    </select>
+                    <input id="mascota-edad" type="text" placeholder="Edad (ej. 2 años)">
+                    <input id="mascota-emoji" type="text" placeholder="Emoji (ej. 🐶)">
+                    <select id="mascota-estado">
+                        <option value="disponible">Disponible</option>
+                        <option value="en_revision">En revisión</option>
+                        <option value="adoptado">Adoptado</option>
+                    </select>
+                    <input id="mascota-salud" type="text" placeholder="Salud (ficha clínica)">
+                    <input id="mascota-vacunas" type="text" placeholder="Vacunas">
+                    <label class="consentimiento">
+                        <input id="mascota-esterilizado" type="checkbox">
+                        Esterilizado
+                    </label>
+                    <textarea id="mascota-descripcion" placeholder="Descripción"></textarea>
+                    <button onclick="guardarMascota()">Guardar mascota</button>
+                    <button onclick="limpiarFormularioMascota()">Limpiar</button>
+                </div>
+
+                <p id="gestion-estado"></p>
+
+                <button onclick="cargarMascotasAdmin()">Cargar mascotas</button>
+                <div id="lista-mascotas-admin"></div>
+            </section>
+        </div>
+    </div>
 
     <footer>
         <p>🐾 ADOPTA YA — Una segunda oportunidad comienza contigo.</p>

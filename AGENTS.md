@@ -73,9 +73,10 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
     de `npm test` o P-13 fallará por la copia Android desfasada (**la copia
     `android/.../assets/public/` está en `.gitignore`**, así que en un clon nuevo hay que
     correr `npm run sync` para que P-13 no se omita).
-- **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
+- **Módulos implementados:** M-01 portada · M-02 navegación (✅ barra con botones→modales y
+  tema claro/oscuro 13/10/2026) · M-03 catálogo (◐ con API) ·
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo
-  (✅ rediseño teal + coral 13/10/2026) ·
+  (✅ rediseño teal + coral y tema claro/oscuro 13/10/2026) ·
   M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
   M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) · 
   M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
@@ -95,6 +96,12 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   degradado, tarjetas del catálogo con hover, formularios con foco e insignias recoloreadas.
   Se pidió que la web y el APK quedaran «más atractivos y profesionales». APK regenerado e
   instalado/probado en el emulador `adopta_ya`.
+- **Tema y modales (13/10/2026):** botón `#btn-tema` que alterna **claro/oscuro** (sigue el
+  sistema y recuerda con `localStorage.tema`; variables en `[data-theme="dark"]`, sin `@media`
+  nuevos para no romper P-03). Los formularios (login, postulación, seguimiento, panel y
+  gestión) se movieron a **modales** (`#modal-*`, con `abrirModal()`/`cerrarModal()`, fondo, ✕
+  y Esc); `#sesion` vive en la barra de navegación. Se conservaron todos los IDs (incl.
+  `#seguimiento`, `#gestion-mascotas`, `#lista-mascotas-admin`) y `ingresar()`/`registrarse()`.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·

@@ -58,9 +58,9 @@ servidor, ni estado, ni persistencia: todo el «dato» vive en el HTML.
 
 | Componente | Archivo | Rol |
 |---|---|---|
-| Página única | `www/index.html` | Barra de navegación, hero, catálogo, acceso, postulación, seguimiento, panel, gestión y responsabilidad |
-| Estilos | `www/css/style.css` | Paleta teal + coral (primario `#0f766e`, acento `#f97316`) con variables CSS, layout responsive (grid), media query 700 px |
-| Lógica | `www/js/script.js` | Navegación y confirmación de adopción (sin persistencia) |
+| Página única | `www/index.html` | Barra de navegación, hero, catálogo y responsabilidad; los formularios (acceso, postulación, seguimiento, panel y gestión) viven en **modales** (`#modal-*`) |
+| Estilos | `www/css/style.css` | Paleta teal + coral (primario `#0f766e`, acento `#f97316`) con variables CSS, **tema claro/oscuro** (`[data-theme="dark"]`), layout responsive (grid), media query 700 px |
+| Lógica | `www/js/script.js` | Navegación, confirmación de adopción, apertura/cierre de modales (`abrirModal`/`cerrarModal`) y tema (`alternarTema`), sin persistencia |
 | Configuración Capacitor | `capacitor.config.json` | `appId com.adoptaya.app`, `webDir www` |
 | Puente Android | `android/.../MainActivity.java` | `BridgeActivity` estándar |
 | Empaquetado | `android/` (Gradle 8.14.3, compileSdk 36, minSdk 24) | APK debug |

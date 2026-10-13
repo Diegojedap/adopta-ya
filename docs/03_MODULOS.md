@@ -17,9 +17,11 @@ Página de bienvenida con propuesta de valor y llamado a la acción.
 - **Funciona:** encabezado, texto de propuesta, botón «Ver mascotas».
 - **Requisitos:** — (soporte de UX para REQ-04)
 
-### M-02 · Navegación (`mostrarMascotas()`) (✅ Implementado)
-Desplazamiento suave hasta el catálogo.
-- **Archivos:** `www/js/script.js` (`mostrarMascotas`), botón «Ver mascotas» del hero en `www/index.html`
+### M-02 · Navegación (`mostrarMascotas()` + modales) (✅ Implementado)
+Barra de navegación con botones que abren **modales** (login, postulación, seguimiento, panel,
+gestión) y desplazamiento suave hasta el catálogo.
+- **Archivos:** `www/js/script.js` (`mostrarMascotas`, `abrirModal`, `cerrarModal`), barra y
+  modales en `www/index.html`
 - **Pruebas:** P-08 ✅
 - **Requisitos:** REQ-04 (usabilidad de acceso al catálogo)
 
@@ -48,8 +50,12 @@ Sección educativa sobre hogar, salud y amor; refuerza el mensaje de campaña.
 - **Requisitos:** — (comunicación, complementa REQ-03)
 
 ### M-06 · Diseño responsivo (✅ Implementado)
-Viewport, `lang="es"` y media query para pantallas ≤700 px.
-- **Archivos:** `www/index.html` (meta viewport y `lang="es"`), `www/css/style.css` (`@media (max-width: 700px)`)
+Viewport, `lang="es"` y media query para pantallas ≤700 px. Incluye **tema claro/oscuro**
+(`#btn-tema`, `[data-theme="dark"]`) que sigue la preferencia del sistema y recuerda la
+elección en `localStorage.tema`.
+- **Archivos:** `www/index.html` (meta viewport, `lang="es"` y script anti-parpadeo),
+  `www/css/style.css` (`@media (max-width: 700px)` y variables de tema),
+  `www/js/script.js` (`alternarTema`, `inicializarTema`)
 - **Pruebas:** P-02 ✅ · P-03 ✅
 - **Requisitos:** REQ-04
 

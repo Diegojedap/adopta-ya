@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-10-13 (Fase 10 — Tema claro/oscuro y formularios en modales)
+
+- **Modo claro/oscuro** con botón `#btn-tema` en la barra: sigue la preferencia del sistema
+  por defecto y **recuerda** la elección del usuario en `localStorage.tema`. Script anti-parpadeo
+  en el `<head>` que fija `data-theme` antes de pintar; el tema se define con variables CSS
+  (`[data-theme="dark"]` redefine superficies, texto, líneas, inputs y semánticos) sin añadir
+  `@media` nuevos (el sistema se detecta en JS, para no romper P-03).
+- **Formularios detrás de botones/modales:** la portada queda limpia (hero + catálogo +
+  responsabilidad) y cada formulario (login, postulación, seguimiento, panel y gestión) vive en
+  un modal (`#modal-login`, `#modal-postulacion`, `#modal-seguimiento`, `#modal-panel`,
+  `#modal-gestion`). Se abren/cierran con `abrirModal()`/`cerrarModal()`, clic en el fondo, botón ✕
+  o tecla Esc. **Se conservaron todos los IDs** (incl. `#seguimiento`, `#gestion-mascotas`,
+  `#lista-mascotas-admin`) y las funciones `ingresar()`/`registrarse()`/`mostrarSesion()`.
+- **Sesión en la barra:** `#sesion` pasa a la barra de navegación (siempre visible) como píldora.
+- **Verificación:** `npm test` → **18/18 PASA**; `node uat/ejecutar_uat.js` → **16/16 Aceptado**.
+  APK regenerado e instalado en el emulador `adopta_ya`; se verificó por DevTools del WebView que
+  el tema alterna (fondo `#f1f6f5` ↔ `#0c1615`, 3 tarjetas, 5 modales, 6 botones de nav, icono
+  🌙/☀️). Capturas: `C:\Users\diego_ojeda\Downloads\adopta_ya_tema_claro.png` y
+  `adopta_ya_tema_oscuro.png`.
+- **Docs:** `AGENTS.md` §3, `docs/02_ARQUITECTURA.md`, `docs/03_MODULOS.md` (M-06).
+- **Pendiente (humano):** UAT presencial con el refugio (backlog #9); demo web (M-18).
+
+---
+
 ## 2026-10-13 (Fase 9 — Rediseño visual: teal + coral, web y APK)
 
 - **Interfaz rediseñada** para un aspecto más atractivo y profesional, con una paleta

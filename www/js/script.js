@@ -525,8 +525,67 @@ function cargarMascotasAdmin() {
         });
 }
 
-if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", cargarMascotas);
-} else {
+function abrirModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.add("abierto");
+}
+
+function cerrarModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove("abierto");
+}
+
+function cerrarModalFondo(evento, id) {
+    if (evento && evento.target && evento.target.id === id) cerrarModal(id);
+}
+
+function aplicarTema(tema) {
+    const raiz = document.documentElement;
+    if (tema === "dark" || tema === "light") {
+        raiz.setAttribute("data-theme", tema);
+    }
+    const boton = document.getElementById("btn-tema");
+    if (boton) boton.textContent = tema === "dark" ? "☀️" : "🌙";
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute("content", tema === "dark" ? "#0c1615" : "#0f766e");
+}
+
+function alternarTema() {
+    const actual = document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+    const nuevo = actual === "dark" ? "light" : "dark";
+    try { localStorage.setItem("tema", nuevo); } catch (e) {}
+    aplicarTema(nuevo);
+}
+
+function inicializarTema() {
+    let guardado = null;
+    try { guardado = localStorage.getItem("tema"); } catch (e) {}
+    if (guardado === "dark" || guardado === "light") {
+        aplicarTema(guardado);
+        return;
+    }
+    let prefiereOscuro = false;
+    try {
+        if (typeof window.matchMedia === "function") {
+            prefiereOscuro = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        }
+    } catch (e) {}
+    aplicarTema(prefiereOscuro ? "dark" : "light");
+}
+
+function prepararInterfaz() {
     cargarMascotas();
+    inicializarTema();
+    document.addEventListener("keydown", function (evento) {
+        if (evento.key === "Escape") {
+            const abiertos = document.querySelectorAll(".modal.abierto");
+            for (let i = 0; i < abiertos.length; i++) abiertos[i].classList.remove("abierto");
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", prepararInterfaz);
+} else {
+    prepararInterfaz();
 }
