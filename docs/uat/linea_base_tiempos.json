@@ -1,11 +1,11 @@
 {
   "resumen": {
-    "fuente": "docs/uat/resultados_simulacion_2026-10-12.csv",
-    "generado_en": "2026-10-12T23:57:36.860Z",
-    "total_ejecuciones": 12,
-    "escenarios_evaluados": 12,
+    "fuente": "docs/uat/resultados_simulacion_2026-10-13.csv",
+    "generado_en": "2026-10-13T15:25:08.732Z",
+    "total_ejecuciones": 16,
+    "escenarios_evaluados": 16,
     "porcentaje_exito_global": 100,
-    "tiempo_prom_global_seg": 26.7,
+    "tiempo_prom_global_seg": 31.1,
     "defectos": [
       {
         "escenario": "UAT-04",
@@ -70,7 +70,7 @@
         {
           "id": "D-001",
           "severidad": "Medio",
-          "nota": "Simulacion opencode - exige consentimiento; no muestra el numero de solicitud creado"
+          "nota": "Simulacion opencode - exige consentimiento; no mostraba el numero de solicitud (D-001 corregido 12/10)"
         }
       ]
     },
@@ -172,9 +172,57 @@
         {
           "id": "D-002",
           "severidad": "Bajo",
-          "nota": "Simulacion opencode - rechazo 200 con historial; la nota no se ve en la tarjeta sin abrir detalle"
+          "nota": "Simulacion opencode - rechazo 200 con historial; nota no visible en la tarjeta (D-002 corregido 12/10)"
         }
       ]
+    },
+    {
+      "escenario": "UAT-13",
+      "requisito": "REQ-01",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 58,
+      "tiempo_prom_seg": 58,
+      "tiempo_max_seg": 58,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-14",
+      "requisito": "REQ-01",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 47,
+      "tiempo_prom_seg": 47,
+      "tiempo_max_seg": 47,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-15",
+      "requisito": "REQ-01",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 42,
+      "tiempo_prom_seg": 42,
+      "tiempo_max_seg": 42,
+      "defectos": []
+    },
+    {
+      "escenario": "UAT-16",
+      "requisito": "REQ-05",
+      "rol": "Admin",
+      "ejecuciones": 1,
+      "exitos": 1,
+      "porcentaje_exito": 100,
+      "tiempo_min_seg": 30,
+      "tiempo_prom_seg": 30,
+      "tiempo_max_seg": 30,
+      "defectos": []
     }
   ]
 }

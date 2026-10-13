@@ -116,7 +116,7 @@
     "req": "RNF-03",
     "desc": "Existe el kit UAT (plan, guion, plantilla y script de linea base)",
     "resultado": "PASA",
-    "detalle": "artefactos=true; escenarios UAT-01/12=true; scripts.uat:medir=\"node uat/medir_linea_base.js\""
+    "detalle": "artefactos=true; escenarios UAT-01/12/16=true; scripts.uat:medir=\"node uat/medir_linea_base.js\""
   },
   {
     "id": "P-18",

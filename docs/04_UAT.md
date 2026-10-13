@@ -20,7 +20,8 @@ Entrega 2. Se documentan defectos y decisiones de aceptación.
 
 **Se prueba:** la capa de presentación (`www/`) y la API de prototipo (`server/index.js`)
 en ejecución local: catálogo desde la API, postulación con consentimiento, registro/login
-con roles, panel de evaluación, contrato PDF y seguimiento con evidencias y alertas.
+con roles, panel de evaluación, contrato PDF, gestión de mascotas (CRUD + ficha clínica) y
+seguimiento con evidencias y alertas.
 
 **NO se prueba / límites declarados (para no dar falsas expectativas al refugio):**
 
@@ -29,16 +30,17 @@ con roles, panel de evaluación, contrato PDF y seguimiento con evidencias y ale
 - No existen **notificaciones reales** (correo/push): las alertas 30/60/90 solo se calculan.
 - El **APK** fue regenerado el 13/10/2026 sobre la fuente corregida (F-08 resuelto); la UAT
   puede ejecutarse sobre `www/` o sobre el APK ya actualizado.
-- El **CRUD de mascotas con ficha clínica ya está implementado** (M-10 ✅, 12/10/2026);
-  queda fuera de esta UAT el **despliegue cloud** (M-18, no implementado).
+- El **CRUD de mascotas con ficha clínica ya está implementado** (M-10 ✅, 12/10/2026) y
+  **se cubre** en esta UAT con los escenarios **UAT-13…UAT-16**; queda fuera el **despliegue
+  cloud** (M-18, no implementado).
 
 ## 3. Participantes y roles
 
 | Rol | Descripción | Escenarios |
 |---|---|---|
 | **Facilitador** | Prepara el entorno, cronometra y llena el registro | todos |
-| **Admin del refugio** | Personal de la fundación que aprueba/rechaza y hace seguimiento | UAT-06…UAT-10, UAT-12 |
-| **Adoptante** | Persona que explora el catálogo y postula | UAT-01…UAT-05, UAT-09, UAT-11 |
+| **Admin del refugio** | Personal de la fundación que aprueba/rechaza, gestiona mascotas y hace seguimiento | UAT-06…UAT-10, UAT-12…UAT-16 |
+| **Adoptante** | Persona que explora el catálogo y postula | UAT-01…UAT-05, UAT-09, UAT-11, UAT-16 |
 
 > Mínimo recomendado: **2 participantes por rol**. Con eso se pueden promediar tiempos.
 
@@ -72,6 +74,10 @@ Guion detallado en `docs/uat/guion_escenarios.md`. Resumen:
 | UAT-10 | Alertas de seguimiento 30/60/90 | REQ-03 | Admin | Muestra día acumulado, próximo hito e insignia |
 | UAT-11 | Diseño responsive | REQ-04 | Cualquiera | En pantalla ≤700 px se adapta sin scroll horizontal |
 | UAT-12 | Rechazo con nota e historial | RNF-01 | Admin | El estado y el historial quedan registrados |
+| UAT-13 | Registrar mascota con ficha clínica | REQ-01 | Admin | Crea la mascota y valida nombre/edad y especie/estado |
+| UAT-14 | Editar una mascota existente | REQ-01 | Admin | Precarga la ficha y persiste el cambio de estado/datos |
+| UAT-15 | Retirar (eliminar) una mascota | REQ-01 | Admin | Confirma y la elimina de la lista y del catálogo |
+| UAT-16 | Control de acceso a la gestión de mascotas | REQ-05/RNF-01 | Adoptante/Admin | Escritura solo con rol administrador (401 sin sesión, 403 adoptante) |
 
 ## 6. Línea base de tiempos (procedimiento)
 
@@ -84,7 +90,7 @@ Guion detallado en `docs/uat/guion_escenarios.md`. Resumen:
 4. El cálculo es reproducible con `npm run uat:medir`, que lee el CSV y genera
    `docs/uat/linea_base_tiempos.json`.
 
-**Indicador de salida:** línea base registrada para los 12 escenarios y **≥ 90 % de éxito**
+**Indicador de salida:** línea base registrada para los 16 escenarios y **≥ 90 % de éxito**
 en escenarios de requisito Alta (REQ-01/02/03/04/05).
 
 ## 7. Clasificación de defectos y decisión de aceptación
@@ -101,7 +107,7 @@ produce defecto Bloqueante; de lo contrario, se corrige y se repite el escenario
 
 ## 8. Criterios de salida (exit criteria)
 
-- Los 12 escenarios ejecutados y registrados en el CSV.
+- Los 16 escenarios ejecutados y registrados en el CSV.
 - `docs/uat/linea_base_tiempos.json` generado con `npm run uat:medir`.
 - Defectos clasificados con decisión (corregir / aceptar / diferir a backlog).
 - Acta de sesión con fecha, participantes y evidencias adjuntas.
@@ -116,11 +122,16 @@ produce defecto Bloqueante; de lo contrario, se corrige y se repite el escenario
 
 ## 10. Trazabilidad con el estado del proyecto
 
-- La **sesión simulada** (`docs/uat/resultados_simulacion_2026-10-12.csv`, marcada como
+- La **sesión simulada** (`docs/uat/resultados_simulacion_2026-10-13.csv`, marcada como
   simulación de opencode) valida el flujo y el pipeline de medición; **no sustituye** la
   prueba con usuarios reales.
 - La existencia de los artefactos UAT se verifica con la prueba **P-17** de la suite
   (`test_estatico_adopta_ya.js`).
-- De la simulación se levantaron dos defectos que **ya fueron corregidos** en el prototipo
-  (12/10/2026): **D-001** (mostrar el n.º de solicitud creado tras postular) y **D-002**
-  (mostrar la nota de rechazo en la tarjeta del panel, con captura del motivo al rechazar).
+- De la simulación de 12/10/2026 se levantaron dos defectos que **ya fueron corregidos** en
+  el prototipo (12/10/2026): **D-001** (mostrar el n.º de solicitud creado tras postular) y
+  **D-002** (mostrar la nota de rechazo en la tarjeta del panel, con captura del motivo al
+  rechazar).
+- El **13/10/2026** se amplió el kit con los escenarios **UAT-13…UAT-16** para cubrir el
+  **CRUD de mascotas con ficha clínica (M-10)**; se validaron de punta a punta contra la API
+  local (201 al crear, 200 al editar, 200 al eliminar, 404 posterior, 400 de validación, 401
+  sin sesión y 403 con rol adoptante) y la línea base se regeneró con los 16 escenarios.

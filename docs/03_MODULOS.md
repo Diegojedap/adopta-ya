@@ -213,7 +213,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | ✅ APK regenerado 13/10/2026 (JDK 21 + SDK local; cierra F-08). ◐ Falta publicar la demo web (Vercel + Render) |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
-| 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos de la simulación **D-001** (n.º de solicitud) y **D-002** (nota de rechazo en la tarjeta) corregidos 12/10/2026 |
+| 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026 (12 escenarios) y **ampliados a 16 con el CRUD de mascotas (UAT-13…UAT-16) el 13/10/2026**; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos de la simulación **D-001** (n.º de solicitud) y **D-002** (nota de rechazo en la tarjeta) corregidos 12/10/2026 |
 | 10 | CRUD de mascotas con ficha clínica para el refugio | M-10 | P1 | ✅ Hecho 12/10/2026 (`server/index.js` + panel `#gestion-mascotas`; P-18) |
 
 ---
@@ -225,7 +225,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
   contrato de adopción en PDF, seguimiento post-adopción con evidencias (notas y fotos) y
   alertas del refugio a los 30/60/90 días, CRUD de mascotas con ficha clínica, navegación,
   empaquetado Android y 18 pruebas automatizadas en verde; además, el **kit de UAT con línea
-  base de tiempos** (12 escenarios y medición reproducible con `npm run uat:medir`).
+  base de tiempos** (16 escenarios y medición reproducible con `npm run uat:medir`).
 - **Se puede probar con evidencia:** `npm test` (tabla P-01…P-18), `resultados_pruebas.json`,
   la API local (`npm start`) y los artefactos UAT (`docs/04_UAT.md`, `docs/uat/`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy

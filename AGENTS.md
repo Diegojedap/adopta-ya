@@ -35,7 +35,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── README.md                      ← documento principal del entregable
 ├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken; dev: jsdom@23.0.1
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
-├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-17 (única copia)
+├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-18 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── adopta-ya.code-workspace       ← espacio VS Code (conexión SQLTools MySQL local)
 ├── uat/
@@ -83,9 +83,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-14 seguimiento (◐ evidencias de adopción aprobada, dueño o admin) ·
   M-15 alertas (◐ hitos 30/60/90 calculados, sin scheduler/correo) ·
   M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
-- **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (12 escenarios UAT-01…UAT-12 y plantilla);
+- **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (16 escenarios UAT-01…UAT-16 y plantilla);
   línea base de tiempos reproducible con `npm run uat:medir`; simulación opencode en
-  `docs/uat/resultados_simulacion_2026-10-12.csv` (no sustituye la sesión con el refugio).
+  `docs/uat/resultados_simulacion_2026-10-13.csv` (no sustituye la sesión con el refugio).
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
@@ -119,7 +119,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ## 4. Comandos clave
 
 ```powershell
-npm test           # suite P-01…P-17; actualiza resultados_pruebas.json (esperado 17/17)
+npm test           # suite P-01…P-18; actualiza resultados_pruebas.json (esperado 18/18)
 npm start          # API local en http://localhost:3000 (mascotas + solicitudes)
 npm run uat:medir  # calcula la línea base de tiempos de la UAT → docs/uat/linea_base_tiempos.json
 npm run sync       # cap sync android (coopia www/ → android/.../assets/public/)
@@ -174,7 +174,7 @@ Al **iniciar una sesión** en este proyecto, hacer antes de responder sobre el e
 4. Si hay deriva (la memoria dice algo que ya no es cierto), **corregir AGENTS.md y/o
    PROGRESO.md en ese momento** y reflejarlo en el commit. Nunca dar por bueno un dato
    desactualizado sin avisar.
-5. Si el usuario lo pide o hay duda de integridad, ejecutar `npm test` (17/17 esperado).
+5. Si el usuario lo pide o hay duda de integridad, ejecutar `npm test` (18/18 esperado).
 
 ## Regla 2 — Actualización automática de progreso (anti-apagón)
 

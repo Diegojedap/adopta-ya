@@ -7,7 +7,7 @@ catálogo → solicitud → evaluación → formalización → seguimiento post-
 > **Estado actual (12/10/2026):** prototipo verificable de **interfaz web responsive + empaquetado Android**.
 > La capa de datos (API, base de datos, autenticación, contratos y seguimiento) está **diseñada** y
 > **parcialmente implementada** (api en memoria, auth JWT, contrato PDF y seguimiento con evidencias/alertas).
-> Pruebas automatizadas: **17/17 PASS** (`npm test`). Kit de UAT con línea base de tiempos listo (`docs/04_UAT.md`).
+> Pruebas automatizadas: **18/18 PASS** (`npm test`). Kit de UAT (16 escenarios) con línea base de tiempos listo (`docs/04_UAT.md`).
 
 ---
 
@@ -20,7 +20,7 @@ ADOPTA-YA 1.0/                     ← raíz del repositorio
 ├── package.json                   ← sólo dependencias directas (@capacitor/*) + jsdom (dev)
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
 ├── adopta-ya.code-workspace       ← espacio de trabajo de VS Code (conexión MySQL local)
-├── test_estatico_adopta_ya.js     ← script de pruebas P-01…P-17 (usa npm test)
+├── test_estatico_adopta_ya.js     ← script de pruebas P-01…P-18 (usa npm test)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── uat/
 │   └── medir_linea_base.js        ← calcula la línea base de tiempos de la UAT (npm run uat:medir)
@@ -105,27 +105,27 @@ al JDK 21.
 ### 2.4 Pruebas automatizadas
 
 ```powershell
-npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-17) y genera resultados_pruebas.json
+npm test               # ejecuta test_estatico_adopta_ya.js (P-01…P-18) y genera resultados_pruebas.json
 ```
 
-Resultado vigente: **PASA 17 / FALLA 0**. Todas las comprobaciones P-01…P-17 pasan,
+Resultado vigente: **PASA 18 / FALLA 0**. Todas las comprobaciones P-01…P-18 pasan,
 incluidas P-05 (catálogo desde API), P-07 (solicitud persistida), P-09 (hashing/autenticación),
-P-15 (evidencias post-adopción), P-16 (alertas 30/60/90) y P-17 (kit de UAT).
+P-15 (evidencias post-adopción), P-16 (alertas 30/60/90), P-17 (kit de UAT) y P-18 (CRUD de mascotas).
 
 ### 2.5 UAT con el refugio y línea base de tiempos
 
-El kit de pruebas de aceptación está en `docs/04_UAT.md` y `docs/uat/` (guion con 12
-escenarios UAT-01…UAT-12 y plantilla de registro). Tras llenar el CSV de resultados, la
+El kit de pruebas de aceptación está en `docs/04_UAT.md` y `docs/uat/` (guion con 16
+escenarios UAT-01…UAT-16 y plantilla de registro). Tras llenar el CSV de resultados, la
 línea base de tiempos se calcula y queda como evidencia:
 
 ```powershell
-npm run uat:medir      # lee docs/uat/resultados_simulacion_2026-10-12.csv
+npm run uat:medir      # lee docs/uat/resultados_simulacion_2026-10-13.csv
                        # y genera docs/uat/linea_base_tiempos.json
 ```
 
 La sesión con el refugio es un paso humano pendiente; ya existe una **simulación** de opencode
-(`docs/uat/resultados_simulacion_2026-10-12.csv`) que valida el flujo y la medición, sin
-sustituir la prueba con usuarios reales.
+(`docs/uat/resultados_simulacion_2026-10-13.csv`, con los 16 escenarios) que valida el flujo y
+la medición, sin sustituir la prueba con usuarios reales.
 
 ## 3. Herramientas y versiones
 

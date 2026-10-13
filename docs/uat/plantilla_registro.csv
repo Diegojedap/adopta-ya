@@ -11,3 +11,7 @@ fecha,sesion,escenario,requisito,rol,resultado,defecto,severidad,tiempo_seg,obse
 2026-10-12,SIM-01,UAT-10,REQ-03,Admin,Aceptado,,,14,Ejemplo de fila: borrar antes de la sesion real
 2026-10-12,SIM-01,UAT-11,REQ-04,Cualquiera,Aceptado,,,20,Ejemplo de fila: borrar antes de la sesion real
 2026-10-12,SIM-01,UAT-12,RNF-01,Admin,Condicional,D-002,Bajo,33,No se ve la nota de rechazo en la tarjeta sin abrir detalle
+2026-10-13,SIM-02,UAT-13,REQ-01,Admin,Aceptado,,,58,Ejemplo de fila: borrar antes de la sesion real
+2026-10-13,SIM-02,UAT-14,REQ-01,Admin,Aceptado,,,47,Ejemplo de fila: borrar antes de la sesion real
+2026-10-13,SIM-02,UAT-15,REQ-01,Admin,Aceptado,,,42,Ejemplo de fila: borrar antes de la sesion real
+2026-10-13,SIM-02,UAT-16,REQ-05,Admin,Aceptado,,,30,Ejemplo de fila: borrar antes de la sesion real

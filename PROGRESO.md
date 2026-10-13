@@ -6,6 +6,28 @@
 
 ---
 
+## 2026-10-13 (Fase 6 — UAT: kit ampliado al CRUD de mascotas, 16 escenarios)
+
+- **Kit UAT ampliado a 16 escenarios:** se añadieron **UAT-13…UAT-16** para cubrir el CRUD de
+  mascotas con ficha clínica (M-10), que la simulación anterior no probaba:
+  - UAT-13 registro (valida nombre/edad/especie/estado) · UAT-14 edición (precarga ficha y
+    persiste el cambio) · UAT-15 eliminación (confirma y da de baja del catálogo) ·
+    UAT-16 control de acceso (escritura solo admin: 401 sin sesión, 403 adoptante).
+  - **Validación end-to-end contra la API local:** POST 201, PUT 200, DELETE 200, GET posterior
+    404, especie inválida 400, sin token 401 y adoptante 403; registro+login adoptante OK.
+- **Artefactos:** `docs/uat/guion_escenarios.md` (+4 bloques), `docs/uat/plantilla_registro.csv`
+  (+4 filas), `docs/04_UAT.md` (roles admin, tabla, alcance, salida e indicador a 16), nueva
+  simulación consolidada `docs/uat/resultados_simulacion_2026-10-13.csv` (sustituye a la de
+  2026-10-12), `uat/medir_linea_base.js` (default → CSV nuevo) y prueba **P-17** ampliada a
+  UAT-16. `README.md`, `AGENTS.md` y `03_MODULOS.md` sincronizados.
+- **Verificación:** `npm run uat:medir` → línea base con **16 escenarios** (éxito global 100 %,
+  promedio 31,1 s); `npm test` → **18/18 PASA**.
+- **Pendiente (humano):** ejecutar la UAT real con el refugio (backlog #9).
+
+**Siguiente paso:** publicar la demo web (M-18) y/o ejecutar la UAT real con el refugio.
+
+---
+
 ## 2026-10-13 (Fase 5 — APK regenerado: F-08 y F-11 resueltos)
 
 - **Hallazgo F-08 cerrado:** el APK debug se **regeneró** por fin sobre la fuente corregida.

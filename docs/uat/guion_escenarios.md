@@ -81,6 +81,30 @@ cronometra y se registra en `docs/uat/plantilla_registro.csv`.
 - **Resultado esperado:** el estado «rechazada» queda visible y el cambio se registra en el historial de estados.
 - **Defecto si:** el cambio no persiste en la sesión.
 
+## UAT-13 · Registrar mascota con ficha clínica
+- **Requisito:** REQ-01 · **Rol:** Admin
+- **Pasos:** 1) Autenticado como administrador, ir a «Gestión de mascotas (refugio)». 2) Completar nombre, especie, edad, emoji, estado, salud, vacunas, esterilizado y descripción. 3) Pulsar «Guardar mascota». 4) Casos límite: intentar guardar sin nombre/edad y con una especie no permitida.
+- **Resultado esperado:** la mascota se crea (mensaje «Mascota registrada (N.º X)») y aparece en la lista y en el catálogo; sin nombre/edad avisa «Completa nombre y edad.», y una especie/estado inválido responde 400.
+- **Defecto si:** no guarda, no valida los obligatorios o acepta especies/estados fuera del catálogo.
+
+## UAT-14 · Editar una mascota existente
+- **Requisito:** REQ-01 · **Rol:** Admin
+- **Pasos:** 1) En la lista, pulsar «Editar» en una mascota. 2) Verificar que el formulario se carga con sus datos (incluida la ficha clínica). 3) Cambiar el estado (p. ej. a «adoptado») y la descripción. 4) Pulsar «Guardar mascota».
+- **Resultado esperado:** mensaje «Mascota N.º X actualizada.» y el cambio se refleja en la lista y en el catálogo.
+- **Defecto si:** no precarga los datos o no persiste el cambio.
+
+## UAT-15 · Retirar (eliminar) una mascota
+- **Requisito:** REQ-01 · **Rol:** Admin
+- **Pasos:** 1) En la lista, pulsar «Eliminar» en una mascota. 2) Confirmar el aviso «¿Eliminar la mascota N.º X?».
+- **Resultado esperado:** mensaje «Mascota eliminada.»; desaparece de la lista y del catálogo (al consultarla responde 404).
+- **Defecto si:** elimina sin confirmar, no elimina o deja la mascota visible en el catálogo.
+
+## UAT-16 · Control de acceso a la gestión de mascotas
+- **Requisito:** REQ-05 / RNF-01 · **Rol:** Adoptante / Admin
+- **Pasos:** 1) Sin sesión, intentar «Guardar mascota» o «Eliminar». 2) Con sesión de **adoptante**, intentar guardar, editar y eliminar. 3) Con sesión de **administrador**, repetir la operación.
+- **Resultado esperado:** sin sesión avisa «Inicia sesión como administrador.» (la API responde 401); con adoptante la API responde 403 «Solo administradores»; con administrador la operación procede.
+- **Defecto si:** permite escrituras sin rol administrador.
+
 ---
 
 ## Registro

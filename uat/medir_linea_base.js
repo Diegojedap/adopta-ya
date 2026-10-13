@@ -8,7 +8,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = process.cwd();
-const CSV = process.argv[2] || 'docs/uat/resultados_simulacion_2026-10-12.csv';
+const CSV = process.argv[2] || 'docs/uat/resultados_simulacion_2026-10-13.csv';
 const SALIDA = process.argv[3] || 'docs/uat/linea_base_tiempos.json';
 
 function leerCSV(ruta) {
