@@ -46,7 +46,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 │   ├── 02_ARQUITECTURA.md         ← arquitectura actual vs. objetivo
 │   ├── 03_MODULOS.md              ← módulos M-01…M-18, trazabilidad REQ, backlog
 │   ├── 04_UAT.md                  ← plan de UAT con el refugio y línea base de tiempos
-│   ├── uat/                       ← guion de escenarios, plantilla de registro y resultados
+│   ├── uat/                       ← guion, plantilla, actas, hojas por rol y checklist de sesión
 │   └── entregas/                  ← PDFs de Entrega 1 y Entrega 2
 ├── sql/
 │   ├── schema.sql                 ← esquema MySQL (usuarios, mascotas, solicitudes, evidencias)

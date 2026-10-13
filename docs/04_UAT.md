@@ -55,6 +55,10 @@ npx serve www      # o abrir www/index.html directamente
 - Antes de cada sesión, reiniciar la API para partir de un estado limpio (store en memoria).
 - Registrar la evidencia: capturas de pantalla o video de la sesión, más el CSV de
   resultados (plantilla `docs/uat/plantilla_registro.csv`).
+- **Material de la sesión real (`docs/uat/`):** guía del facilitador
+  (`facilitacion.md`), hojas por participante (`hoja_participante_adoptante.md`,
+  `hoja_participante_admin.md`), checklist del entorno (`checklist_sesion.md`) y plantilla
+  del acta (`acta_uat_plantilla.md`).
 
 ## 5. Escenarios de aceptación
 

@@ -6,6 +6,22 @@
 
 ---
 
+## 2026-10-13 (Fase 8 — Kit de la sesión UAT real con el refugio)
+
+- **Material de la sesión presencial creado en `docs/uat/`:**
+  - `facilitacion.md` — guía del facilitador: cronometraje, orden de bloques, registro CSV con
+    una columna de sesión por participante (`REFUGIO-<ROL>-<N>`), severidades y decisión.
+  - `hoja_participante_adoptante.md` y `hoja_participante_admin.md` — pasos por rol para los
+    16 escenarios con su resultado esperado.
+  - `acta_uat_plantilla.md` — plantilla del acta real (participantes, resultados, defectos,
+    decisión, evidencias y firmas); **sustituye** al acta de simulación.
+  - `checklist_sesion.md` — verificación del entorno antes/durante/después de la sesión.
+  - `docs/04_UAT.md` §4 enlaza el material nuevo.
+- **Pendiente (humano):** agendar y ejecutar la UAT con el refugio (backlog #9); tras la
+  UAT presencial, demo web (M-18, persistencia en memoria).
+
+---
+
 ## 2026-10-13 (Fase 7 — UAT simulada EJECUTADA: 16/16 en el frontend real)
 
 - **La simulación pasó de tabla manual a ejecución real:** nuevo `uat/ejecutar_uat.js`
