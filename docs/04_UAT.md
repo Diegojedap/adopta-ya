@@ -27,8 +27,8 @@ con roles, panel de evaluación, contrato PDF y seguimiento con evidencias y ale
 - No hay persistencia real: usuarios y solicitudes viven en **memoria** (se pierden al
   reiniciar la API) salvo MySQL local configurado.
 - No existen **notificaciones reales** (correo/push): las alertas 30/60/90 solo se calculan.
-- El **APK** versionado es anterior a las correcciones (hallazgo F-08); la UAT se ejecuta
-  sobre la fuente `www/`, no sobre el APK desactualizado.
+- El **APK** fue regenerado el 13/10/2026 sobre la fuente corregida (F-08 resuelto); la UAT
+  puede ejecutarse sobre `www/` o sobre el APK ya actualizado.
 - El **CRUD de mascotas con ficha clínica ya está implementado** (M-10 ✅, 12/10/2026);
   queda fuera de esta UAT el **despliegue cloud** (M-18, no implementado).
 

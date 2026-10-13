@@ -74,7 +74,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
     correr `npm run sync` para que P-13 no se omita).
 - **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
-  M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas ·
+  M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
   M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) · 
   M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
   M-11 formulario postulación (◐ datos + consentimiento Ley 1581) · 
@@ -86,8 +86,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (12 escenarios UAT-01…UAT-12 y plantilla);
   línea base de tiempos reproducible con `npm run uat:medir`; simulación opencode en
   `docs/uat/resultados_simulacion_2026-10-12.csv` (no sustituye la sesión con el refugio).
-- **Módulos NO implementados (diseñados):** M-18 cloud.
-- **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK pendiente de regenerar) ·
+- **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
+- **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
   RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
 - **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
@@ -101,13 +101,20 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
   minúsculas (`css/`, `js/`) · F-02 credenciales MySQL vaciadas · F-03 `package.json`
-  higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
-  Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
-  puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
+  higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/` ·
+  **F-08 APK regenerado** (13/10/2026) · **F-11 `local.properties` ya apunta al SDK local**.
+  Ningún hallazgo de auditoría queda pendiente.
+- **Entorno de build Android (verificado 13/10/2026):** el SDK **sí está** en `C:\Android`
+  (platform 36, build-tools 36.0.0, licencias aceptadas) y hay JDK 17 en
+  `C:\Java\jdk-17.0.20.1+1`. Capacitor 8 exige **JDK 21** (compila con
+  `sourceCompatibility 21`), por lo que se usó un JDK 21 portátil en el temp. Para regenerar:
+  `npm run sync` y luego, en `android/`, `set JAVA_HOME=<JDK21>` +
+  `gradlew.bat assembleDebug` (la descarga TLS de `dl.google.com` requiere importar las CAs
+  raíz de Windows al truststore del JDK, por la inspección TLS corporativa).
 - **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8, #9 y #10 (esquema,
   API, consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de
   UAT, CRUD de mascotas).
-  Siguiente: APK (M-18) → ejecutar la UAT real con el refugio.
+  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio.
 
 ## 4. Comandos clave
 

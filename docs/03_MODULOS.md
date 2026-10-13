@@ -53,13 +53,13 @@ Viewport, `lang="es"` y media query para pantallas ≤700 px.
 - **Pruebas:** P-02 ✅ · P-03 ✅
 - **Requisitos:** REQ-04
 
-### M-07 · Empaquetado Android (◐ Parcial)
+### M-07 · Empaquetado Android (✅ Implementado)
 App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y APK debug.
 - **Archivos:** `capacitor.config.json`, `android/` (compileSdk 36, minSdk 24)
 - **Funciona:** proyecto Gradle completo; `npm run sync` mantiene coherente la copia web
-  (P-13 ✅); APK debug como evidencia (P-14 ✅).
-- **Limitación:** el APK vigente fue compilado antes de la corrección de rutas (F-08) y
-  esta máquina no puede regenerarlo (sin Android SDK/JDK 17+).
+  (P-13 ✅); APK debug regenerado sobre la fuente corregida (P-14 ✅).
+- **Limitación:** para compilar en esta máquina se requiere JDK 21 (Capacitor 8) y el SDK
+  local; la publicación cloud (demo web) sigue siendo M-18.
 - **Requisitos:** REQ-04
 
 ### M-08 · Suite de pruebas automatizadas (✅ Implementado)
@@ -189,7 +189,7 @@ Panel de administración para registrar, editar y retirar mascotas, con ficha cl
 | REQ-01 · Registrar y mostrar mascotas con información básica y estado | Alta | M-03, M-10, M-17 | P-04, P-05, P-18 | ✅ Catálogo vía API + CRUD del refugio con ficha clínica y estado |
 | REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Formulario de postulación + evaluación con historial; falta ficha y notificaciones |
 | REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | P-15, P-16 | ◐ Evidencias cargadas por el adoptante y alertas 30/60/90 calculadas; falta notificación real |
-| REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK pendiente de regenerar) |
+| REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK regenerado 13/10/2026) |
 | REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
 | RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✗ Sin persistencia |
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
@@ -210,7 +210,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 | 3 | Consumir la API en `script.js` (reemplazar catálogo hardcodeado y `alert`) | M-03, M-04 | P0 | ✅ Hecho 08/10/2026 (con reserva estática) |
 | 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | ✅ Hecho 08/10/2026 (`server/index.js`; P-09) |
 | 5 | Formulario de postulación + panel de evaluación | M-11, M-12 | P1 | ✅ Hecho 08/10/2026 (datos + consentimiento + historial) |
-| 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | Cierre del hallazgo F-08 |
+| 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | ✅ APK regenerado 13/10/2026 (JDK 21 + SDK local; cierra F-08). ◐ Falta publicar la demo web (Vercel + Render) |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
 | 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos de la simulación **D-001** (n.º de solicitud) y **D-002** (nota de rechazo en la tarjeta) corregidos 12/10/2026 |

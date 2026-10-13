@@ -6,7 +6,31 @@
 
 ---
 
-## 2026-10-12 (Fase 4 — M-10: CRUD de mascotas del refugio)
+## 2026-10-13 (Fase 5 — APK regenerado: F-08 y F-11 resueltos)
+
+- **Hallazgo F-08 cerrado:** el APK debug se **regeneró** por fin sobre la fuente corregida.
+  - **Entorno real (corrige la memoria):** el Android SDK **sí estaba** en `C:\Android`
+    (platform 36, build-tools 36.0.0, licencias aceptadas) y hay **JDK 17** en
+    `C:\Java\jdk-17.0.20.1+1`; `local.properties` ya apuntaba al SDK local (**F-11 resuelto**).
+  - **JDK 21:** Capacitor 8 compila con `sourceCompatibility 21`, así que se descargó un
+    **JDK 21 portátil** (Temurin 21.0.12.1) al temp y se usó como `JAVA_HOME`.
+  - **TLS corporativo:** la descarga de `dl.google.com` fallaba por inspección TLS; se
+    importaron las **CAs raíz de Windows** al truststore del JDK 21 (`keytool
+    -importkeystore -srcstoretype Windows-ROOT`) y el build pasó.
+  - **Comandos:** `npm run sync` + `gradlew.bat assembleDebug --no-daemon --no-watch-fs` →
+    **BUILD SUCCESSFUL** (2m 5s).
+- **Verificación:** APK `app-debug.apk` = **4,13 MB** (13/10/2026 09:45); contiene
+  `assets/public/css/style.css`, `index.html` y `js/script.js` (rutas minúsculas); hashes de
+  `www/` idénticos a la copia empaquetada.
+- **Docs:** `01_INFORME_DE_AUDITORIA.md` (F-08 y F-11 → RESUELTO, P-14 y tablas),
+  `02_ARQUITECTURA.md` (empaquetado, tooling Java, riesgo JDK/SDK mitigado),
+  `03_MODULOS.md` (M-07 ✅, REQ-04, backlog #6), `04_UAT.md`, `README.md` y `AGENTS.md`.
+- **Estado:** `npm test` → **18/18**. Backlog #6 en su parte de APK ✅; queda publicar la
+  demo web (M-18) y la UAT real con el refugio.
+
+**Siguiente paso:** publicar la demo web (M-18) y/o ejecutar la UAT real con el refugio.
+
+---
 
 - **M-10 implementado (REQ-01 ✅):** el refugio (admin) ahora **registra, edita y elimina**
   mascotas con **ficha clínica**.

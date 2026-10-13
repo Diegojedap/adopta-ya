@@ -92,13 +92,15 @@ npm run sync           # cap sync android: copia www/ → android/app/src/main/a
 npm run open:android   # abre el proyecto en Android Studio para build/run
 ```
 
-Requisitos de build (NO incluidos en esta máquina): Android SDK (compileSdk 36, minSdk 24),
-JDK 17+ (la máquina actual sólo tiene JDK 11) y red para descargar Gradle 8.14.3.
+Requisitos de build: Android SDK (compileSdk 36, minSdk 24; en esta máquina `C:\Android`) y
+**JDK 21** (Capacitor 8 compila con `sourceCompatibility 21`; hay JDK 17 en `C:\Java` y se
+usó un JDK 21 portátil para el build) y red para descargar Gradle 8.14.3.
 
-Un APK debug prerrobotado se conserva como evidencia en
-`android/app/build/outputs/apk/debug/app-debug.apk` (~3,9 MB).
-**Atención:** ese APK fue compilado antes de la corrección de rutas (ver §4);
-debe regenerarse con `npm run sync` + build antes de instalarlo de nuevo.
+El APK debug se conserva como evidencia en
+`android/app/build/outputs/apk/debug/app-debug.apk` (~4,1 MB, **regenerado el 13/10/2026**
+sobre la fuente con rutas en minúsculas; hallazgo F-08 cerrado). Para regenerarlo:
+`npm run sync` y luego `gradlew.bat assembleDebug` en `android/` con `JAVA_HOME` apuntando
+al JDK 21.
 
 ### 2.4 Pruebas automatizadas
 
@@ -164,8 +166,8 @@ Detalle completo (severidad, evidencias y pendientes): `docs/01_INFORME_DE_AUDIT
 
 ## 5. Advertencias
 
-- **No desplegar el paquete actual en hosting público sin antes** eliminar `local.properties`
-  (apunta al SDK de otra máquina) y revisar que no haya secretos.
+- **No desplegar el paquete actual en hosting público sin antes** revisar que no haya
+  secretos (el `local.properties` ya apunta al SDK local y está en `.gitignore`).
 - La app es **prototipo sin producción**: la API funciona en memoria (sin persistencia real
   salvo MySQL local si está configurado), el seguimiento calcula alertas por fecha pero **no
   hay notificación real (correo/push)** ni generación de fichas clínicas (ver `docs/03_MODULOS.md`).

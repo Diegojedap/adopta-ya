@@ -42,7 +42,7 @@ la Entrega 3, no defectos ocultos del prototipo actual.
 | 5 | Sección informativa de responsabilidad (hogar / salud / amor) | `www/index.html:73-104` |
 | 6 | Diseño responsive (media query ≤700 px, viewport, `lang="es"`) | `www/css/style.css:175-193` (P-02, P-03) |
 | 7 | Empaquetado Android con Capacitor 8 y proyecto Gradle | `android/`, `capacitor.config.json` (P-13) |
-| 8 | APK debug compilado (~3,9 MB) | `android/app/build/outputs/apk/debug/app-debug.apk` (P-14) |
+| 8 | APK debug compilado (~4,1 MB, regenerado 13/10/2026) | `android/app/build/outputs/apk/debug/app-debug.apk` (P-14) |
 | 9 | Suite de pruebas automatizadas P-01…P-14 ejecutable con `npm test` | `test_estatico_adopta_ya.js`, `resultados_pruebas.json` |
 
 ## 3. Qué NO funciona / no existe
@@ -106,13 +106,13 @@ el esquema quedó versionado en `sql/schema.sql` + `sql/seed.sql`.
 `/auth/perfil` con roles administrador/adoptante/veterinario (P-09 PASA) y pantalla de acceso
 en `www/`. **Pendiente:** persistir usuarios en MySQL y habilitar paneles por rol.
 
-### F-08 · APK desactualizado respecto de la fuente (MEDIO — PENDIENTE)
-El APK vigente se compiló con la versión anterior de `www/` (referencias `CSS/`/`JS/`).
-Sigue siendo instalable y funcional, pero ya no refleja la fuente corregida.
-Regenerarlo requiere Android SDK (este `local.properties` apunta al SDK de otra
-máquina: `C:\Users\troun\...`), JDK 17+ (aquí sólo hay JDK 11) y red para Gradle 8.14.3.
-**Acción:** `npm run sync` + build en Android Studio / `gradlew assembleDebug` en una
-máquina con el SDK.
+### F-08 · APK desactualizado respecto de la fuente (MEDIO — RESUELTO 13/10/2026)
+El APK vigente se había compilado con la versión anterior de `www/` (referencias
+`CSS/`/`JS/`). **Regenerado** con `npm run sync` + `gradlew.bat assembleDebug`: el APK
+debug ahora empaqueta los assets corregidos (rutas `css/`/`js/` en minúsculas, hashes
+verificados contra `www/`). Requiere Android SDK (`C:\Android`, platform 36, build-tools
+36.0.0) y **JDK 21** (Capacitor 8 compila con `sourceCompatibility 21`); en esta máquina
+se usó un JDK 21 portátil porque el JDK del sistema es 17.
 
 ### F-09 · Artefactos de build dentro del paquete (BAJO — PARCIAL)
 El paquete incluye `android/app/build/` e intermediarios de Gradle (~cientos de archivos).
@@ -124,9 +124,9 @@ conservado como evidencia (Anexo C de la Entrega 2).
 y están vacíos; `capacitor.plugins.json` es `[]`. No afecta, pero conviene no confundirlo
 con un uso real de Cordova.
 
-### F-11 · `local.properties` con ruta de otra máquina (BAJO — DOCUMENTADO)
-`android/local.properties` apunta al SDK de otro usuario. Gradle lo usa sólo en local;
-no debe versionarse (ya está en `.gitignore`), pero conviene regenerarlo con Android Studio.
+### F-11 · `local.properties` con ruta de otra máquina (BAJO — RESUELTO 13/10/2026)
+`android/local.properties` ya apunta al SDK local (`sdk.dir=C:\Android`). Sigue sin
+versionarse (`.gitignore`), como corresponde.
 
 ### F-12 · Metadatos incompletos (BAJO — PARCIAL)
 Faltaban descripción, autor, licencia y keywords en `package.json`; corregido.
@@ -149,7 +149,7 @@ Siguen faltando LICENSE y CONTRIBUTING en la raíz del repositorio.
 | P-11 Dependencias directas | RNF-03 | **PASA** | Corregido (F-03) |
 | P-12 Script de pruebas real | RNF-03 | **PASA** | Corregido (F-04) |
 | P-13 Copia Android == `www/` | REQ-04 | **PASA** | Verificado tras `npm run sync` |
-| P-14 APK debug existe | REQ-04 | **PASA** | 3,93 MB (desactualizado, ver F-08) |
+| P-14 APK debug existe | REQ-04 | **PASA** | 4,13 MB (regenerado 13/10/2026; F-08 resuelto) |
 
 Evidencia: `resultados_pruebas.json`.
 
@@ -162,7 +162,7 @@ Evidencia: `resultados_pruebas.json`.
 | P0 | ✅ (08/10/2026) Consumir la API desde `script.js` | Medio |
 | P1 | ✅ (08/10/2026) Autenticación con roles (admin/adoptante/veterinario) y hashing bcrypt (REQ-05) | Medio |
 | P1 | ✅ (08/10/2026) Formulario de postulación + panel de evaluación del refugio | Medio |
-| P1 | Regenerar APK tras cambios y publicar demo web (Vercel + Render free tier) | Bajo |
+| P1 | ✅ (13/10/2026) Regenerar APK tras cambios (JDK 21 + SDK local); publicar demo web (Vercel + Render free tier) | Bajo |
 | P2 | Contrato PDF con plantilla y firma/aceptación | Medio |
 | P2 | Seguimiento post-adopción: carga de evidencias y alertas a los 30 días (REQ-03) | Alto |
 | P2 | UAT con usuarios del contexto y medición de línea base (tiempo de respuesta) | Medio |
@@ -178,3 +178,8 @@ es construir la capa de datos y seguridad que la Entrega 2 ya declara como pendi
 **Avance posterior (08/10/2026):** se implementaron la API REST local, el consumo desde el
 frontend, el esquema MySQL versionado y la autenticación con bcrypt+JWT; la suite pasó de
 11/14 a **14/14** y los hallazgos F-06/F-07 quedaron resueltos en su versión de prototipo.
+
+**Avance posterior (13/10/2026):** el APK debug se regeneró con `npm run sync` +
+`gradlew.bat assembleDebug` (JDK 21 portátil + SDK local `C:\Android`), lo que **cierra F-08**
+y **F-11**; el APK resultante empaqueta los assets corregidos (`css/`/`js/` en minúsculas,
+hashes idénticos a `www/`). La suite se mantiene en **18/18**.
