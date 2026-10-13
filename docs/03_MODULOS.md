@@ -19,9 +19,10 @@ Página de bienvenida con propuesta de valor y llamado a la acción.
 
 ### M-02 · Navegación (`mostrarMascotas()` + modales) (✅ Implementado)
 Barra de navegación con botones que abren **modales** (login, postulación, seguimiento, panel,
-gestión) y desplazamiento suave hasta el catálogo.
-- **Archivos:** `www/js/script.js` (`mostrarMascotas`, `abrirModal`, `cerrarModal`), barra y
-  modales en `www/index.html`
+gestión), **tema claro/oscuro** (`#btn-tema`) y **bilingüe ES/EN** (`#btn-idioma`), más
+desplazamiento suave hasta el catálogo.
+- **Archivos:** `www/js/script.js` (`mostrarMascotas`, `abrirModal`, `cerrarModal`, `alternarTema`,
+  `alternarIdioma`), barra y modales en `www/index.html`
 - **Pruebas:** P-08 ✅
 - **Requisitos:** REQ-04 (usabilidad de acceso al catálogo)
 
@@ -52,10 +53,11 @@ Sección educativa sobre hogar, salud y amor; refuerza el mensaje de campaña.
 ### M-06 · Diseño responsivo (✅ Implementado)
 Viewport, `lang="es"` y media query para pantallas ≤700 px. Incluye **tema claro/oscuro**
 (`#btn-tema`, `[data-theme="dark"]`) que sigue la preferencia del sistema y recuerda la
-elección en `localStorage.tema`.
+elección en `localStorage.tema`, y **bilingüe ES/EN** (`#btn-idioma`, `data-i18n`,
+`alternarIdioma`) con español por defecto y preferencia en `localStorage.idioma`.
 - **Archivos:** `www/index.html` (meta viewport, `lang="es"` y script anti-parpadeo),
   `www/css/style.css` (`@media (max-width: 700px)` y variables de tema),
-  `www/js/script.js` (`alternarTema`, `inicializarTema`)
+  `www/js/script.js` (`alternarTema`, `inicializarTema`, `alternarIdioma`, `inicializarIdioma`)
 - **Pruebas:** P-02 ✅ · P-03 ✅
 - **Requisitos:** REQ-04
 

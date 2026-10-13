@@ -73,8 +73,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
     de `npm test` o P-13 fallará por la copia Android desfasada (**la copia
     `android/.../assets/public/` está en `.gitignore`**, así que en un clon nuevo hay que
     correr `npm run sync` para que P-13 no se omita).
-- **Módulos implementados:** M-01 portada · M-02 navegación (✅ barra con botones→modales y
-  tema claro/oscuro 13/10/2026) · M-03 catálogo (◐ con API) ·
+- **Módulos implementados:** M-01 portada · M-02 navegación (✅ barra con botones→modales,
+  tema claro/oscuro y bilingüe ES/EN 13/10/2026) · M-03 catálogo (◐ con API) ·
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo
   (✅ rediseño teal + coral y tema claro/oscuro 13/10/2026) ·
   M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
@@ -102,6 +102,13 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   gestión) se movieron a **modales** (`#modal-*`, con `abrirModal()`/`cerrarModal()`, fondo, ✕
   y Esc); `#sesion` vive en la barra de navegación. Se conservaron todos los IDs (incl.
   `#seguimiento`, `#gestion-mascotas`, `#lista-mascotas-admin`) y `ingresar()`/`registrarse()`.
+- **Bilingüe ES/EN (13/10/2026):** botón `#btn-idioma` (`🌐 EN`/`🌐 ES`) que alterna español
+  (por defecto) e inglés; recuerda la elección en `localStorage.idioma` y actualiza
+  `document.documentElement.lang`. Textos estáticos con `data-i18n`/`data-i18n-ph`; diccionario
+  `{es,en}` y `t(clave, ...args)` para los dinámicos; `aplicarIdioma()`/`alternarIdioma()`/
+  `inicializarIdioma()`. **No se autodetecta el idioma del sistema** para no romper las pruebas
+  ni la UAT (esperan español); los errores del servidor siguen en español. Verificado en el
+  WebView del APK por CDP.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·

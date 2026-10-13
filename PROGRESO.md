@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-10-13 (Fase 11 — Bilingüe español/inglés, web y APK)
+
+- **Soporte bilingüe (ES/EN)** con botón `#btn-idioma` en la barra (`🌐 EN` / `🌐 ES`).
+  El idioma por defecto es **español** (no se autodetecta el sistema, para no romper las
+  pruebas ni la UAT, que esperan textos en español) y la elección se **recuerda** en
+  `localStorage.idioma`.
+- **Implementación sin dependencias:** textos estáticos marcados con `data-i18n` (contenido) y
+  `data-i18n-ph` (placeholders); un `DICCIONARIO` `{es, en}` en `www/js/script.js` y la función
+  `t(clave, ...args)` para los textos dinámicos. `aplicarIdioma()` recorre el DOM, `alternarIdioma()`
+  cambia de idioma y `inicializarIdioma()` restaura la preferencia; se actualiza
+  `document.documentElement.lang`. Todos los mensajes dinámicos (sesión, postulación, panel,
+  gestion, seguimiento) pasan por `t()`; las cadenas en español que verifican las pruebas/UAT se
+  mantuvieron idénticas. Los errores del servidor (API) permanecen en español.
+- **Verificación:** `npm test` → **18/18 PASA**; `node uat/ejecutar_uat.js` → **16/16 Aceptado**
+  (UAT-11 confirma `lang="es"` por defecto). APK regenerado (**4.138.702 bytes**) e instalado en
+  el emulador `adopta_ya`; verificado por DevTools del WebView que el idioma alterna
+  (`lang` `es`↔`en`, hero, catálogo, botones, placeholders y pie; 3 tarjetas, 5 modales, 7 botones
+  de nav). Capturas: `C:\Users\diego_ojeda\Downloads\adopta_ya_idioma_es.png` y
+  `adopta_ya_idioma_en.png`.
+- **Docs:** `AGENTS.md` §3, `docs/02_ARQUITECTURA.md`, `docs/03_MODULOS.md` (M-02).
+- **Pendiente (humano):** UAT presencial con el refugio (backlog #9); demo web (M-18).
+
+---
+
 ## 2026-10-13 (Fase 10 — Tema claro/oscuro y formularios en modales)
 
 - **Modo claro/oscuro** con botón `#btn-tema` en la barra: sigue la preferencia del sistema

@@ -32,16 +32,17 @@
                 <h1 class="marca-texto">Adopta <strong>Ya</strong></h1>
             </a>
 
-            <p id="sesion" class="sesion">Sin sesión iniciada.</p>
+            <p id="sesion" class="sesion" data-i18n="sesion_ninguna">Sin sesión iniciada.</p>
 
             <nav class="menu">
-                <a href="#mascotas">Mascotas</a>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-postulacion')">Postular</button>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-seguimiento')">Seguimiento</button>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-panel')">Panel</button>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-gestion')">Gestión</button>
-                <button type="button" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')">Iniciar sesión</button>
-                <button type="button" id="btn-tema" class="menu-btn menu-btn--icono" onclick="alternarTema()" aria-label="Cambiar tema">🌙</button>
+                <a href="#mascotas" data-i18n="nav_mascotas">Mascotas</a>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-postulacion')" data-i18n="nav_postular">Postular</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-seguimiento')" data-i18n="nav_seguimiento">Seguimiento</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-panel')" data-i18n="nav_panel">Panel</button>
+                <button type="button" class="menu-btn" onclick="abrirModal('modal-gestion')" data-i18n="nav_gestion">Gestión</button>
+                <button type="button" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')" data-i18n="nav_sesion">Iniciar sesión</button>
+                <button type="button" id="btn-idioma" class="menu-btn menu-btn--icono" onclick="alternarIdioma()" aria-label="Cambiar idioma / Change language">🌐 EN</button>
+                <button type="button" id="btn-tema" class="menu-btn menu-btn--icono" onclick="alternarTema()" aria-label="Cambiar tema / Change theme">🌙</button>
             </nav>
         </div>
     </header>
@@ -49,31 +50,31 @@
     <main>
 
         <section id="inicio" class="inicio">
-            <span class="etiqueta">Adopción responsable</span>
-            <h2>Encuentra a tu nuevo compañero</h2>
+            <span class="etiqueta" data-i18n="hero_etiqueta">Adopción responsable</span>
+            <h2 data-i18n="hero_titulo">Encuentra a tu nuevo compañero</h2>
 
-            <p>
+            <p data-i18n="hero_texto">
                 Conoce mascotas que están esperando una familia
                 que les brinde amor, cuidado y un hogar.
             </p>
 
-            <button onclick="mostrarMascotas()">
+            <button onclick="mostrarMascotas()" data-i18n="hero_boton">
                 Ver mascotas
             </button>
         </section>
 
         <section id="mascotas" class="mascotas">
-            <span class="etiqueta">Catálogo</span>
-            <h2>Mascotas en adopción</h2>
+            <span class="etiqueta" data-i18n="catalogo_etiqueta">Catálogo</span>
+            <h2 data-i18n="catalogo_titulo">Mascotas en adopción</h2>
 
             <div class="contenedor-mascotas">
 
                 <div class="tarjeta">
                     <div class="emoji">🐶</div>
                     <h3>Max</h3>
-                    <p><strong>Edad:</strong> 2 años</p>
-                    <p>Amigable, cariñoso y lleno de energía.</p>
-                    <button onclick="adoptar('Max')">
+                    <p><strong data-i18n="edad_label">Edad:</strong> <span data-i18n="edad_max">2 años</span></p>
+                    <p data-i18n="max_desc">Amigable, cariñoso y lleno de energía.</p>
+                    <button onclick="adoptar('Max')" data-i18n="quiero_adoptarlo">
                         Quiero adoptarlo
                     </button>
                 </div>
@@ -81,9 +82,9 @@
                 <div class="tarjeta">
                     <div class="emoji">🐱</div>
                     <h3>Luna</h3>
-                    <p><strong>Edad:</strong> 1 año</p>
-                    <p>Tranquila, tierna y busca una familia amorosa.</p>
-                    <button onclick="adoptar('Luna')">
+                    <p><strong data-i18n="edad_label">Edad:</strong> <span data-i18n="edad_luna">1 año</span></p>
+                    <p data-i18n="luna_desc">Tranquila, tierna y busca una familia amorosa.</p>
+                    <button onclick="adoptar('Luna')" data-i18n="quiero_adoptarla">
                         Quiero adoptarla
                     </button>
                 </div>
@@ -91,9 +92,9 @@
                 <div class="tarjeta">
                     <div class="emoji">🐶</div>
                     <h3>Rocky</h3>
-                    <p><strong>Edad:</strong> 3 años</p>
-                    <p>Juguetón, obediente y muy cariñoso.</p>
-                    <button onclick="adoptar('Rocky')">
+                    <p><strong data-i18n="edad_label">Edad:</strong> <span data-i18n="edad_rocky">3 años</span></p>
+                    <p data-i18n="rocky_desc">Juguetón, obediente y muy cariñoso.</p>
+                    <button onclick="adoptar('Rocky')" data-i18n="quiero_adoptarlo">
                         Quiero adoptarlo
                     </button>
                 </div>
@@ -103,10 +104,10 @@
         </section>
 
         <section class="responsabilidad">
-            <span class="etiqueta">Compromiso</span>
-            <h2>❤️ Adopta con responsabilidad</h2>
+            <span class="etiqueta" data-i18n="responsabilidad_etiqueta">Compromiso</span>
+            <h2 data-i18n="responsabilidad_titulo">❤️ Adopta con responsabilidad</h2>
 
-            <p>
+            <p data-i18n="responsabilidad_texto">
                 Adoptar significa brindar amor, protección, alimentación,
                 atención veterinaria y un hogar seguro durante toda la vida.
             </p>
@@ -115,20 +116,20 @@
 
                 <div>
                     <span>🏠</span>
-                    <h3>Hogar</h3>
-                    <p>Un espacio seguro y lleno de cariño.</p>
+                    <h3 data-i18n="cuidado_hogar_titulo">Hogar</h3>
+                    <p data-i18n="cuidado_hogar_texto">Un espacio seguro y lleno de cariño.</p>
                 </div>
 
                 <div>
                     <span>🩺</span>
-                    <h3>Salud</h3>
-                    <p>Visitas veterinarias, vacunas y desparasitación.</p>
+                    <h3 data-i18n="cuidado_salud_titulo">Salud</h3>
+                    <p data-i18n="cuidado_salud_texto">Visitas veterinarias, vacunas y desparasitación.</p>
                 </div>
 
                 <div>
                     <span>❤️</span>
-                    <h3>Amor</h3>
-                    <p>Tiempo, paciencia y cuidado todos los días.</p>
+                    <h3 data-i18n="cuidado_amor_titulo">Amor</h3>
+                    <p data-i18n="cuidado_amor_texto">Tiempo, paciencia y cuidado todos los días.</p>
                 </div>
 
             </div>
@@ -142,15 +143,15 @@
             <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-login')" aria-label="Cerrar">✕</button>
 
             <section id="acceso" class="acceso">
-                <span class="etiqueta">Tu cuenta</span>
-                <h2 id="titulo-login">Acceso a tu cuenta</h2>
+                <span class="etiqueta" data-i18n="acceso_etiqueta">Tu cuenta</span>
+                <h2 id="titulo-login" data-i18n="acceso_titulo">Acceso a tu cuenta</h2>
 
                 <div class="formulario">
-                    <input id="acceso-nombre" type="text" placeholder="Nombre (solo registro)">
-                    <input id="acceso-email" type="email" placeholder="Correo electrónico">
-                    <input id="acceso-clave" type="password" placeholder="Contraseña">
-                    <button onclick="ingresar()">Ingresar</button>
-                    <button onclick="registrarse()">Registrarse</button>
+                    <input id="acceso-nombre" type="text" placeholder="Nombre (solo registro)" data-i18n-ph="ph_acceso_nombre">
+                    <input id="acceso-email" type="email" placeholder="Correo electrónico" data-i18n-ph="ph_acceso_email">
+                    <input id="acceso-clave" type="password" placeholder="Contraseña" data-i18n-ph="ph_acceso_clave">
+                    <button onclick="ingresar()" data-i18n="btn_ingresar">Ingresar</button>
+                    <button onclick="registrarse()" data-i18n="btn_registrarse">Registrarse</button>
                 </div>
             </section>
         </div>
@@ -161,25 +162,25 @@
             <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-postulacion')" aria-label="Cerrar">✕</button>
 
             <section id="postulacion" class="postulacion">
-                <span class="etiqueta">Quiero adoptar</span>
-                <h2 id="titulo-postulacion">Formulario de postulación</h2>
+                <span class="etiqueta" data-i18n="postulacion_etiqueta">Quiero adoptar</span>
+                <h2 id="titulo-postulacion" data-i18n="postulacion_titulo">Formulario de postulación</h2>
 
-                <p>
+                <p data-i18n="postulacion_texto">
                     Cuéntanos sobre ti para evaluar la adopción. Al enviar, autorizas el
                     tratamiento de tus datos conforme a la Ley 1581 de 2012.
                 </p>
 
                 <div class="formulario">
-                    <input id="post-nombre" type="text" placeholder="Nombre completo">
-                    <input id="post-email" type="email" placeholder="Correo electrónico">
-                    <input id="post-telefono" type="tel" placeholder="Teléfono">
-                    <input id="post-mascota" type="text" placeholder="Mascota de interés">
-                    <textarea id="post-motivacion" placeholder="¿Por qué quieres adoptar?"></textarea>
+                    <input id="post-nombre" type="text" placeholder="Nombre completo" data-i18n-ph="ph_post_nombre">
+                    <input id="post-email" type="email" placeholder="Correo electrónico" data-i18n-ph="ph_post_email">
+                    <input id="post-telefono" type="tel" placeholder="Teléfono" data-i18n-ph="ph_post_telefono">
+                    <input id="post-mascota" type="text" placeholder="Mascota de interés" data-i18n-ph="ph_post_mascota">
+                    <textarea id="post-motivacion" placeholder="¿Por qué quieres adoptar?" data-i18n-ph="ph_post_motivacion"></textarea>
                     <label class="consentimiento">
                         <input id="post-consentimiento" type="checkbox">
-                        Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012)
+                        <span data-i18n="post_consentimiento">Autorizo el tratamiento de mis datos personales (Ley 1581 de 2012)</span>
                     </label>
-                    <button onclick="enviarPostulacion()">Enviar postulación</button>
+                    <button onclick="enviarPostulacion()" data-i18n="btn_enviar_postulacion">Enviar postulación</button>
                 </div>
 
                 <p id="post-estado"></p>
@@ -192,22 +193,22 @@
             <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-seguimiento')" aria-label="Cerrar">✕</button>
 
             <section id="seguimiento" class="seguimiento">
-                <span class="etiqueta">Post-adopción</span>
-                <h2 id="titulo-seguimiento">Mi seguimiento post-adopción</h2>
+                <span class="etiqueta" data-i18n="seguimiento_etiqueta">Post-adopción</span>
+                <h2 id="titulo-seguimiento" data-i18n="seguimiento_titulo">Mi seguimiento post-adopción</h2>
 
-                <p>
+                <p data-i18n="seguimiento_texto">
                     Si tu adopción fue aprobada, registra evidencias (fotos y notas) durante los
                     primeros meses. El refugio recibe recordatorios a los 30, 60 y 90 días.
                 </p>
 
                 <div class="formulario">
-                    <input id="seg-solicitud" type="number" placeholder="N.º de tu solicitud">
-                    <input id="seg-descripcion" type="text" placeholder="¿Cómo va tu mascota? (nota)">
+                    <input id="seg-solicitud" type="number" placeholder="N.º de tu solicitud" data-i18n-ph="ph_seg_solicitud">
+                    <input id="seg-descripcion" type="text" placeholder="¿Cómo va tu mascota? (nota)" data-i18n-ph="ph_seg_descripcion">
                     <label class="consentimiento">
-                        <span>Foto (opcional):</span>
+                        <span data-i18n="seg_foto_label">Foto (opcional):</span>
                         <input id="seg-foto" type="file" accept="image/*">
                     </label>
-                    <button onclick="registrarEvidencia()">Registrar evidencia</button>
+                    <button onclick="registrarEvidencia()" data-i18n="btn_registrar_evidencia">Registrar evidencia</button>
                 </div>
 
                 <p id="seg-estado"></p>
@@ -222,13 +223,13 @@
             <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-panel')" aria-label="Cerrar">✕</button>
 
             <section id="panel" class="panel">
-                <span class="etiqueta">Refugio</span>
-                <h2 id="titulo-panel">Panel de evaluación (refugio)</h2>
+                <span class="etiqueta" data-i18n="panel_etiqueta">Refugio</span>
+                <h2 id="titulo-panel" data-i18n="panel_titulo">Panel de evaluación (refugio)</h2>
 
-                <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
+                <p id="panel-estado" data-i18n="panel_estado_inicial">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
 
-                <button onclick="cargarSolicitudes()">Cargar solicitudes</button>
-                <button onclick="cargarAlertas()">Cargar alertas de seguimiento</button>
+                <button onclick="cargarSolicitudes()" data-i18n="btn_cargar_solicitudes">Cargar solicitudes</button>
+                <button onclick="cargarAlertas()" data-i18n="btn_cargar_alertas">Cargar alertas de seguimiento</button>
 
                 <div id="lista-solicitudes"></div>
                 <div id="lista-alertas"></div>
@@ -241,50 +242,50 @@
             <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-gestion')" aria-label="Cerrar">✕</button>
 
             <section id="gestion-mascotas" class="gestion-mascotas">
-                <span class="etiqueta">Refugio</span>
-                <h2 id="titulo-gestion">Gestión de mascotas (refugio)</h2>
+                <span class="etiqueta" data-i18n="gestion_etiqueta">Refugio</span>
+                <h2 id="titulo-gestion" data-i18n="gestion_titulo">Gestión de mascotas (refugio)</h2>
 
-                <p>
+                <p data-i18n="gestion_texto">
                     Registra, edita o retira mascotas del catálogo, incluyendo su ficha clínica.
                     Requiere sesión de administrador.
                 </p>
 
                 <div class="formulario">
                     <input id="mascota-id" type="hidden">
-                    <input id="mascota-nombre" type="text" placeholder="Nombre">
+                    <input id="mascota-nombre" type="text" placeholder="Nombre" data-i18n-ph="ph_mascota_nombre">
                     <select id="mascota-especie">
-                        <option value="perro">Perro</option>
-                        <option value="gato">Gato</option>
-                        <option value="otro">Otro</option>
+                        <option value="perro" data-i18n="opt_perro">Perro</option>
+                        <option value="gato" data-i18n="opt_gato">Gato</option>
+                        <option value="otro" data-i18n="opt_otro">Otro</option>
                     </select>
-                    <input id="mascota-edad" type="text" placeholder="Edad (ej. 2 años)">
-                    <input id="mascota-emoji" type="text" placeholder="Emoji (ej. 🐶)">
+                    <input id="mascota-edad" type="text" placeholder="Edad (ej. 2 años)" data-i18n-ph="ph_mascota_edad">
+                    <input id="mascota-emoji" type="text" placeholder="Emoji (ej. 🐶)" data-i18n-ph="ph_mascota_emoji">
                     <select id="mascota-estado">
-                        <option value="disponible">Disponible</option>
-                        <option value="en_revision">En revisión</option>
-                        <option value="adoptado">Adoptado</option>
+                        <option value="disponible" data-i18n="opt_disponible">Disponible</option>
+                        <option value="en_revision" data-i18n="opt_en_revision">En revisión</option>
+                        <option value="adoptado" data-i18n="opt_adoptado">Adoptado</option>
                     </select>
-                    <input id="mascota-salud" type="text" placeholder="Salud (ficha clínica)">
-                    <input id="mascota-vacunas" type="text" placeholder="Vacunas">
+                    <input id="mascota-salud" type="text" placeholder="Salud (ficha clínica)" data-i18n-ph="ph_mascota_salud">
+                    <input id="mascota-vacunas" type="text" placeholder="Vacunas" data-i18n-ph="ph_mascota_vacunas">
                     <label class="consentimiento">
                         <input id="mascota-esterilizado" type="checkbox">
-                        Esterilizado
+                        <span data-i18n="label_esterilizado">Esterilizado</span>
                     </label>
-                    <textarea id="mascota-descripcion" placeholder="Descripción"></textarea>
-                    <button onclick="guardarMascota()">Guardar mascota</button>
-                    <button onclick="limpiarFormularioMascota()">Limpiar</button>
+                    <textarea id="mascota-descripcion" placeholder="Descripción" data-i18n-ph="ph_mascota_descripcion"></textarea>
+                    <button onclick="guardarMascota()" data-i18n="btn_guardar_mascota">Guardar mascota</button>
+                    <button onclick="limpiarFormularioMascota()" data-i18n="btn_limpiar">Limpiar</button>
                 </div>
 
                 <p id="gestion-estado"></p>
 
-                <button onclick="cargarMascotasAdmin()">Cargar mascotas</button>
+                <button onclick="cargarMascotasAdmin()" data-i18n="btn_cargar_mascotas">Cargar mascotas</button>
                 <div id="lista-mascotas-admin"></div>
             </section>
         </div>
     </div>
 
     <footer>
-        <p>🐾 ADOPTA YA — Una segunda oportunidad comienza contigo.</p>
+        <p data-i18n="footer">🐾 ADOPTA YA — Una segunda oportunidad comienza contigo.</p>
     </footer>
 
     <script src="js/script.js"></script>
