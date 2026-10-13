@@ -6,6 +6,24 @@
 
 ---
 
+## 2026-10-12 (Fase 3 — Defectos de la simulación UAT)
+
+- **D-001 (Medio) corregido:** el formulario de postulación ahora muestra el **número de
+  solicitud** creado (`enviarPostulacion` → `#post-estado`).
+- **D-002 (Bajo) corregido:** el panel de evaluación captura el **motivo del rechazo**
+  (`cambiarEstado` pide la nota) y la **tarjeta de la solicitud** la muestra con
+  `ultimaNota()` + estilos `.nota-estado` (nueva regla en `www/css/style.css`).
+- **Verificación:** `npm run sync` OK; `npm test` → **17/17 PASA**. End-to-end con la API:
+  postulación (201 con `id`) y rechazo con nota (el historial y el listado devuelven la
+  nota) → 5/5 OK.
+- Backlog #9 (`docs/03_MODULOS.md`) sigue **◐** (kit + simulación hechos; falta la sesión
+  real con el refugio), pero los dos defectos hallados en la simulación quedan resueltos.
+
+**Siguiente paso:** ejecutar la UAT real con el refugio y/o APK (M-18, bloqueado sin Android
+SDK/JDK 17).
+
+---
+
 ## 2026-10-12 (Fase 2 — UAT y línea base de tiempos)
 
 - **Kit de UAT creado:** `docs/04_UAT.md` (plan de aceptación con el refugio: objetivo,

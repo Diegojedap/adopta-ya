@@ -4,7 +4,7 @@
     "req": "REQ-04",
     "desc": "Recursos CSS/JS de index.html resuelven con mayúsculas exactas",
     "resultado": "PASA",
-    "detalle": "referencias: css/style.css, js/script.js; carpetas reales en www/: css, js"
+    "detalle": "referencias: css/style.css, js/script.js; carpetas reales en www/: css, img, js"
   },
   {
     "id": "P-02",
@@ -95,7 +95,7 @@
     "req": "REQ-04",
     "desc": "Existe un APK debug generado",
     "resultado": "PASA",
-    "detalle": "3.93 MB, 2026-10-12"
+    "detalle": "3.93 MB, 2026-10-08"
   },
   {
     "id": "P-15",

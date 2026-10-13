@@ -120,3 +120,6 @@ produce defecto Bloqueante; de lo contrario, se corrige y se repite el escenario
   prueba con usuarios reales.
 - La existencia de los artefactos UAT se verifica con la prueba **P-17** de la suite
   (`test_estatico_adopta_ya.js`).
+- De la simulación se levantaron dos defectos que **ya fueron corregidos** en el prototipo
+  (12/10/2026): **D-001** (mostrar el n.º de solicitud creado tras postular) y **D-002**
+  (mostrar la nota de rechazo en la tarjeta del panel, con captura del motivo al rechazar).

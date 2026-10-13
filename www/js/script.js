@@ -130,12 +130,23 @@ function enviarPostulacion() {
         .then(function (respuesta) { return respuesta.json(); })
         .then(function (datos) {
             if (etiqueta) etiqueta.textContent = (datos && datos.id)
-                ? "Postulación enviada. Estado: " + datos.estado
+                ? "Postulación enviada. N.º de solicitud: " + datos.id + " (estado: " + datos.estado + ")"
                 : "No se pudo enviar la postulación.";
         })
         .catch(function () {
             if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
         });
+}
+
+function ultimaNota(s) {
+    if (!s) return "";
+    if (s.nota) return s.nota;
+    if (Array.isArray(s.historial)) {
+        for (let i = s.historial.length - 1; i >= 0; i--) {
+            if (s.historial[i] && s.historial[i].nota) return s.historial[i].nota;
+        }
+    }
+    return "";
 }
 
 function tarjetaSolicitud(s) {
@@ -146,11 +157,13 @@ function tarjetaSolicitud(s) {
     } else if (s.estado === "aprobada") {
         botones = '<button onclick="descargarContrato(' + s.id + ')">Descargar contrato</button>';
     }
+    const nota = ultimaNota(s);
     return '<div class="solicitud">' +
         '<strong>' + (s.mascota || ("#" + s.mascota_id)) + '</strong> · ' + s.estado +
         '<br>' + (s.solicitante_nombre || "Sin datos") +
         (s.solicitante_email ? ' (' + s.solicitante_email + ')' : '') +
         (s.motivacion ? '<br>' + s.motivacion : '') +
+        (nota ? '<div class="nota-estado">📝 ' + nota + '</div>' : '') +
         '<div class="acciones">' + botones + '</div>' +
         '</div>';
 }
@@ -182,10 +195,16 @@ function cargarSolicitudes() {
 function cambiarEstado(id, estado) {
     let token = null;
     try { token = localStorage.getItem("token"); } catch (e) {}
+    const cuerpo = { estado: estado };
+    if (estado === "rechazada") {
+        const motivo = window.prompt("Motivo del rechazo (se mostrará al solicitante):", "");
+        if (motivo === null) return;
+        if (motivo.trim()) cuerpo.nota = motivo.trim();
+    }
     fetch(API_BASE + "/solicitudes/" + id + "/estado", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
-        body: JSON.stringify({ estado: estado })
+        body: JSON.stringify(cuerpo)
     }).then(cargarSolicitudes).catch(function () {});
 }
 
