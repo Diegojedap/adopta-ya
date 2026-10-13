@@ -60,7 +60,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 └── node_modules/                  ← no versionada
 ```
 
-## 3. Estado verificado (12/10/2026)
+## 3. Estado verificado (13/10/2026)
 
 - **Pruebas:** `npm test` → **PASA 18 / FALLA 0** de 18 (tras `npm run sync`).
   - P-09 ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
@@ -74,7 +74,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
     `android/.../assets/public/` está en `.gitignore`**, así que en un clon nuevo hay que
     correr `npm run sync` para que P-13 no se omita).
 - **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
-  M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
+  M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo
+  (✅ rediseño teal + coral 13/10/2026) ·
   M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
   M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) · 
   M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
@@ -89,6 +90,11 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   13/10/2026** con `node uat/ejecutar_uat.js` (jsdom + API local): **16/16 Aceptado** en
   `docs/uat/resultados_simulacion_2026-10-13.csv`, acta `docs/uat/acta_uat_2026-10-13.md`
   (no sustituye la sesión con el refugio, aún pendiente).
+- **Diseño (13/10/2026):** rediseño visual con paleta **teal (`#0f766e`) + coral (`#f97316`)** en
+  variables CSS (`:root` de `www/css/style.css`); barra de navegación pegajosa, hero con
+  degradado, tarjetas del catálogo con hover, formularios con foco e insignias recoloreadas.
+  Se pidió que la web y el APK quedaran «más atractivos y profesionales». APK regenerado e
+  instalado/probado en el emulador `adopta_ya`.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·

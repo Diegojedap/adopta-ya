@@ -35,12 +35,12 @@ la Entrega 3, no defectos ocultos del prototipo actual.
 
 | # | Funcionalidad | Evidencia |
 |---|---|---|
-| 1 | Página de inicio con encabezado, propuesta y CTA | `www/index.html:13-31` |
-| 2 | Catálogo de 3 mascotas (Max, Luna, Rocky) con nombre, edad, descripción y botón | `www/index.html:33-71` (P-04) |
-| 3 | Navegación con desplazamiento suave al catálogo | `www/js/script.js:1-7` (P-08) |
-| 4 | Interacción de adopción: mensaje de agradecimiento con el nombre de la mascota | `www/js/script.js:9-14` (P-06) |
-| 5 | Sección informativa de responsabilidad (hogar / salud / amor) | `www/index.html:73-104` |
-| 6 | Diseño responsive (media query ≤700 px, viewport, `lang="es"`) | `www/css/style.css:175-193` (P-02, P-03) |
+| 1 | Página de inicio con encabezado, propuesta y CTA | `www/index.html` (barra de navegación + hero `.inicio`) |
+| 2 | Catálogo de 3 mascotas (Max, Luna, Rocky) con nombre, edad, descripción y botón | `www/index.html` (`#mascotas`) (P-04) |
+| 3 | Navegación con desplazamiento suave al catálogo | `www/js/script.js` (`mostrarMascotas`) (P-08) |
+| 4 | Interacción de adopción: mensaje de agradecimiento con el nombre de la mascota | `www/js/script.js` (`adoptar`) (P-06) |
+| 5 | Sección informativa de responsabilidad (hogar / salud / amor) | `www/index.html` (`.responsabilidad`) |
+| 6 | Diseño responsive (media query ≤700 px, viewport, `lang="es"`) | `www/css/style.css` (`@media (max-width: 700px)`) (P-02, P-03) |
 | 7 | Empaquetado Android con Capacitor 8 y proyecto Gradle | `android/`, `capacitor.config.json` (P-13) |
 | 8 | APK debug compilado (~4,1 MB, regenerado 13/10/2026) | `android/app/build/outputs/apk/debug/app-debug.apk` (P-14) |
 | 9 | Suite de pruebas automatizadas P-01…P-14 ejecutable con `npm test` | `test_estatico_adopta_ya.js`, `resultados_pruebas.json` |

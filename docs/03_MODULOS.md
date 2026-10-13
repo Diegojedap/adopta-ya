@@ -13,19 +13,19 @@ de código.
 
 ### M-01 · Portada e información (✅ Implementado)
 Página de bienvenida con propuesta de valor y llamado a la acción.
-- **Archivos:** `www/index.html:13-31` (header + sección `.inicio`)
+- **Archivos:** `www/index.html` (barra de navegación `.barra-navegacion` + hero `.inicio`)
 - **Funciona:** encabezado, texto de propuesta, botón «Ver mascotas».
 - **Requisitos:** — (soporte de UX para REQ-04)
 
 ### M-02 · Navegación (`mostrarMascotas()`) (✅ Implementado)
 Desplazamiento suave hasta el catálogo.
-- **Archivos:** `www/js/script.js:1-7`, botón `www/index.html:28-30`
+- **Archivos:** `www/js/script.js` (`mostrarMascotas`), botón «Ver mascotas» del hero en `www/index.html`
 - **Pruebas:** P-08 ✅
 - **Requisitos:** REQ-04 (usabilidad de acceso al catálogo)
 
 ### M-03 · Catálogo de mascotas (◐ Parcial)
 Muestra tarjetas con emoji, nombre, edad, descripción y botón de adopción.
-- **Archivos:** `www/index.html:33-71`; `www/js/script.js` (`cargarMascotas`, `pintarMascotas`); estilos `www/css/style.css:76-121`
+- **Archivos:** `www/index.html` (`#mascotas`); `www/js/script.js` (`cargarMascotas`, `pintarMascotas`); estilos `www/css/style.css` (`.mascotas`, `.contenedor-mascotas`, `.tarjeta`)
 - **Funciona:** el catálogo se carga con `fetch` desde `GET /mascotas` de la API; si la
   API no responde, se conservan las 3 tarjetas estáticas (Max, Luna, Rocky) de reserva.
 - **Limitación:** sin filtro por especie ni detalle ampliado; la ficha clínica y el estado
@@ -35,7 +35,7 @@ Muestra tarjetas con emoji, nombre, edad, descripción y botón de adopción.
 
 ### M-04 · Interacción de adopción (`adoptar(nombre)`) (◐ Parcial)
 Al pulsar «Quiero adoptar…» se muestra un mensaje y se registra una solicitud.
-- **Archivos:** `www/js/script.js` (`adoptar`); botones `www/index.html:44-66`
+- **Archivos:** `www/js/script.js` (`adoptar`); botones de las tarjetas en `www/index.html` (`#mascotas`)
 - **Funciona:** confirmación visual (P-06 ✅) y `POST /solicitudes` que crea la solicitud
   con estado «en_revision» (P-07 ✅).
 - **Limitación:** sin formulario de postulación ni datos del adoptante (M-11 pendiente);
@@ -44,12 +44,12 @@ Al pulsar «Quiero adoptar…» se muestra un mensaje y se registra una solicitu
 
 ### M-05 · Responsabilidad en la adopción (✅ Implementado)
 Sección educativa sobre hogar, salud y amor; refuerza el mensaje de campaña.
-- **Archivos:** `www/index.html:73-104`; estilos `www/css/style.css:124-163`
+- **Archivos:** `www/index.html` (`.responsabilidad`); estilos `www/css/style.css` (`.responsabilidad`, `.cuidados`)
 - **Requisitos:** — (comunicación, complementa REQ-03)
 
 ### M-06 · Diseño responsivo (✅ Implementado)
 Viewport, `lang="es"` y media query para pantallas ≤700 px.
-- **Archivos:** `www/index.html:4-5`, `www/css/style.css:175-193`
+- **Archivos:** `www/index.html` (meta viewport y `lang="es"`), `www/css/style.css` (`@media (max-width: 700px)`)
 - **Pruebas:** P-02 ✅ · P-03 ✅
 - **Requisitos:** REQ-04
 

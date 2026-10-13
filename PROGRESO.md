@@ -6,6 +6,33 @@
 
 ---
 
+## 2026-10-13 (Fase 9 — Rediseño visual: teal + coral, web y APK)
+
+- **Interfaz rediseñada** para un aspecto más atractivo y profesional, con una paleta
+  nueva en **variables CSS**: primario **teal `#0f766e`**, acento **coral `#f97316`**,
+  fondos menta claros y textos verde-oscuro. Los colores viven en `:root`, así que se
+  cambian en un solo lugar.
+- **`www/css/style.css` reescrito** (barra de navegación pegajosa, hero con degradado y
+  marca de agua, tarjetas del catálogo con cabecera degradada y hover, formularios con
+  anillo de foco, insignias de estado recoloreadas, pie oscuro, animación de entrada con
+  `prefers-reduced-motion`).
+- **`www/index.html` actualizado**: barra de navegación con la marca y enlaces de anclaje,
+  hero con etiqueta («Adopción responsable») y encabezados de sección tipo *eyebrow*.
+  Se conservaron **todos los IDs, las 3 tarjetas `.tarjeta`, el `viewport`, `lang="es"` y
+  la media query**, de modo que P-01…P-18 y el arnés UAT siguen válidos.
+- **Verificación:** `npm test` → **18/18 PASA**; `node uat/ejecutar_uat.js` →
+  **16/16 Aceptado** (línea base regenerada: 100 %, promedio 0,1 s); hashes de
+  `www/` ↔ `android/.../assets/public/` idénticos.
+- **APK regenerado** (13/10/2026, ~4,14 MB) e **instalado y probado en el emulador**
+  `adopta_ya` (Android 16, x86_64). Capturas guardadas en
+  `C:\Users\diego_ojeda\Downloads\adopta_ya_final_hero.png` y
+  `adopta_ya_final_mascotas.png`.
+- **Docs actualizadas:** `docs/02_ARQUITECTURA.md` (paleta), `docs/03_MODULOS.md` y
+  `docs/01_INFORME_DE_AUDITORIA.md` (referencias simbólicas en vez de líneas frágiles).
+- **Pendiente (humano):** UAT presencial con el refugio (backlog #9); demo web (M-18).
+
+---
+
 ## 2026-10-13 (Fase 8 — Kit de la sesión UAT real con el refugio)
 
 - **Material de la sesión presencial creado en `docs/uat/`:**

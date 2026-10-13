@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="¡ADOPTA YA! Conecta refugios y fundaciones de animales con adoptantes responsables. Adopta con amor y haz seguimiento post-adopción.">
+    <meta name="theme-color" content="#0f766e">
     <title>Adopta Ya</title>
 
     <link rel="stylesheet" href="css/style.css">
@@ -10,14 +12,25 @@
 
 <body>
 
-    <header>
-        <h1>🐾 ADOPTA YA</h1>
-        <p>Encuentra un amigo que necesita un hogar</p>
+    <header class="barra-navegacion">
+        <div class="barra-contenido">
+            <a class="marca" href="#inicio">
+                <span class="marca-icono">🐾</span>
+                <h1 class="marca-texto">Adopta <strong>Ya</strong></h1>
+            </a>
+            <nav class="menu">
+                <a href="#mascotas">Mascotas</a>
+                <a href="#postulacion">Postular</a>
+                <a href="#seguimiento">Seguimiento</a>
+                <a href="#panel">Panel</a>
+            </nav>
+        </div>
     </header>
 
     <main>
 
-        <section class="inicio">
+        <section id="inicio" class="inicio">
+            <span class="etiqueta">Adopción responsable</span>
             <h2>Encuentra a tu nuevo compañero</h2>
 
             <p>
@@ -31,6 +44,7 @@
         </section>
 
         <section id="acceso" class="acceso">
+            <span class="etiqueta">Tu cuenta</span>
             <h2>Acceso a tu cuenta</h2>
 
             <p id="sesion">Sin sesión iniciada.</p>
@@ -45,7 +59,7 @@
         </section>
 
         <section id="mascotas" class="mascotas">
-
+            <span class="etiqueta">Catálogo</span>
             <h2>Mascotas en adopción</h2>
 
             <div class="contenedor-mascotas">
@@ -85,6 +99,7 @@
         </section>
 
         <section id="postulacion" class="postulacion">
+            <span class="etiqueta">Quiero adoptar</span>
             <h2>Formulario de postulación</h2>
 
             <p>
@@ -109,6 +124,7 @@
         </section>
 
         <section id="seguimiento" class="seguimiento">
+            <span class="etiqueta">Post-adopción</span>
             <h2>Mi seguimiento post-adopción</h2>
 
             <p>
@@ -132,6 +148,7 @@
         </section>
 
         <section id="panel" class="panel">
+            <span class="etiqueta">Refugio</span>
             <h2>Panel de evaluación (refugio)</h2>
 
             <p id="panel-estado">Inicia sesión como administrador y pulsa «Cargar solicitudes».</p>
@@ -144,6 +161,7 @@
         </section>
 
         <section id="gestion-mascotas" class="gestion-mascotas">
+            <span class="etiqueta">Refugio</span>
             <h2>Gestión de mascotas (refugio)</h2>
 
             <p>
@@ -184,7 +202,7 @@
         </section>
 
         <section class="responsabilidad">
-
+            <span class="etiqueta">Compromiso</span>
             <h2>❤️ Adopta con responsabilidad</h2>
 
             <p>

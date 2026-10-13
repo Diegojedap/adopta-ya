@@ -1,11 +1,11 @@
 {
   "resumen": {
     "fuente": "docs/uat/resultados_simulacion_2026-10-13.csv",
-    "generado_en": "2026-10-13T15:54:13.286Z",
+    "generado_en": "2026-10-13T20:31:33.891Z",
     "total_ejecuciones": 16,
     "escenarios_evaluados": 16,
     "porcentaje_exito_global": 100,
-    "tiempo_prom_global_seg": 0.2,
+    "tiempo_prom_global_seg": 0.1,
     "defectos": []
   },
   "escenarios": [
@@ -64,9 +64,9 @@
       "ejecuciones": 1,
       "exitos": 1,
       "porcentaje_exito": 100,
-      "tiempo_min_seg": 0.3,
-      "tiempo_prom_seg": 0.3,
-      "tiempo_max_seg": 0.3,
+      "tiempo_min_seg": 0.2,
+      "tiempo_prom_seg": 0.2,
+      "tiempo_max_seg": 0.2,
       "defectos": []
     },
     {
@@ -76,9 +76,9 @@
       "ejecuciones": 1,
       "exitos": 1,
       "porcentaje_exito": 100,
-      "tiempo_min_seg": 0.2,
-      "tiempo_prom_seg": 0.2,
-      "tiempo_max_seg": 0.2,
+      "tiempo_min_seg": 0.1,
+      "tiempo_prom_seg": 0.1,
+      "tiempo_max_seg": 0.1,
       "defectos": []
     },
     {
@@ -124,9 +124,9 @@
       "ejecuciones": 1,
       "exitos": 1,
       "porcentaje_exito": 100,
-      "tiempo_min_seg": 0.2,
-      "tiempo_prom_seg": 0.2,
-      "tiempo_max_seg": 0.2,
+      "tiempo_min_seg": 0.1,
+      "tiempo_prom_seg": 0.1,
+      "tiempo_max_seg": 0.1,
       "defectos": []
     },
     {
