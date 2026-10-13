@@ -39,7 +39,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── adopta-ya.code-workspace       ← espacio VS Code (conexión SQLTools MySQL local)
 ├── uat/
-│   └── medir_linea_base.js        ← calcula la línea base de tiempos de la UAT (npm run uat:medir)
+│   ├── medir_linea_base.js      ← calcula la línea base de tiempos de la UAT (npm run uat:medir)
+│   └── ejecutar_uat.js          ← ejecuta y cronometra los 16 escenarios en el frontend real (jsdom + API)
 ├── docs/
 │   ├── 01_INFORME_DE_AUDITORIA.md ← hallazgos F-01…F-08, severidad y estado
 │   ├── 02_ARQUITECTURA.md         ← arquitectura actual vs. objetivo
@@ -84,8 +85,10 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-15 alertas (◐ hitos 30/60/90 calculados, sin scheduler/correo) ·
   M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
 - **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (16 escenarios UAT-01…UAT-16 y plantilla);
-  línea base de tiempos reproducible con `npm run uat:medir`; simulación opencode en
-  `docs/uat/resultados_simulacion_2026-10-13.csv` (no sustituye la sesión con el refugio).
+  línea base de tiempos reproducible con `npm run uat:medir`; **simulación EJECUTADA el
+  13/10/2026** con `node uat/ejecutar_uat.js` (jsdom + API local): **16/16 Aceptado** en
+  `docs/uat/resultados_simulacion_2026-10-13.csv`, acta `docs/uat/acta_uat_2026-10-13.md`
+  (no sustituye la sesión con el refugio, aún pendiente).
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
@@ -122,6 +125,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 npm test           # suite P-01…P-18; actualiza resultados_pruebas.json (esperado 18/18)
 npm start          # API local en http://localhost:3000 (mascotas + solicitudes)
 npm run uat:medir  # calcula la línea base de tiempos de la UAT → docs/uat/linea_base_tiempos.json
+node uat/ejecutar_uat.js  # re-ejecuta y cronometra los 16 escenarios (frontend jsdom + API limpia) → CSV
 npm run sync       # cap sync android (coopia www/ → android/.../assets/public/)
 npm run open:android  # abrir proyecto en Android Studio (no disponible en esta máquina)
 npx serve www      # servir el front-end localmente

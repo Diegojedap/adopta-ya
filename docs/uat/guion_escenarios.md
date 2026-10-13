@@ -114,3 +114,15 @@ Usar `docs/uat/plantilla_registro.csv` (una fila por escenario y participante). 
 ```powershell
 npm run uat:medir   # genera docs/uat/linea_base_tiempos.json
 ```
+
+### Ejecución reproducida (simulación opencode)
+
+Para re-ejecutar la simulación del frontend real (jsdom + API local), con API limpia
+(`npm start`) y store recién arrancado:
+
+```powershell
+node uat/ejecutar_uat.js   # reescribe docs/uat/resultados_simulacion_2026-10-13.csv (16 escenarios, cronometrados)
+```
+
+La simulación verifica además los códigos HTTP esperados y asarta el resultado persistente
+(lista del panel, catálogo, API). No sustituye la sesión humana con el refugio.

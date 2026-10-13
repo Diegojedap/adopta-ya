@@ -279,7 +279,7 @@ function registrarEvidencia() {
             .then(function (respuesta) { return respuesta.json(); })
             .then(function (datos) {
                 if (datos && datos.id) {
-                    if (etiqueta) etiqueta.textContent = "Evidencia registrada (día " + (datos.dia || "?") + ").";
+                    if (etiqueta) etiqueta.textContent = "Evidencia registrada (día " + (datos.dia ?? "?") + ").";
                     cargarEvidencias(id);
                 } else if (datos && datos.error) {
                     if (etiqueta) etiqueta.textContent = datos.error;
@@ -298,7 +298,7 @@ function tarjetaEvidencia(e) {
         ? '<div class="evidencia-foto"><img src="' + e.url + '" alt="Evidencia del seguimiento"></div>'
         : "";
     return '<div class="evidencia">' +
-        '<strong>Día ' + (e.dia || "?") + '</strong> · ' +
+        '<strong>Día ' + (e.dia ?? "?") + '</strong> · ' +
         new Date(e.creado_en || Date.now()).toLocaleDateString() +
         (e.descripcion ? '<br>' + e.descripcion : '') +
         foto +

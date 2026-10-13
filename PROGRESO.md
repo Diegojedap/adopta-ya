@@ -6,6 +6,26 @@
 
 ---
 
+## 2026-10-13 (Fase 7 — UAT simulada EJECUTADA: 16/16 en el frontend real)
+
+- **La simulación pasó de tabla manual a ejecución real:** nuevo `uat/ejecutar_uat.js`
+  (jsdom + fetch enrutado a la API local) que **ejecuta y cronometra los 16 escenarios**
+  sobre `www/index.html` + `www/js/script.js` reales y verifica además los códigos HTTP.
+  Resultado: **16/16 Aceptado** (2026-10-13, sesión `REFUGIO-SIM`), CSV reescrito
+  `docs/uat/resultados_simulacion_2026-10-13.csv`, línea base regenerada (`npm run
+  uat:medir` → 100 %, promedio 0,2 s) y acta `docs/uat/acta_uat_2026-10-13.md`.
+  Comando reproducible: `node uat/ejecutar_uat.js` (requiere API limpia).
+- **Defecto detectado y corregido en la misma jornada (D-003, menor):** la evidencia del
+  **día 0** se mostraba como «?» (`dia || "?"` con 0 falsy) en `registrarEvidencia()` y
+  `tarjetaEvidencia()` de `www/js/script.js`; corregido con `dia ?? "?"`. **APK regenerado**
+  sobre la fuente corregida (13/10/2026, 4.132.765 bytes) y `npm run sync` aplicado;
+  `npm test` → **18/18 PASA**.
+- **Pendiente (humano):** la UAT presencial con el refugio sigue pendiente (backlog #9).
+
+**Siguiente paso:** publicar la demo web (M-18) y/o ejecutar la UAT real con el refugio.
+
+---
+
 ## 2026-10-13 (Fase 6 — UAT: kit ampliado al CRUD de mascotas, 16 escenarios)
 
 - **Kit UAT ampliado a 16 escenarios:** se añadieron **UAT-13…UAT-16** para cubrir el CRUD de

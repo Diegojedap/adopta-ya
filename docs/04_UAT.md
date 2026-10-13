@@ -135,3 +135,13 @@ produce defecto Bloqueante; de lo contrario, se corrige y se repite el escenario
   **CRUD de mascotas con ficha clínica (M-10)**; se validaron de punta a punta contra la API
   local (201 al crear, 200 al editar, 200 al eliminar, 404 posterior, 400 de validación, 401
   sin sesión y 403 con rol adoptante) y la línea base se regeneró con los 16 escenarios.
+- El **13/10/2026** la simulación pasó de tableau manual a **ejecución real del frontend**
+  con `node uat/ejecutar_uat.js` (jsdom + fetch enrutado a la API local): los **16 escenarios
+  se ejecutan de verdad y cronometrados**, reescribiendo
+  `docs/uat/resultados_simulacion_2026-10-13.csv` (16/16 «Aceptado»). El script es
+  reproducible y verifica también los códigos HTTP (201/200/404/400/401/403). La **sesión con
+  el refugio sigue siendo el paso humano pendiente** (`docs/uat/acta_uat_2026-10-13.md` es el
+  acta de la simulación, no del refugio).
+- Durante esa simulación se detectó y corrigió un **defecto menor** en `www/js/script.js`:
+  la evidencia del **día 0** se mostraba como «?» (por `dia || "?"` con 0 como falsy); con
+  `dia ?? "?"` se muestra «Día 0». El APK se regeneró sobre la fuente corregida.
