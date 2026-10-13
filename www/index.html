@@ -40,7 +40,8 @@
                 <button type="button" class="menu-btn" onclick="abrirModal('modal-seguimiento')" data-i18n="nav_seguimiento">Seguimiento</button>
                 <button type="button" class="menu-btn" onclick="abrirModal('modal-panel')" data-i18n="nav_panel">Panel</button>
                 <button type="button" class="menu-btn" onclick="abrirModal('modal-gestion')" data-i18n="nav_gestion">Gestión</button>
-                <button type="button" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')" data-i18n="nav_sesion">Iniciar sesión</button>
+                <button type="button" id="btn-entrar" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')" data-i18n="nav_sesion">Iniciar sesión</button>
+                <button type="button" id="btn-salir" class="menu-btn" onclick="cerrarSesion()" data-i18n="nav_salir" hidden>Cerrar sesión</button>
                 <button type="button" id="btn-idioma" class="menu-btn menu-btn--icono" onclick="alternarIdioma()" aria-label="Cambiar idioma / Change language">🌐 EN</button>
                 <button type="button" id="btn-tema" class="menu-btn menu-btn--icono" onclick="alternarTema()" aria-label="Cambiar tema / Change theme">🌙</button>
             </nav>

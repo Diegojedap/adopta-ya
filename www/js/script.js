@@ -12,6 +12,7 @@ const DICCIONARIO = {
         nav_panel: "Panel",
         nav_gestion: "Gestión",
         nav_sesion: "Iniciar sesión",
+        nav_salir: "Cerrar sesión",
         sesion_ninguna: "Sin sesión iniciada.",
         sesion_iniciada: function (nombre, rol) { return "Sesión iniciada: " + nombre + " (" + rol + ")"; },
 
@@ -165,6 +166,7 @@ const DICCIONARIO = {
         nav_panel: "Panel",
         nav_gestion: "Manage",
         nav_sesion: "Sign in",
+        nav_salir: "Sign out",
         sesion_ninguna: "Not signed in.",
         sesion_iniciada: function (nombre, rol) { return "Signed in: " + nombre + " (" + rol + ")"; },
 
@@ -371,10 +373,22 @@ function adoptar(nombre) {
 function mostrarSesion(usuario) {
     usuarioActual = usuario || null;
     const etiqueta = document.getElementById("sesion");
-    if (!etiqueta) return;
-    etiqueta.textContent = usuario
-        ? t("sesion_iniciada", usuario.nombre, usuario.rol)
-        : t("sesion_ninguna");
+    if (etiqueta) {
+        etiqueta.textContent = usuario
+            ? t("sesion_iniciada", usuario.nombre, usuario.rol)
+            : t("sesion_ninguna");
+    }
+    const entrar = document.getElementById("btn-entrar");
+    if (entrar) entrar.hidden = !!usuario;
+    const salir = document.getElementById("btn-salir");
+    if (salir) salir.hidden = !usuario;
+}
+
+function cerrarSesion() {
+    try { localStorage.removeItem("token"); } catch (e) {}
+    usuarioActual = null;
+    mostrarSesion(null);
+    cerrarModal("modal-login");
 }
 
 function ingresar() {

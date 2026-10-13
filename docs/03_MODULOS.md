@@ -80,9 +80,10 @@ App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y
 ### M-09 · Autenticación y roles (◐ Prototipo)
 Registro, login con hashing y control de acceso por JWT; roles administrador/adoptante/veterinario.
 - **Archivos:** `server/index.js` (`/auth/registro`, `/auth/login`, `/auth/perfil`);
-  UI `www/index.html` + `www/js/script.js` (`ingresar`, `registrarse`, `mostrarSesion`).
+  UI `www/index.html` + `www/js/script.js` (`ingresar`, `registrarse`, `mostrarSesion`, `cerrarSesion`).
 - **Funciona:** hash con `bcryptjs` (10 rondas) y token `jsonwebtoken` (24 h); admin de demo
-  `admin@adoptaya.local` / `admin123`.
+  `admin@adoptaya.local` / `admin123`; **cerrar sesión** (`#btn-salir`, visible solo con sesión
+  activa) que borra el token de `localStorage` y vuelve a «Sin sesión iniciada».
 - **Limitación:** usuarios en memoria (no persisten en MySQL) y sin panel por rol todavía.
 - **Pruebas:** P-09 ✅
 - **Requisitos:** REQ-05

@@ -6,6 +6,25 @@
 
 ---
 
+## 2026-10-13 (Fase 12 — Cerrar sesión)
+
+- **Botón «Cerrar sesión»** (`#btn-salir`) en la barra de navegación, visible **solo** cuando hay
+  sesión activa; el botón «Iniciar sesión» (`#btn-entrar`) se oculta en ese caso y vuelve a
+  mostrarse al salir. Nueva función `cerrarSesion()` en `www/js/script.js`: borra
+  `localStorage.token`, reinicia la sesión (`mostrarSesion(null)`) y cierra el modal de login.
+  `mostrarSesion()` ahora también alterna la visibilidad de ambos botones.
+- **Bilingüe:** clave `nav_salir` («Cerrar sesión» / «Sign out») en el diccionario; se traduce
+  automáticamente porque `aplicarIdioma()` recorre `[data-i18n]` y recalcula la sesión.
+- **Verificación:** `npm test` → **18/18 PASA**; `node uat/ejecutar_uat.js` → **16/16 Aceptado**.
+  APK regenerado (**4.138.845 bytes**) e instalado en `adopta_ya`; verificado por DevTools del
+  WebView que con sesión `#btn-salir` se muestra (y `#btn-entrar` se oculta) y que `cerrarSesion()`
+  borra `localStorage.token` y restaura «Sin sesión iniciada». Capturas:
+  `C:\Users\diego_ojeda\Downloads\adopta_ya_cerrar_sesion_visible.png` y
+  `adopta_ya_cerrar_sesion_hecho.png`.
+- **Docs:** `docs/03_MODULOS.md` (M-09), `AGENTS.md`.
+
+---
+
 ## 2026-10-13 (Fase 11 — Bilingüe español/inglés, web y APK)
 
 - **Soporte bilingüe (ES/EN)** con botón `#btn-idioma` en la barra (`🌐 EN` / `🌐 ES`).

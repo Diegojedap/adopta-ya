@@ -78,7 +78,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo
   (✅ rediseño teal + coral y tema claro/oscuro 13/10/2026) ·
   M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
-  M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) · 
+  M-09 auth/roles (◐ login/registro/JWT/cerrar sesión, usuarios en memoria) · 
   M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
   M-11 formulario postulación (◐ datos + consentimiento Ley 1581) · 
   M-12 panel de evaluación (◐ aprobar/rechazar con historial) ·
@@ -109,6 +109,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   `inicializarIdioma()`. **No se autodetecta el idioma del sistema** para no romper las pruebas
   ni la UAT (esperan español); los errores del servidor siguen en español. Verificado en el
   WebView del APK por CDP.
+- **Cerrar sesión (13/10/2026):** botón `#btn-salir` (visible solo con sesión activa; `#btn-entrar`
+  se oculta entonces) que ejecuta `cerrarSesion()` → borra `localStorage.token`, `mostrarSesion(null)`
+  y cierra `#modal-login`. `mostrarSesion()` alterna la visibilidad de ambos botones.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
