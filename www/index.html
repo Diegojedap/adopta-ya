@@ -143,6 +143,46 @@
             <div id="lista-alertas"></div>
         </section>
 
+        <section id="gestion-mascotas" class="gestion-mascotas">
+            <h2>Gestión de mascotas (refugio)</h2>
+
+            <p>
+                Registra, edita o retira mascotas del catálogo, incluyendo su ficha clínica.
+                Requiere sesión de administrador.
+            </p>
+
+            <div class="formulario">
+                <input id="mascota-id" type="hidden">
+                <input id="mascota-nombre" type="text" placeholder="Nombre">
+                <select id="mascota-especie">
+                    <option value="perro">Perro</option>
+                    <option value="gato">Gato</option>
+                    <option value="otro">Otro</option>
+                </select>
+                <input id="mascota-edad" type="text" placeholder="Edad (ej. 2 años)">
+                <input id="mascota-emoji" type="text" placeholder="Emoji (ej. 🐶)">
+                <select id="mascota-estado">
+                    <option value="disponible">Disponible</option>
+                    <option value="en_revision">En revisión</option>
+                    <option value="adoptado">Adoptado</option>
+                </select>
+                <input id="mascota-salud" type="text" placeholder="Salud (ficha clínica)">
+                <input id="mascota-vacunas" type="text" placeholder="Vacunas">
+                <label class="consentimiento">
+                    <input id="mascota-esterilizado" type="checkbox">
+                    Esterilizado
+                </label>
+                <textarea id="mascota-descripcion" placeholder="Descripción"></textarea>
+                <button onclick="guardarMascota()">Guardar mascota</button>
+                <button onclick="limpiarFormularioMascota()">Limpiar</button>
+            </div>
+
+            <p id="gestion-estado"></p>
+
+            <button onclick="cargarMascotasAdmin()">Cargar mascotas</button>
+            <div id="lista-mascotas-admin"></div>
+        </section>
+
         <section class="responsabilidad">
 
             <h2>❤️ Adopta con responsabilidad</h2>

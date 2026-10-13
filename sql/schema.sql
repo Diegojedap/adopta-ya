@@ -24,8 +24,17 @@ CREATE TABLE IF NOT EXISTS mascotas (
   descripcion   TEXT          NULL,
   emoji         VARCHAR(8)    NULL,
   estado        ENUM('disponible','en_revision','adoptado') NOT NULL DEFAULT 'disponible',
+  salud         TEXT          NULL COMMENT 'Ficha clínica: estado de salud, tratamientos (M-10)',
+  vacunas       VARCHAR(255)  NULL COMMENT 'Vacunas aplicadas (M-10)',
+  esterilizado  TINYINT(1)    NOT NULL DEFAULT 0 COMMENT 'Esterilizado (M-10)',
   creado_en     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+-- Bases ya creadas antes de M-10: añadir las columnas de ficha clínica (ejecutar una vez).
+-- ALTER TABLE mascotas
+--   ADD COLUMN salud TEXT NULL,
+--   ADD COLUMN vacunas VARCHAR(255) NULL,
+--   ADD COLUMN esterilizado TINYINT(1) NOT NULL DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS solicitudes (
   id                    INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,

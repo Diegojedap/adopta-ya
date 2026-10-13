@@ -118,6 +118,17 @@ const mideUat = !!scripts['uat:medir'];
 add('P-17', 'RNF-03', 'Existe el kit UAT (plan, guion, plantilla y script de linea base)', existeUat && tieneEscenarios && mideUat,
   `artefactos=${existeUat}; escenarios UAT-01/12=${tieneEscenarios}; scripts.uat:medir=${JSON.stringify(scripts['uat:medir'])}`);
 
+// P-18 gestion de mascotas (CRUD + ficha clinica) REQ-01 / M-10
+const serverSrc = fs.readFileSync(path.join(ROOT, 'server/index.js'), 'utf8');
+const schemaSrc = fs.readFileSync(path.join(ROOT, 'sql/schema.sql'), 'utf8');
+const htmlGestion = fs.readFileSync(path.join(WWW, 'index.html'), 'utf8');
+const panelMascotas = /id="gestion-mascotas"/.test(htmlGestion) && /id="lista-mascotas-admin"/.test(htmlGestion);
+const crudFront = /guardarMascota/.test(scriptSrc) && /editarMascota/.test(scriptSrc) && /eliminarMascota/.test(scriptSrc);
+const crudApi = /crearMascota/.test(serverSrc) && /actualizarMascota/.test(serverSrc) && /eliminarMascota/.test(serverSrc) && /'PUT'/.test(serverSrc) && /'DELETE'/.test(serverSrc);
+const fichaClinica = /salud/.test(schemaSrc) && /vacunas/.test(schemaSrc) && /esterilizado/.test(schemaSrc);
+add('P-18', 'REQ-01', 'El refugio gestiona mascotas (CRUD) y ficha clinica (M-10)', panelMascotas && crudFront && crudApi && fichaClinica,
+  `panel=${panelMascotas}; frontend CRUD=${crudFront}; API CRUD=${crudApi}; ficha clinica=${fichaClinica}`);
+
 console.table(res.map(r => ({ id: r.id, req: r.req, resultado: r.resultado, descripcion: r.desc })));
 const pasa = res.filter(r => r.resultado === 'PASA').length;
 console.log(`Total ${res.length} | PASA ${pasa} | FALLA ${res.length - pasa}`);

@@ -61,10 +61,11 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 
 ## 3. Estado verificado (12/10/2026)
 
-- **Pruebas:** `npm test` → **PASA 17 / FALLA 0** de 17 (tras `npm run sync`).
+- **Pruebas:** `npm test` → **PASA 18 / FALLA 0** de 18 (tras `npm run sync`).
   - P-09 ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
   - P-15/P-16 (REQ-03) cierran el módulo de seguimiento (evidencias + alertas 30/60/90).
   - P-17 (RNF-03) verifica el kit de UAT (plan, guion, plantilla y script de medición).
+  - P-18 (REQ-01) verifica el CRUD de mascotas del refugio (M-10: panel + API + ficha clínica).
   - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) pasan.
   - **Nota:** el check P-11 del test fue corregido (allowlist de dependencias directas) para
     no contradecir a P-09. Ojo con el orden: si editas `www/`, ejecuta `npm run sync` antes
@@ -74,8 +75,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **Módulos implementados:** M-01 portada · M-02 navegación · M-03 catálogo (◐ con API) ·
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo ·
   M-07 empaquetado Android (◐ APK viejo) · M-08 suite de pruebas ·
-  M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) ·
-  M-11 formulario postulación (◐ datos + consentimiento Ley 1581) ·
+  M-09 auth/roles (◐ login/registro/JWT, usuarios en memoria) · 
+  M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
+  M-11 formulario postulación (◐ datos + consentimiento Ley 1581) · 
   M-12 panel de evaluación (◐ aprobar/rechazar con historial) ·
   M-13 contrato PDF (◐ generado sin dependencias para aprobadas) ·
   M-14 seguimiento (◐ evidencias de adopción aprobada, dueño o admin) ·
@@ -84,13 +86,13 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (12 escenarios UAT-01…UAT-12 y plantilla);
   línea base de tiempos reproducible con `npm run uat:medir`; simulación opencode en
   `docs/uat/resultados_simulacion_2026-10-12.csv` (no sustituye la sesión con el refugio).
-- **Módulos NO implementados (diseñados):** M-10 CRUD mascotas · M-18 cloud.
-- **Requisitos:** REQ-04 ✅ (APK pendiente de regenerar) · REQ-05 ✅ (auth) ·
-  REQ-01/REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
+- **Módulos NO implementados (diseñados):** M-18 cloud.
+- **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK pendiente de regenerar) ·
+  REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
   RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
 - **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
   en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
-  Rutas: `GET /health`, `GET /mascotas[:id]`, `POST /solicitudes`,
+  Rutas: `GET /health`, `GET /mascotas[:id]`, `POST/PUT/DELETE /mascotas` (escritura solo admin), `POST /solicitudes`,
   `GET /solicitudes` y `POST /solicitudes/:id/estado` (solo admin),
   `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF),
   `POST/GET /solicitudes/:id/evidencias` (aprobada, admin o dueño) y
@@ -102,8 +104,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/`.
   Pendiente: **F-08** — el APK debug es anterior a las correcciones y **esta máquina no
   puede regenerarlo** (sin Android SDK ni JDK 17; solo hay JDK 11).
-- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8 y #9 (esquema, API,
-  consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de UAT).
+- **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8, #9 y #10 (esquema,
+  API, consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de
+  UAT, CRUD de mascotas).
   Siguiente: APK (M-18) → ejecutar la UAT real con el refugio.
 
 ## 4. Comandos clave

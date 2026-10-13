@@ -7,12 +7,15 @@ const PUERTO = Number(process.env['PORT'] || 3000);
 const CLAVE_JWT = process.env['JWT_SECRET'] || 'adopta-ya-desarrollo';
 const ROLES = ['administrador', 'adoptante', 'veterinario'];
 const ESTADOS_REVISION = ['aprobada', 'rechazada'];
+const ESPECIES_MASCOTA = ['perro', 'gato', 'otro'];
+const ESTADOS_MASCOTA = ['disponible', 'en_revision', 'adoptado'];
 
 const mascotas = [
-  { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible' },
-  { id: 2, nombre: 'Luna',  especie: 'gato',  edad: '1 año',  descripcion: 'Tranquila, tierna y busca una familia amorosa.', emoji: '🐱', estado: 'disponible' },
-  { id: 3, nombre: 'Rocky', especie: 'perro', edad: '3 años', descripcion: 'Juguetón, obediente y muy cariñoso.',            emoji: '🐶', estado: 'disponible' }
+  { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible', salud: 'Sano. Vacunado y desparasitado.',    vacunas: 'Rabia, parvovirus', esterilizado: true  },
+  { id: 2, nombre: 'Luna',  especie: 'gato',  edad: '1 año',  descripcion: 'Tranquila, tierna y busca una familia amorosa.', emoji: '🐱', estado: 'disponible', salud: 'Sana. En buen estado general.',     vacunas: 'Triple felina',     esterilizado: true  },
+  { id: 3, nombre: 'Rocky', especie: 'perro', edad: '3 años', descripcion: 'Juguetón, obediente y muy cariñoso.',            emoji: '🐶', estado: 'disponible', salud: 'Sano. Control veterinario al día.', vacunas: 'Rabia',             esterilizado: false }
 ];
+let siguienteMascota = mascotas.reduce((max, m) => Math.max(max, m.id), 0) + 1;
 
 const solicitudes = [];
 let siguienteSolicitud = 1;
@@ -61,7 +64,7 @@ function enviar(res, codigo, datos) {
   res.writeHead(codigo, {
     'Content-Type': 'application/json; charset=utf-8',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+    'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
   });
   res.end(cuerpo);
@@ -95,7 +98,7 @@ function autenticar(req) {
 
 async function listarMascotas() {
   if (pool) {
-    const [filas] = await pool.query('SELECT id, nombre, especie, edad, descripcion, emoji, estado FROM mascotas ORDER BY id');
+    const [filas] = await pool.query('SELECT id, nombre, especie, edad, descripcion, emoji, estado, salud, vacunas, esterilizado FROM mascotas ORDER BY id');
     return filas;
   }
   return mascotas;
@@ -117,6 +120,82 @@ async function resolverMascota(datos) {
   if (id) return mascotas.find(m => m.id === id) || null;
   if (datos.mascota) return mascotas.find(m => m.nombre === datos.mascota) || null;
   return null;
+}
+
+function normalizarMascota(datos, base) {
+  const tomar = (campo, porDefecto) => {
+    if (datos[campo] != null) return String(datos[campo]).trim();
+    if (base && base[campo] != null) return String(base[campo]);
+    return porDefecto;
+  };
+  const baseEst = base && (base.esterilizado === true || base.esterilizado === 1 || base.esterilizado === '1');
+  const est = datos.esterilizado != null
+    ? (datos.esterilizado === true || datos.esterilizado === 1 || datos.esterilizado === '1')
+    : !!baseEst;
+  return {
+    nombre: tomar('nombre', ''),
+    especie: tomar('especie', 'perro'),
+    edad: tomar('edad', ''),
+    descripcion: tomar('descripcion', '') || null,
+    emoji: tomar('emoji', '') || null,
+    estado: tomar('estado', 'disponible'),
+    salud: tomar('salud', '') || null,
+    vacunas: tomar('vacunas', '') || null,
+    esterilizado: est
+  };
+}
+
+function validarMascota(m) {
+  if (!m.nombre || !m.edad) return { error: 'Nombre y edad son obligatorios', codigo: 400 };
+  if (!ESPECIES_MASCOTA.includes(m.especie)) return { error: 'Especie inválida', codigo: 400 };
+  if (!ESTADOS_MASCOTA.includes(m.estado)) return { error: 'Estado inválido', codigo: 400 };
+  return null;
+}
+
+async function crearMascota(datos) {
+  const m = normalizarMascota(datos, null);
+  const invalido = validarMascota(m);
+  if (invalido) return invalido;
+  if (pool) {
+    const [r] = await pool.query(
+      'INSERT INTO mascotas (nombre, especie, edad, descripcion, emoji, estado, salud, vacunas, esterilizado) VALUES (?,?,?,?,?,?,?,?,?)',
+      [m.nombre, m.especie, m.edad, m.descripcion, m.emoji, m.estado, m.salud, m.vacunas, m.esterilizado ? 1 : 0]
+    );
+    return Object.assign({ id: r.insertId }, m);
+  }
+  const mascota = Object.assign({ id: siguienteMascota++ }, m);
+  mascotas.push(mascota);
+  return mascota;
+}
+
+async function actualizarMascota(id, datos) {
+  const actual = pool
+    ? (await pool.query('SELECT * FROM mascotas WHERE id = ? LIMIT 1', [id]))[0][0]
+    : mascotas.find(m => m.id === id);
+  if (!actual) return { error: 'Mascota no encontrada', codigo: 404 };
+  const m = normalizarMascota(datos, actual);
+  const invalido = validarMascota(m);
+  if (invalido) return invalido;
+  if (pool) {
+    await pool.query(
+      'UPDATE mascotas SET nombre=?, especie=?, edad=?, descripcion=?, emoji=?, estado=?, salud=?, vacunas=?, esterilizado=? WHERE id=?',
+      [m.nombre, m.especie, m.edad, m.descripcion, m.emoji, m.estado, m.salud, m.vacunas, m.esterilizado ? 1 : 0, id]
+    );
+    return Object.assign({ id }, m);
+  }
+  Object.assign(actual, m);
+  return actual;
+}
+
+async function eliminarMascota(id) {
+  if (pool) {
+    const [r] = await pool.query('DELETE FROM mascotas WHERE id = ?', [id]);
+    return r.affectedRows > 0;
+  }
+  const indice = mascotas.findIndex(m => m.id === id);
+  if (indice === -1) return false;
+  mascotas.splice(indice, 1);
+  return true;
 }
 
 async function crearSolicitud(datos, sesion) {
@@ -327,15 +406,48 @@ const servidor = http.createServer(async (req, res) => {
       return usuario ? enviar(res, 200, publico(usuario)) : enviar(res, 401, { error: 'No autenticado' });
     }
 
+    function soloAdministrador() {
+      const sesion = autenticar(req);
+      if (!sesion) return { error: 'No autenticado', codigo: 401 };
+      if (sesion.rol !== 'administrador') return { error: 'Solo administradores', codigo: 403 };
+      return null;
+    }
+
     if (req.method === 'GET' && ruta === '/mascotas') {
       return enviar(res, 200, await listarMascotas());
     }
 
-    if (req.method === 'GET' && ruta.startsWith('/mascotas/')) {
-      const id = Number(ruta.split('/')[2]);
+    if (req.method === 'POST' && ruta === '/mascotas') {
+      const denegado = soloAdministrador();
+      if (denegado) return enviar(res, denegado.codigo, { error: denegado.error });
+      const creada = await crearMascota(await leerCuerpo(req));
+      if (creada.error) return enviar(res, creada.codigo, { error: creada.error });
+      return enviar(res, 201, creada);
+    }
+
+    const mascotaRuta = ruta.match(/^\/mascotas\/(\d+)$/);
+
+    if (req.method === 'GET' && mascotaRuta) {
+      const id = Number(mascotaRuta[1]);
       const todas = await listarMascotas();
       const mascota = todas.find(m => m.id === id);
       return mascota ? enviar(res, 200, mascota) : enviar(res, 404, { error: 'Mascota no encontrada' });
+    }
+
+    if (req.method === 'PUT' && mascotaRuta) {
+      const denegado = soloAdministrador();
+      if (denegado) return enviar(res, denegado.codigo, { error: denegado.error });
+      const actualizada = await actualizarMascota(Number(mascotaRuta[1]), await leerCuerpo(req));
+      if (actualizada.error) return enviar(res, actualizada.codigo, { error: actualizada.error });
+      return enviar(res, 200, actualizada);
+    }
+
+    if (req.method === 'DELETE' && mascotaRuta) {
+      const denegado = soloAdministrador();
+      if (denegado) return enviar(res, denegado.codigo, { error: denegado.error });
+      const id = Number(mascotaRuta[1]);
+      const eliminada = await eliminarMascota(id);
+      return eliminada ? enviar(res, 200, { eliminado: id }) : enviar(res, 404, { error: 'Mascota no encontrada' });
     }
 
     if (req.method === 'POST' && ruta === '/solicitudes') {

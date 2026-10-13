@@ -368,6 +368,163 @@ function cargarAlertas() {
         });
 }
 
+function tokenAdmin() {
+    try { return localStorage.getItem("token"); } catch (e) { return null; }
+}
+
+function limpiarFormularioMascota() {
+    ["mascota-id", "mascota-nombre", "mascota-edad", "mascota-emoji",
+     "mascota-salud", "mascota-vacunas", "mascota-descripcion"].forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.value = "";
+    });
+    const especie = document.getElementById("mascota-especie");
+    if (especie) especie.value = "perro";
+    const estado = document.getElementById("mascota-estado");
+    if (estado) estado.value = "disponible";
+    const esterilizado = document.getElementById("mascota-esterilizado");
+    if (esterilizado) esterilizado.checked = false;
+}
+
+function guardarMascota() {
+    const token = tokenAdmin();
+    const etiqueta = document.getElementById("gestion-estado");
+    if (!token) {
+        if (etiqueta) etiqueta.textContent = "Inicia sesión como administrador.";
+        return;
+    }
+    const id = document.getElementById("mascota-id").value;
+    const cuerpo = {
+        nombre: document.getElementById("mascota-nombre").value.trim(),
+        especie: document.getElementById("mascota-especie").value,
+        edad: document.getElementById("mascota-edad").value.trim(),
+        emoji: document.getElementById("mascota-emoji").value.trim(),
+        estado: document.getElementById("mascota-estado").value,
+        salud: document.getElementById("mascota-salud").value.trim(),
+        vacunas: document.getElementById("mascota-vacunas").value.trim(),
+        esterilizado: document.getElementById("mascota-esterilizado").checked,
+        descripcion: document.getElementById("mascota-descripcion").value.trim()
+    };
+    if (!cuerpo.nombre || !cuerpo.edad) {
+        if (etiqueta) etiqueta.textContent = "Completa nombre y edad.";
+        return;
+    }
+    fetch(API_BASE + (id ? "/mascotas/" + id : "/mascotas"), {
+        method: id ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json", "Authorization": "Bearer " + token },
+        body: JSON.stringify(cuerpo)
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (datos && datos.error) {
+                if (etiqueta) etiqueta.textContent = datos.error;
+                return;
+            }
+            if (etiqueta) etiqueta.textContent = id
+                ? "Mascota N.º " + id + " actualizada."
+                : "Mascota registrada (N.º " + (datos && datos.id ? datos.id : "?") + ").";
+            limpiarFormularioMascota();
+            cargarMascotasAdmin();
+            cargarMascotas();
+        })
+        .catch(function () {
+            if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
+        });
+}
+
+function editarMascota(id) {
+    const etiqueta = document.getElementById("gestion-estado");
+    fetch(API_BASE + "/mascotas/" + id)
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (m) {
+            if (!m || m.error) {
+                if (etiqueta) etiqueta.textContent = "No se encontró la mascota.";
+                return;
+            }
+            document.getElementById("mascota-id").value = m.id;
+            document.getElementById("mascota-nombre").value = m.nombre || "";
+            document.getElementById("mascota-especie").value = m.especie || "perro";
+            document.getElementById("mascota-edad").value = m.edad || "";
+            document.getElementById("mascota-emoji").value = m.emoji || "";
+            document.getElementById("mascota-estado").value = m.estado || "disponible";
+            document.getElementById("mascota-salud").value = m.salud || "";
+            document.getElementById("mascota-vacunas").value = m.vacunas || "";
+            document.getElementById("mascota-esterilizado").checked = !!m.esterilizado;
+            document.getElementById("mascota-descripcion").value = m.descripcion || "";
+            if (etiqueta) etiqueta.textContent = "Editando la mascota N.º " + m.id + ". Guarda para aplicar los cambios.";
+        })
+        .catch(function () {
+            if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
+        });
+}
+
+function eliminarMascota(id) {
+    const token = tokenAdmin();
+    const etiqueta = document.getElementById("gestion-estado");
+    if (!token) {
+        if (etiqueta) etiqueta.textContent = "Inicia sesión como administrador.";
+        return;
+    }
+    if (!window.confirm("¿Eliminar la mascota N.º " + id + "? Esta acción no se puede deshacer.")) return;
+    fetch(API_BASE + "/mascotas/" + id, {
+        method: "DELETE",
+        headers: { "Authorization": "Bearer " + token }
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (datos && datos.error) {
+                if (etiqueta) etiqueta.textContent = datos.error;
+                return;
+            }
+            if (etiqueta) etiqueta.textContent = "Mascota eliminada.";
+            cargarMascotasAdmin();
+            cargarMascotas();
+        })
+        .catch(function () {
+            if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
+        });
+}
+
+function tarjetaMascotaAdmin(m) {
+    const ficha = [
+        m.salud ? "Salud: " + m.salud : "",
+        m.vacunas ? "Vacunas: " + m.vacunas : "",
+        "Esterilizado: " + (m.esterilizado ? "sí" : "no")
+    ].filter(Boolean).join(" · ");
+    return '<div class="solicitud mascota-admin">' +
+        '<strong>' + (m.emoji || "🐾") + ' ' + m.nombre + '</strong> · ' + m.especie + ' · ' + m.edad +
+        ' <span class="estado">' + m.estado + '</span>' +
+        (m.descripcion ? '<br>' + m.descripcion : '') +
+        (ficha ? '<br><small>' + ficha + '</small>' : '') +
+        '<div class="acciones">' +
+            '<button onclick="editarMascota(' + m.id + ')">Editar</button>' +
+            '<button onclick="eliminarMascota(' + m.id + ')">Eliminar</button>' +
+        '</div>' +
+        '</div>';
+}
+
+function cargarMascotasAdmin() {
+    const lista = document.getElementById("lista-mascotas-admin");
+    const etiqueta = document.getElementById("gestion-estado");
+    if (!tokenAdmin()) {
+        if (etiqueta) etiqueta.textContent = "Inicia sesión como administrador.";
+        return;
+    }
+    fetch(API_BASE + "/mascotas")
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (!Array.isArray(datos)) {
+                if (etiqueta) etiqueta.textContent = "No se pudo cargar el catálogo.";
+                return;
+            }
+            if (etiqueta) etiqueta.textContent = datos.length + " mascota(s) registradas.";
+            if (lista) lista.innerHTML = datos.map(tarjetaMascotaAdmin).join("");
+        })
+        .catch(function () {
+            if (etiqueta) etiqueta.textContent = "No se pudo conectar con el servidor.";
+        });
+}
+
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", cargarMascotas);
 } else {

@@ -2,7 +2,7 @@
 
 Inventario de módulos funcionales con su **estado real de implementación**, trazabilidad
 a requisitos (REQ-01…REQ-05, RNF-01…RNF-03 de las Entregas 1 y 2) y a las pruebas
-automatizadas P-01…P-17. Estado verificado el 12/10/2026 mediante `npm test` y revisión
+automatizadas P-01…P-18. Estado verificado el 12/10/2026 mediante `npm test` y revisión
 de código.
 
 **Leyenda de estado:** ✅ Implementado · ◐ Parcial · ✗ No implementado (diseñado)
@@ -28,7 +28,8 @@ Muestra tarjetas con emoji, nombre, edad, descripción y botón de adopción.
 - **Archivos:** `www/index.html:33-71`; `www/js/script.js` (`cargarMascotas`, `pintarMascotas`); estilos `www/css/style.css:76-121`
 - **Funciona:** el catálogo se carga con `fetch` desde `GET /mascotas` de la API; si la
   API no responde, se conservan las 3 tarjetas estáticas (Max, Luna, Rocky) de reserva.
-- **Limitación:** sin ficha clínica ni filtro por especie; el detalle sigue siendo básico.
+- **Limitación:** sin filtro por especie ni detalle ampliado; la ficha clínica y el estado
+  editable se gestionan desde M-10 (panel del refugio).
 - **Pruebas:** P-04 ✅ (presenta nombre/acción) · P-05 ✅ (usa red/API)
 - **Requisitos:** REQ-01 («Registrar y mostrar mascotas con información básica y estado»)
 
@@ -62,7 +63,7 @@ App híbrida Capacitor 8 con `MainActivity` (BridgeActivity), permiso INTERNET y
 - **Requisitos:** REQ-04
 
 ### M-08 · Suite de pruebas automatizadas (✅ Implementado)
-17 comprobaciones estáticas y de comportamiento con jsdom (P-01…P-17); genera `resultados_pruebas.json`.
+18 comprobaciones estáticas y de comportamiento con jsdom (P-01…P-18); genera `resultados_pruebas.json`.
 - **Archivos:** `test_estatico_adopta_ya.js`, script `npm test`
 - **Nota P-11:** verificación corregida a allowlist de dependencias directas (08/10/2026)
   para que no contradiga a P-09.
@@ -80,9 +81,10 @@ Registro, login con hashing y control de acceso por JWT; roles administrador/ado
 
 ### M-16 · API REST (◐ Prototipo)
 Servidor con el módulo `http` de Node (sin framework): `GET /health`, `GET /mascotas`,
-`GET /mascotas/:id`, `POST /solicitudes`, `GET /solicitudes` y `POST /solicitudes/:id/estado`
-(admin), `GET /solicitudes/:id/contrato`, y `/auth/registro`, `/auth/login`, `/auth/perfil`;
-CORS habilitado.
+`GET /mascotas/:id`, `POST/PUT/DELETE /mascotas` (solo admin), `POST /solicitudes`,
+`GET /solicitudes` y `POST /solicitudes/:id/estado` (admin), `GET /solicitudes/:id/contrato`,
+`POST/GET /solicitudes/:id/evidencias`, `GET /seguimiento/alertas` (admin) y
+`/auth/registro`, `/auth/login`, `/auth/perfil`; CORS habilitado.
 - **Archivos:** `server/index.js`; script `npm start`; config `server/.env.example`
 - **Funciona:** store en memoria con las mascotas de semilla; hook **opcional** a `mysql2`
   (se activa si está instalado y hay conexión a MySQL).
@@ -149,14 +151,29 @@ Recordatorios de seguimiento a los 30/60/90 días para cargar evidencias.
 - **Pruebas:** P-16 ✅
 - **Requisitos:** REQ-03
 
+### M-10 · Gestión de mascotas (CRUD) (✅ Implementado)
+Panel de administración para registrar, editar y retirar mascotas, con ficha clínica.
+- **Archivos:** `server/index.js` (`crearMascota`, `actualizarMascota`, `eliminarMascota`,
+  rutas `POST/PUT/DELETE /mascotas`), `www/index.html` (`#gestion-mascotas`),
+  `www/js/script.js` (`guardarMascota`, `editarMascota`, `eliminarMascota`,
+  `cargarMascotasAdmin`, `tarjetaMascotaAdmin`), `sql/schema.sql` (columnas `salud`,
+  `vacunas`, `esterilizado`).
+- **Funciona:** el administrador (JWT) crea (201), actualiza (200) y elimina (200) mascotas;
+  las rutas de escritura exigen rol `administrador` (401 sin token, 403 si es adoptante);
+  valida `especie` (`perro`/`gato`/`otro`) y `estado` (`disponible`/`en_revision`/`adoptado`);
+  la ficha clínica incluye salud, vacunas y esterilización. El catálogo público se refresca
+  tras cada cambio.
+- **Limitación:** datos en memoria (o MySQL si hay pool); sin carga de imágenes por mascota.
+- **Pruebas:** P-18 ✅
+- **Requisitos:** REQ-01
+
 ---
 
 ## 2. Módulos diseñados aún NO implementados
 
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
-| M-10 | Gestión de mascotas (CRUD) | Panel admin para registrar/editar mascotas con ficha clínica y estado | REQ-01 | ✗ |
-| M-16 | API REST | Endpoints de mascotas, solicitudes, usuarios, evidencias y estados | RNF-01 | ◐ (mascotas y solicitudes) |
+| M-16 | API REST | Endpoints de mascotas, solicitudes, usuarios, evidencias y estados | RNF-01 | ◐ (mascotas, solicitudes, auth, evidencias) |
 | M-17 | Persistencia MySQL | Esquema y acceso a datos de todas las entidades | RNF-01 | ◐ (esquema versionado, sin conexión) |
 | M-18 | Despliegue cloud | Publicación web (Vercel + Render free tier) y APK de producción | Viabilidad Entrega 1 | ✗ |
 
@@ -169,7 +186,7 @@ Recordatorios de seguimiento a los 30/60/90 días para cargar evidencias.
 
 | Requisito | Prioridad | Módulo(s) | Prueba | Estado real |
 |---|---|---|---|---|
-| REQ-01 · Registrar y mostrar mascotas con información básica y estado | Alta | M-03, M-10, M-17 | P-04, P-05 | ◐ Conectado a la API; faltan ficha clínica y estado editable |
+| REQ-01 · Registrar y mostrar mascotas con información básica y estado | Alta | M-03, M-10, M-17 | P-04, P-05, P-18 | ✅ Catálogo vía API + CRUD del refugio con ficha clínica y estado |
 | REQ-02 · Iniciar solicitud de adopción desde la mascota | Alta | M-04, M-11, M-12 | P-06, P-07 | ◐ Formulario de postulación + evaluación con historial; falta ficha y notificaciones |
 | REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | P-15, P-16 | ◐ Evidencias cargadas por el adoptante y alertas 30/60/90 calculadas; falta notificación real |
 | REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK pendiente de regenerar) |
@@ -178,8 +195,8 @@ Recordatorios de seguimiento a los 30/60/90 días para cargar evidencias.
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
 | RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12, P-17 | ✅ `npm test` ejecutable + kit UAT |
 
-**Cobertura hoy:** REQ-04 y REQ-05 cumplidos; REQ-01, REQ-02 y REQ-03 parciales (con API);
-RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **17/17**. UAT: kit y
+**Cobertura hoy:** REQ-01, REQ-04 y REQ-05 cumplidos; REQ-02 y REQ-03 parciales (con API);
+RNF-01 con prototipo de API; RNF-02 y RNF-03 cumplidos. Pruebas: **18/18**. UAT: kit y
 línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con el refugio.
 
 ---
@@ -197,6 +214,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
 | 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos de la simulación **D-001** (n.º de solicitud) y **D-002** (nota de rechazo en la tarjeta) corregidos 12/10/2026 |
+| 10 | CRUD de mascotas con ficha clínica para el refugio | M-10 | P1 | ✅ Hecho 12/10/2026 (`server/index.js` + panel `#gestion-mascotas`; P-18) |
 
 ---
 
@@ -205,10 +223,10 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
   solicitud «en revisión», login/registro con JWT, panel de evaluación con descarga del
   contrato de adopción en PDF, seguimiento post-adopción con evidencias (notas y fotos) y
-  alertas del refugio a los 30/60/90 días, navegación, empaquetado Android y 17 pruebas
-  automatizadas en verde; además, el **kit de UAT con línea base de tiempos** (12 escenarios
-  y medición reproducible con `npm run uat:medir`).
-- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-17), `resultados_pruebas.json`,
+  alertas del refugio a los 30/60/90 días, CRUD de mascotas con ficha clínica, navegación,
+  empaquetado Android y 18 pruebas automatizadas en verde; además, el **kit de UAT con línea
+  base de tiempos** (12 escenarios y medición reproducible con `npm run uat:medir`).
+- **Se puede probar con evidencia:** `npm test` (tabla P-01…P-18), `resultados_pruebas.json`,
   la API local (`npm start`) y los artefactos UAT (`docs/04_UAT.md`, `docs/uat/`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy
   es la capa de presentación con una API de prototipo (datos en memoria, notificaciones reales

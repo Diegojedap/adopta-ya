@@ -6,6 +6,30 @@
 
 ---
 
+## 2026-10-12 (Fase 4 — M-10: CRUD de mascotas del refugio)
+
+- **M-10 implementado (REQ-01 ✅):** el refugio (admin) ahora **registra, edita y elimina**
+  mascotas con **ficha clínica**.
+  - **API (`server/index.js`):** `POST /mascotas` (201), `PUT /mascotas/:id` (200),
+    `DELETE /mascotas/:id` (200); escritura solo con rol `administrador` (401 sin token,
+    403 si es adoptante); validación de `especie` (`perro`/`gato`/`otro`) y `estado`
+    (`disponible`/`en_revision`/`adoptado`); CORS con `PUT`/`DELETE`.
+  - **Ficha clínica:** columnas `salud`, `vacunas`, `esterilizado` en `sql/schema.sql`
+    (+ `ALTER TABLE` comentado para bases existentes) y `sql/seed.sql` actualizado.
+  - **Frontend:** sección `#gestion-mascotas` en `www/index.html`; funciones `guardarMascota`,
+    `editarMascota`, `eliminarMascota`, `cargarMascotasAdmin`, `tarjetaMascotaAdmin` en
+    `www/js/script.js`; estilos en `www/css/style.css`.
+- **Verificación:** `npm run sync` OK; `npm test` → **18/18 PASA** (nueva prueba **P-18**);
+  prueba end-to-end del CRUD contra la API → **12/12 OK** (crear/listar/editar/eliminar +
+  401/403/400/404).
+- **Docs:** `docs/03_MODULOS.md` (M-10 ✅, trazabilidad REQ-01 ✅, backlog #10),
+  `AGENTS.md` (estado 18/18 y rutas).
+- **Backlog #10 (`docs/03_MODULOS.md`)** queda ✅. Siguiente: APK (M-18) → UAT real con el refugio.
+
+**Siguiente paso:** APK (M-18, bloqueado sin Android SDK/JDK 17) y/o UAT real con el refugio.
+
+---
+
 ## 2026-10-12 (Fase 3 — Defectos de la simulación UAT)
 
 - **D-001 (Medio) corregido:** el formulario de postulación ahora muestra el **número de

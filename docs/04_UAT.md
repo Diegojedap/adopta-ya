@@ -29,7 +29,8 @@ con roles, panel de evaluación, contrato PDF y seguimiento con evidencias y ale
 - No existen **notificaciones reales** (correo/push): las alertas 30/60/90 solo se calculan.
 - El **APK** versionado es anterior a las correcciones (hallazgo F-08); la UAT se ejecuta
   sobre la fuente `www/`, no sobre el APK desactualizado.
-- No hay fichas clínicas ni CRUD de mascotas (M-10/M-18 no implementados).
+- El **CRUD de mascotas con ficha clínica ya está implementado** (M-10 ✅, 12/10/2026);
+  queda fuera de esta UAT el **despliegue cloud** (M-18, no implementado).
 
 ## 3. Participantes y roles
 
