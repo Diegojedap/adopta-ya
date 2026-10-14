@@ -65,8 +65,11 @@ CREATE TABLE IF NOT EXISTS historial_estados (
 CREATE TABLE IF NOT EXISTS evidencias (
   id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   solicitud_id  INT UNSIGNED  NOT NULL,
-  url           VARCHAR(500)  NOT NULL,
-  descripcion   VARCHAR(255)  NULL,
+  url           VARCHAR(500)  NULL COMMENT 'Foto (data-URL) opcional; la descripción puede ir sola (M-14)',
+  descripcion   VARCHAR(1000) NULL,
   creado_en     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_evidencia_solicitud FOREIGN KEY (solicitud_id) REFERENCES solicitudes(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- Bases ya creadas antes del ajuste de M-14: permitir evidencias solo con descripción (ejecutar una vez).
+-- ALTER TABLE evidencias MODIFY COLUMN url VARCHAR(500) NULL;

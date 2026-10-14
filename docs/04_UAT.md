@@ -25,8 +25,9 @@ seguimiento con evidencias y alertas.
 
 **NO se prueba / límites declarados (para no dar falsas expectativas al refugio):**
 
-- No hay persistencia real: usuarios y solicitudes viven en **memoria** (se pierden al
-  reiniciar la API) salvo MySQL local configurado.
+- La persistencia es **local** (MySQL portátil en `127.0.0.1:3307`): si el servidor está
+  arrancado (`npm run db:iniciar`), usuarios y solicitudes **persisten** entre reinicios de la
+  API; si no, la API cae a un store en memoria. No hay base de datos en la nube.
 - No existen **notificaciones reales** (correo/push): las alertas 30/60/90 solo se calculan.
 - El **APK** fue regenerado el 13/10/2026 sobre la fuente corregida (F-08 resuelto); la UAT
   puede ejecutarse sobre `www/` o sobre el APK ya actualizado.
@@ -47,12 +48,14 @@ seguimiento con evidencias y alertas.
 ## 4. Entorno de ejecución
 
 ```powershell
-npm start          # API en http://localhost:3000 (store en memoria)
-npx serve www      # o abrir www/index.html directamente
+npm run db:iniciar # arranca MySQL local portátil (127.0.0.1:3307)
+npm run db:reset   # estado limpio (trunca y resiembra la BD)
+npm start          # web + API en http://localhost:3000
 ```
 
 - Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
-- Antes de cada sesión, reiniciar la API para partir de un estado limpio (store en memoria).
+- Antes de cada sesión, `npm run db:reset` para partir de un estado limpio (o reiniciar la API
+  si se opera sin MySQL, en memoria).
 - Registrar la evidencia: capturas de pantalla o video de la sesión, más el CSV de
   resultados (plantilla `docs/uat/plantilla_registro.csv`).
 - **Material de la sesión real (`docs/uat/`):** guía del facilitador
@@ -126,9 +129,9 @@ produce defecto Bloqueante; de lo contrario, se corrige y se repite el escenario
 
 ## 10. Trazabilidad con el estado del proyecto
 
-- La **sesión simulada** (`docs/uat/resultados_simulacion_2026-10-13.csv`, marcada como
-  simulación de opencode) valida el flujo y el pipeline de medición; **no sustituye** la
-  prueba con usuarios reales.
+- La **sesión simulada** (`docs/uat/resultados_simulacion_*.csv`, marcada como
+  simulación de opencode; la más reciente, `..._2026-10-14.csv`, corrió contra MySQL local)
+  valida el flujo y el pipeline de medición; **no sustituye** la prueba con usuarios reales.
 - La existencia de los artefactos UAT se verifica con la prueba **P-17** de la suite
   (`test_estatico_adopta_ya.js`).
 - De la simulación de 12/10/2026 se levantaron dos defectos que **ya fueron corregidos** en

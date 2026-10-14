@@ -8,8 +8,19 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = process.cwd();
-const CSV = process.argv[2] || 'docs/uat/resultados_simulacion_2026-10-13.csv';
+const FECHA_HOY = new Date().toISOString().slice(0, 10);
 const SALIDA = process.argv[3] || 'docs/uat/linea_base_tiempos.json';
+
+function csvMasReciente() {
+  const carpeta = path.join(ROOT, 'docs', 'uat');
+  if (!fs.existsSync(carpeta)) return null;
+  const archivos = fs.readdirSync(carpeta)
+    .filter(f => /^resultados_simulacion_.*\.csv$/.test(f))
+    .sort();
+  return archivos.length ? path.join('docs/uat', archivos[archivos.length - 1]) : null;
+}
+
+const CSV = process.argv[2] || csvMasReciente() || ('docs/uat/resultados_simulacion_' + FECHA_HOY + '.csv');
 
 function leerCSV(ruta) {
   const texto = fs.readFileSync(ruta, 'utf8').replace(/^\uFEFF/, '');

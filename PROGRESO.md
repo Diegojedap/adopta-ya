@@ -6,6 +6,35 @@
 
 ---
 
+## 2026-10-14 (Fase 13 — MySQL local, API persistente y web servida por la API)
+
+- **MySQL local funcionando** (portátil, sin permisos de administrador): MySQL 8.4.9 en
+  `C:\Users\diego_ojeda\mysql`, puerto **3307**, `127.0.0.1`, usuario `root` sin contraseña
+  local. Se inicializó el `datadir` (`--initialize-insecure`), se creó `my.ini` y se arranca
+  con `npm run db:iniciar` (o se detiene con `db:detener`; estado con `db:estado`).
+- **Scripts npm nuevos:** `db:iniciar`, `db:detener`, `db:estado` (`sql/servidor_mysql.js`) y
+  `db:preparar` / `db:reset` (`sql/preparar_bd.js`, aplica `sql/schema.sql` y siembra; `--reset`
+  trunca y resiembra para la UAT).
+- **API con MySQL (`server/index.js`):** se añadió `mysql2` a `dependencies`. Si MySQL responde,
+  `fuente=mysql` y todas las operaciones (usuarios, registro/login con hash, mascotas,
+  solicitudes, historial, evidencias y alertas) usan la base; si no, cae al store en memoria con
+  aviso en consola. `GET /health` informa la fuente. Los usuarios dejan de ser solo memoria
+  (se cierra el gap de `solicitudes.adoptante_id`).
+- **Web servida por la API:** `GET /` y los estáticos de `www/` (html, css, js, imágenes) se
+  sirven desde `http://localhost:3000` con sus `Content-Type`; `npm start` levanta web + API juntas.
+- **Esquema/datos:** `evidencias.url` y `evidencias.descripcion` quedan `NULL` (M-14); `seed.sql`
+  idempotente sin admin placeholder; nombre de BD unificado a **`adoptaya`** en
+  `.vscode/settings.json` y `adopta-ya.code-workspace`.
+- **Verificación:** `npm run db:preparar` → 3 mascotas · 1 usuario; E2E por HTTP OK
+  (`/health` = mysql, estáticos 200, registro 201, login, mascota, solicitud, aprobación con nota,
+  evidencia día 0, alertas); `npm test` → **18/18 PASA**; `npm run db:reset` +
+  `node uat/ejecutar_uat.js` → **16/16 Aceptado** contra MySQL (`docs/uat/resultados_simulacion_2026-10-14.csv`).
+  El script de UAT y `uat:medir` ahora nombran el CSV/leen el más reciente por fecha.
+- **Pendiente (humano):** UAT presencial con el refugio (backlog #9); publicar la demo web (M-18);
+  login con Google (roadmap #11, admin `diegojedap@gmail.com`).
+
+---
+
 ## 2026-10-13 (Fase 12 — Cerrar sesión)
 
 - **Botón «Cerrar sesión»** (`#btn-salir`) en la barra de navegación, visible **solo** cuando hay

@@ -9,9 +9,10 @@
 
 ## 1. Resumen ejecutivo
 
-El proyecto es un **prototipo de interfaz** de una plataforma de adopción de mascotas.
-Lo que existe y funciona hoy es la capa de presentación: una página estática responsive
-con catálogo de ejemplo, más un proyecto Android/Capacitor con un APK debug compilado.
+El proyecto es un **prototipo full-stack local** de una plataforma de adopción de mascotas
+(web + API REST + MySQL local). En la fecha de la auditoría original existía solo la capa de
+presentación (página estática responsive con catálogo de ejemplo) más un proyecto
+Android/Capacitor con un APK debug. Con posterioridad se conectó MySQL real (14/10/2026).
 
 La auditoría encontró **2 defectos críticos/alto ya corregidos** (rutas sensibles a
 mayúsculas y credenciales de MySQL en texto plano) y **3 defectos de higiene ya
@@ -99,12 +100,12 @@ Con internet: `npm install` normal y eliminación del bloque `overrides`.
 `adoptar()` crea una solicitud «en_revision» vía `POST /solicitudes` (P-07 PASA). La API
 (`server/index.js`, sin framework) usa un store en memoria con hook **opcional** a MySQL;
 el esquema quedó versionado en `sql/schema.sql` + `sql/seed.sql`.
-**Pendiente:** conectar MySQL real y el formulario de postulación (M-11).
+**Pendiente:** formulario de postulación (M-11). *(MySQL real conectado el 14/10/2026: scripts `db:*` + API con `mysql2`.)*
 
 ### F-07 · Autenticación y hashing (ALTO — RESUELTO en prototipo, 08/10/2026)
 `bcryptjs` + `jsonwebtoken` en `dependencies`; endpoints `/auth/registro`, `/auth/login` y
 `/auth/perfil` con roles administrador/adoptante/veterinario (P-09 PASA) y pantalla de acceso
-en `www/`. **Pendiente:** persistir usuarios en MySQL y habilitar paneles por rol.
+en `www/`. **Pendiente:** paneles por rol. *(Usuarios persistidos en MySQL desde el 14/10/2026.)*
 
 ### F-08 · APK desactualizado respecto de la fuente (MEDIO — RESUELTO 13/10/2026)
 El APK vigente se había compilado con la versión anterior de `www/` (referencias

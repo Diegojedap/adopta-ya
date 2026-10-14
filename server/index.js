@@ -1,4 +1,6 @@
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { generarContrato } = require('./contrato');
@@ -26,15 +28,27 @@ let siguienteEvidencia = 1;
 const usuarios = [];
 let siguienteUsuario = 1;
 
+async function sembrarUsuarios() {
+  const email = 'admin@adoptaya.local';
+  if (await buscarUsuarioPorEmail(email)) return;
+  await crearUsuario({
+    nombre: 'Administrador',
+    email,
+    clave_hash: bcrypt.hashSync(process.env['CLAVE_ADMIN'] || 'admin123', 10),
+    rol: 'administrador'
+  });
+}
+
 let pool = null;
 let fuenteDatos = 'memoria';
+let motivoFalloDatos = null;
 
-function sembrarUsuarios() {
-  if (usuarios.length) return;
-  usuarios.push({
-    id: siguienteUsuario++,
+async function sembrarUsuarios() {
+  const email = 'admin@adoptaya.local';
+  if (await buscarUsuarioPorEmail(email)) return;
+  await crearUsuario({
     nombre: 'Administrador',
-    email: 'admin@adoptaya.local',
+    email,
     clave_hash: bcrypt.hashSync(process.env['CLAVE_ADMIN'] || 'admin123', 10),
     rol: 'administrador'
   });
@@ -42,7 +56,7 @@ function sembrarUsuarios() {
 
 async function conectarBaseDatos() {
   const cfg = {
-    host: process.env['DB_HOST'] || 'localhost',
+    host: process.env['DB_HOST'] || '127.0.0.1',
     port: Number(process.env['DB_PORT'] || 3307),
     user: process.env['DB_USER'] || 'root',
     database: process.env['DB_NAME'] || 'adoptaya'
@@ -53,9 +67,11 @@ async function conectarBaseDatos() {
     pool = mysql.createPool(cfg);
     await pool.query('SELECT 1');
     fuenteDatos = 'mysql';
+    motivoFalloDatos = null;
   } catch (e) {
     pool = null;
     fuenteDatos = 'memoria';
+    motivoFalloDatos = e.message;
   }
 }
 
@@ -68,6 +84,41 @@ function enviar(res, codigo, datos) {
     'Access-Control-Allow-Headers': 'Content-Type, Authorization'
   });
   res.end(cuerpo);
+}
+
+const RUTA_WEB = path.join(__dirname, '..', 'www');
+const TIPOS_MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webmanifest': 'application/manifest+json',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2',
+  '.ttf': 'font/ttf'
+};
+
+function servirEstatico(req, res, ruta) {
+  if (req.method !== 'GET') return false;
+  const prefijosApi = ['/auth', '/mascotas', '/solicitudes', '/seguimiento'];
+  if (ruta === '/health' || prefijosApi.some(p => ruta === p || ruta.startsWith(p + '/'))) return false;
+  const relativa = ruta === '/' ? 'index.html' : decodeURIComponent(ruta).replace(/^\/+/, '');
+  const destino = path.resolve(RUTA_WEB, relativa);
+  if (!destino.startsWith(RUTA_WEB)) return false;
+  if (!fs.existsSync(destino) || fs.statSync(destino).isDirectory()) return false;
+  const contenido = fs.readFileSync(destino);
+  res.writeHead(200, {
+    'Content-Type': TIPOS_MIME[path.extname(destino).toLowerCase()] || 'application/octet-stream',
+    'Access-Control-Allow-Origin': '*'
+  });
+  res.end(contenido);
+  return true;
 }
 
 function leerCuerpo(req) {
@@ -96,10 +147,25 @@ function autenticar(req) {
   }
 }
 
+function aBooleano(valor) {
+  return valor === true || valor === 1 || valor === '1';
+}
+
+function filaMascota(fila) {
+  return Object.assign({}, fila, { esterilizado: aBooleano(fila.esterilizado) });
+}
+
+function filaSolicitud(fila) {
+  return Object.assign({}, fila, { consentimiento: aBooleano(fila.consentimiento) });
+}
+
+const NOTA_SUBCONSULTA =
+  '(SELECT h.nota FROM historial_estados h WHERE h.solicitud_id = s.id AND h.nota IS NOT NULL ORDER BY h.id DESC LIMIT 1) AS nota';
+
 async function listarMascotas() {
   if (pool) {
     const [filas] = await pool.query('SELECT id, nombre, especie, edad, descripcion, emoji, estado, salud, vacunas, esterilizado FROM mascotas ORDER BY id');
-    return filas;
+    return filas.map(filaMascota);
   }
   return mascotas;
 }
@@ -235,17 +301,17 @@ async function crearSolicitud(datos, sesion) {
 async function listarSolicitudes() {
   if (pool) {
     const [filas] = await pool.query(
-      'SELECT s.*, m.nombre AS mascota FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id ORDER BY s.id DESC'
+      'SELECT s.*, m.nombre AS mascota, ' + NOTA_SUBCONSULTA + ' FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id ORDER BY s.id DESC'
     );
-    return filas;
+    return filas.map(filaSolicitud);
   }
   return solicitudes.slice().reverse();
 }
 
 async function obtenerSolicitud(id) {
   if (pool) {
-    const [filas] = await pool.query('SELECT s.*, m.nombre AS mascota FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id WHERE s.id = ? LIMIT 1', [id]);
-    return filas.length ? filas[0] : null;
+    const [filas] = await pool.query(      'SELECT s.*, m.nombre AS mascota, ' + NOTA_SUBCONSULTA + ' FROM solicitudes s JOIN mascotas m ON m.id = s.mascota_id WHERE s.id = ? LIMIT 1', [id]);
+    return filas.length ? filaSolicitud(filas[0]) : null;
   }
   return solicitudes.find(s => s.id === id) || null;
 }
@@ -255,8 +321,7 @@ async function actualizarEstado(id, estado, nota, sesion) {
     await pool.query('UPDATE solicitudes SET estado = ?, revisado_en = NOW() WHERE id = ?', [estado, id]);
     await pool.query('INSERT INTO historial_estados (solicitud_id, estado, nota, revisor_id) VALUES (?,?,?,?)',
       [id, estado, nota || null, sesion ? sesion.id : null]);
-    const [filas] = await pool.query('SELECT * FROM solicitudes WHERE id = ?', [id]);
-    return filas.length ? filas[0] : null;
+    return obtenerSolicitud(id);
   }
   const solicitud = solicitudes.find(s => s.id === id);
   if (!solicitud) return null;
@@ -347,28 +412,50 @@ async function alertasSeguimiento() {
   return resultado;
 }
 
-function registrar(datos) {
+async function buscarUsuarioPorEmail(email) {
+  if (pool) {
+    const [filas] = await pool.query('SELECT * FROM usuarios WHERE email = ? LIMIT 1', [email]);
+    return filas.length ? filas[0] : null;
+  }
+  return usuarios.find(u => u.email === email) || null;
+}
+
+async function buscarUsuarioPorId(id) {
+  if (pool) {
+    const [filas] = await pool.query('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [id]);
+    return filas.length ? filas[0] : null;
+  }
+  return usuarios.find(u => u.id === id) || null;
+}
+
+async function crearUsuario(datos) {
+  if (pool) {
+    const [resultado] = await pool.query(
+      'INSERT INTO usuarios (nombre, email, clave_hash, rol) VALUES (?,?,?,?)',
+      [datos.nombre, datos.email, datos.clave_hash, datos.rol]
+    );
+    return { id: resultado.insertId, nombre: datos.nombre, email: datos.email, rol: datos.rol };
+  }
+  const usuario = { id: siguienteUsuario++, ...datos };
+  usuarios.push(usuario);
+  return usuario;
+}
+
+async function registrar(datos) {
   const nombre = (datos.nombre || '').trim();
   const email = (datos.email || '').trim().toLowerCase();
   const clave = datos.clave || '';
   if (!nombre || !email || !clave) return { error: 'Nombre, email y clave son obligatorios' };
-  if (usuarios.some(u => u.email === email)) return { error: 'El email ya está registrado', codigo: 409 };
+  if (await buscarUsuarioPorEmail(email)) return { error: 'El email ya está registrado', codigo: 409 };
   const rol = ROLES.includes(datos.rol) ? datos.rol : 'adoptante';
-  const usuario = {
-    id: siguienteUsuario++,
-    nombre,
-    email,
-    clave_hash: bcrypt.hashSync(clave, 10),
-    rol
-  };
-  usuarios.push(usuario);
+  const usuario = await crearUsuario({ nombre, email, clave_hash: bcrypt.hashSync(clave, 10), rol });
   return { usuario: publico(usuario) };
 }
 
-function ingresar(datos) {
+async function ingresar(datos) {
   const email = (datos.email || '').trim().toLowerCase();
   const clave = datos.clave || '';
-  const usuario = usuarios.find(u => u.email === email);
+  const usuario = await buscarUsuarioPorEmail(email);
   if (!usuario || !bcrypt.compareSync(clave, usuario.clave_hash)) {
     return { error: 'Credenciales inválidas', codigo: 401 };
   }
@@ -388,13 +475,13 @@ const servidor = http.createServer(async (req, res) => {
     }
 
     if (req.method === 'POST' && ruta === '/auth/registro') {
-      const resultado = registrar(await leerCuerpo(req));
+      const resultado = await registrar(await leerCuerpo(req));
       if (resultado.error) return enviar(res, resultado.codigo || 400, { error: resultado.error });
       return enviar(res, 201, resultado.usuario);
     }
 
     if (req.method === 'POST' && ruta === '/auth/login') {
-      const resultado = ingresar(await leerCuerpo(req));
+      const resultado = await ingresar(await leerCuerpo(req));
       if (resultado.error) return enviar(res, resultado.codigo, { error: resultado.error });
       return enviar(res, 200, resultado);
     }
@@ -402,7 +489,7 @@ const servidor = http.createServer(async (req, res) => {
     if (req.method === 'GET' && ruta === '/auth/perfil') {
       const sesion = autenticar(req);
       if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
-      const usuario = usuarios.find(u => u.id === sesion.id);
+      const usuario = await buscarUsuarioPorId(sesion.id);
       return usuario ? enviar(res, 200, publico(usuario)) : enviar(res, 401, { error: 'No autenticado' });
     }
 
@@ -530,15 +617,24 @@ const servidor = http.createServer(async (req, res) => {
       return enviar(res, 200, await alertasSeguimiento());
     }
 
+    if (servirEstatico(req, res, ruta)) return;
+
     return enviar(res, 404, { error: 'Ruta no encontrada' });
   } catch (e) {
     return enviar(res, 500, { error: 'Error interno' });
   }
 });
 
-sembrarUsuarios();
-conectarBaseDatos().finally(() => {
+(async () => {
+  await conectarBaseDatos();
+  await sembrarUsuarios();
   servidor.listen(PUERTO, () => {
     console.log('API ¡ADOPTA YA! en http://localhost:' + PUERTO + ' (datos: ' + fuenteDatos + ')');
+    if (fuenteDatos === 'mysql') {
+      console.log('Web y API disponibles en http://localhost:' + PUERTO);
+    } else {
+      console.log('Aviso: MySQL no disponible (' + (motivoFalloDatos || 'sin conexión') + '); usando store en memoria.');
+      console.log('Ejecuta "npm run db:iniciar" y "npm run db:preparar" para usar la base de datos.');
+    }
   });
-});
+})();

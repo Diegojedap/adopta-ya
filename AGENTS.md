@@ -20,10 +20,11 @@ post-adopción y la reducción de abandonos.
 - **Máquina actual:** Windows, carpeta de trabajo `C:\Users\diego_ojeda\Downloads\ADOPTA-YA 1.0`.
 - **Idioma de trabajo:** español (documentación, commits y respuestas).
 
-**Alcance REAL hoy:** es la **capa de presentación** (prototipo de interfaz) con
-arquitectura y backlog definidos para completarlo. **NO hay backend**: no existen cuentas,
-API, base de datos activa, solicitudes persistidas ni contratos PDF. Cualquier afirmación
-de "sistema integral de adopciones" sería falsa.
+**Alcance REAL hoy:** es un **prototipo full-stack local**: web + API REST propia y base de
+datos **MySQL local** (persistencia real de usuarios, mascotas, solicitudes, evidencias y
+alertas; contrato PDF). **NO está desplegado en la nube** ni es un sistema productivo: sin
+hosting, sin cuentas de producción y sin notificaciones reales por correo. El login con Google
+es roadmap (`docs/03_MODULOS.md` §4, #11).
 
 ## 2. Estructura del repositorio
 
@@ -33,7 +34,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── PROGRESO.md                    ← bitácora viva de avance (se actualiza en cada paso)
 ├── opencode.json                  ← config de opencode (autoupdate, instructions, share off)
 ├── README.md                      ← documento principal del entregable
-├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken; dev: jsdom@23.0.1
+├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken, mysql2; dev: jsdom@23.0.1
 ├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
 ├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-18 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
@@ -51,18 +52,26 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── sql/
 │   ├── schema.sql                 ← esquema MySQL (usuarios, mascotas, solicitudes, evidencias)
 │   ├── seed.sql                   ← datos de ejemplo (Max, Luna, Rocky)
+│   ├── preparar_bd.js             ← aplica el esquema y siembra (npm run db:preparar / db:reset)
+│   ├── servidor_mysql.js          ← arranca/detiene/consulta el MySQL portátil (npm run db:*)
 │   └── adopta_ya.session.sql      ← evidencia de intención MySQL (SELECT de prueba)
 ├── server/
-│   ├── index.js                   ← API REST sin dependencias (GET /mascotas, POST /solicitudes)
+│   ├── index.js                   ← API REST + MySQL (GET /mascotas, POST /solicitudes…) y sirve www/
 │   └── .env.example               ← config de la API (copiar a .env y completar en local)
 ├── www/                           ← fuente web: index.html, css/, js/, img/
 ├── android/                       ← proyecto Capacitor/Android (incluye APK debug)
 └── node_modules/                  ← no versionada
 ```
 
-## 3. Estado verificado (13/10/2026)
+## 3. Estado verificado (14/10/2026)
 
 - **Pruebas:** `npm test` → **PASA 18 / FALLA 0** de 18 (tras `npm run sync`).
+  - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) pasan; la suite corre con
+    la API en MySQL o en memoria.
+  - **Persistencia real:** `npm run db:iniciar` + `npm run db:preparar` dejan MySQL 8.4.9
+    (puerto 3307, `127.0.0.1`, BD `adoptaya`) con usuarios/mascotas/solicitudes/evidencias;
+    `npm test` 18/18 y `npm run db:reset` + `node uat/ejecutar_uat.js` 16/16 verificados
+    el 14/10/2026 contra MySQL.
   - P-09 ya pasa: auth con `bcryptjs` + `jsonwebtoken` en `dependencies` (M-09).
   - P-15/P-16 (REQ-03) cierran el módulo de seguimiento (evidencias + alertas 30/60/90).
   - P-17 (RNF-03) verifica el kit de UAT (plan, guion, plantilla y script de medición).
@@ -85,12 +94,13 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-13 contrato PDF (◐ generado sin dependencias para aprobadas) ·
   M-14 seguimiento (◐ evidencias de adopción aprobada, dueño o admin) ·
   M-15 alertas (◐ hitos 30/60/90 calculados, sin scheduler/correo) ·
-  M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (◐ esquema versionado).
+  M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (✅ en uso: esquema + scripts `db:*` + API).
 - **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (16 escenarios UAT-01…UAT-16 y plantilla);
   línea base de tiempos reproducible con `npm run uat:medir`; **simulación EJECUTADA el
-  13/10/2026** con `node uat/ejecutar_uat.js` (jsdom + API local): **16/16 Aceptado** en
-  `docs/uat/resultados_simulacion_2026-10-13.csv`, acta `docs/uat/acta_uat_2026-10-13.md`
-  (no sustituye la sesión con el refugio, aún pendiente).
+  13/10/2026** (en memoria, `docs/uat/resultados_simulacion_2026-10-13.csv`, acta
+  `docs/uat/acta_uat_2026-10-13.md`) y **re-ejecutada el 14/10/2026 contra MySQL** (`npm run
+  db:reset` + `node uat/ejecutar_uat.js` → `docs/uat/resultados_simulacion_2026-10-14.csv`,
+  16/16 Aceptado). No sustituye la sesión con el refugio, aún pendiente.
 - **Diseño (13/10/2026):** rediseño visual con paleta **teal (`#0f766e`) + coral (`#f97316`)** en
   variables CSS (`:root` de `www/css/style.css`); barra de navegación pegajosa, hero con
   degradado, tarjetas del catálogo con hover, formularios con foco e insignias recoloreadas.
@@ -116,8 +126,11 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
   RNF-01 ◐ (prototipo) · RNF-02/RNF-03 ✅.
-- **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` con store
-  en memoria (se reserva estático si no responde); hook opcional a `mysql2` si hay MySQL.
+- **API local:** `npm start` levanta `server/index.js` en `http://localhost:3000` y sirve la
+  web (`www/`) y la API REST juntas. Usa **MySQL** si está disponible (`GET /health` →
+  `fuente: "mysql"`); si no, cae a un store en memoria con aviso. MySQL portátil en
+  `C:\Users\diego_ojeda\mysql` (puerto 3307, `root` sin contraseña local); se administra con
+  los scripts `db:*`.
   Rutas: `GET /health`, `GET /mascotas[:id]`, `POST/PUT/DELETE /mascotas` (escritura solo admin), `POST /solicitudes`,
   `GET /solicitudes` y `POST /solicitudes/:id/estado` (solo admin),
   `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF),
@@ -139,20 +152,26 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   raíz de Windows al truststore del JDK, por la inspección TLS corporativa).
 - **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8, #9 y #10 (esquema,
   API, consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de
-  UAT, CRUD de mascotas).
-  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio.
+  UAT, CRUD de mascotas). La **persistencia MySQL (M-17)** quedó implementada y en uso
+  (scripts `db:*`, API con `mysql2`, web servida por la API).
+  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; login con Google (#11).
 
 ## 4. Comandos clave
 
 ```powershell
 npm test           # suite P-01…P-18; actualiza resultados_pruebas.json (esperado 18/18)
-npm start          # API local en http://localhost:3000 (mascotas + solicitudes)
+npm start          # web + API en http://localhost:3000 (MySQL si responde; si no, memoria)
+npm run db:iniciar # arranca MySQL portátil (127.0.0.1:3307); db:detener / db:estado
+npm run db:preparar # aplica sql/schema.sql y siembra; db:reset reinicia (UAT/pruebas)
 npm run uat:medir  # calcula la línea base de tiempos de la UAT → docs/uat/linea_base_tiempos.json
 node uat/ejecutar_uat.js  # re-ejecuta y cronometra los 16 escenarios (frontend jsdom + API limpia) → CSV
 npm run sync       # cap sync android (coopia www/ → android/.../assets/public/)
 npm run open:android  # abrir proyecto en Android Studio (no disponible en esta máquina)
-npx serve www      # servir el front-end localmente
+npx serve www      # servir el front-end localmente (alternativa sin la API)
 ```
+
+Antes de correr la UAT contra MySQL: `npm run db:iniciar`, `npm run db:reset` y `npm start`,
+luego `node uat/ejecutar_uat.js`.
 
 Verificación rápida de integridad: comparar hashes de `www/index.html`,
 `www/css/style.css`, `www/js/script.js` con su par en
@@ -169,7 +188,8 @@ Verificación rápida de integridad: comparar hashes de `www/index.html`,
    (versiones en caché local). En el **codespace de opencode** el registro **sí** es accesible:
    `npm install` normal instala la cadena completa (`node_modules/` está en `.gitignore`). Los
    `overrides` siguen siendo válidos con conexión y no estorban.
-   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) también están en `dependencies`.
+   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) y de base de datos
+   (`mysql2@^3.23.1`) también están en `dependencies`.
 4. **APK**: el único binario versionado es `android/app/build/outputs/apk/debug/app-debug.apk`
    (excepción deliberada en `.gitignore`, como evidencia). No borrar.
 5. **Datos legales**: al capturar datos reales de adoptantes aplica la **Ley 1581 de 2012**

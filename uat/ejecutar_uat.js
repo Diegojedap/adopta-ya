@@ -1,16 +1,17 @@
 // Ejecución simulada de la UAT de ¡ADOPTA YA! (16 escenarios) contra la app REAL.
 // Levanta el frontend en jsdom con fetch enrutado a la API local y ejecuta los
 // flujos del guion (docs/uat/guion_escenarios.md) cronometrados.
-// Requisitos: API corriendo en http://localhost:3000 con estado limpio (npm start)
-// y el store en memoria recién arrancado (esta simulación crea mascotas/solicitudes).
+// Requisitos: API corriendo en http://localhost:3000 con estado limpio
+// (npm run db:reset si hay MySQL, o reiniciando la API si opera en memoria).
 // Uso:
 //   node uat/ejecutar_uat.js [ruta_csv]
-//   Salida: docs/uat/resultados_simulacion_2026-10-13.csv
+//   Salida: docs/uat/resultados_simulacion_AAAA-MM-DD.csv
 const fs = require('fs');
 const path = require('path');
 
 const ROOT = process.cwd();
-const SALIDA = process.argv[2] || 'docs/uat/resultados_simulacion_2026-10-13.csv';
+const FECHA_HOY = new Date().toISOString().slice(0, 10);
+const SALIDA = process.argv[2] || ('docs/uat/resultados_simulacion_' + FECHA_HOY + '.csv');
 const JSDOM = require('jsdom').JSDOM;
 
 const html = fs.readFileSync(path.join(ROOT, 'www/index.html'), 'utf8');

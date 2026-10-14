@@ -36,9 +36,11 @@ ADOPTA-YA 1.0/                     ← raíz del repositorio
 ├── sql/
 │   ├── schema.sql                 ← esquema MySQL (usuarios, mascotas, solicitudes, evidencias)
 │   ├── seed.sql                   ← datos de ejemplo (Max, Luna, Rocky)
+│   ├── preparar_bd.js             ← aplica el esquema y siembra (npm run db:preparar / db:reset)
+│   ├── servidor_mysql.js          ← arranca/detiene/consulta el MySQL portátil (npm run db:*)
 │   └── adopta_ya.session.sql      ← evidencia de la intención de uso de MySQL
 ├── server/
-│   ├── index.js                   ← API REST local sin dependencias (mascotas y solicitudes)
+│   ├── index.js                   ← API REST + MySQL y sirve www/ (mascotas y solicitudes)
 │   └── .env.example               ← configuración de la API (copiar a .env en local)
 ├── www/                           ← código fuente web (index.html, css/, js/, img/)
 ├── android/                       ← proyecto Android/Capacitor (incluye APK debug)
@@ -65,13 +67,16 @@ aprobar o rechazar solicitudes y descarga del contrato de adopción en PDF para 
 seguimiento post-adopción con registro de evidencias (notas y fotos) y alertas del refugio a
 los 30/60/90 días. Responsivo a 700 px.
 
-### 2.2 API local (opcional)
+### 2.2 API local + base de datos
 
 Servidor con el módulo `http` de Node (sin framework) y auth con `bcryptjs` + `jsonwebtoken`.
-Levanta en `http://localhost:3000`:
+Levanta en `http://localhost:3000` y sirve **la web y la API juntas** (`npm start`):
 
 ```powershell
-npm start   # GET /health · GET /mascotas[:id] · POST /solicitudes
+npm run db:iniciar    # arranca MySQL local portátil (127.0.0.1:3307); db:detener / db:estado
+npm run db:preparar   # aplica sql/schema.sql y siembra; db:reset reinicia (UAT/pruebas)
+npm start             # web + API en http://localhost:3000
+            # GET /health · GET /mascotas[:id] · POST /solicitudes
             # GET /solicitudes · POST /solicitudes/:id/estado  (solo administrador, JWT)
             # GET /solicitudes/:id/contrato (PDF; aprobada y admin o adoptante dueño, JWT)
             # POST/GET /solicitudes/:id/evidencias (aprobada; admin o adoptante dueño, JWT)
@@ -79,10 +84,10 @@ npm start   # GET /health · GET /mascotas[:id] · POST /solicitudes
             # POST /auth/registro · POST /auth/login · GET /auth/perfil (JWT Bearer)
 ```
 
-Por defecto usa un store **en memoria** (mascotas y usuarios) con el admin de demo
-`admin@adoptaya.local` / `admin123`. Si hay MySQL (puerto 3307) y `mysql2` instalado, conecta
-y persiste mascotas/solicitudes (`sql/schema.sql` + `sql/seed.sql`); las credenciales se
-definen en `server/.env` (no versionado).
+Usa **MySQL** si responde (`GET /health` → `fuente: "mysql"`) y persiste usuarios,
+mascotas, solicitudes, evidencias y alertas; si no, cae a un store **en memoria** con aviso
+en consola. Admin de demo: `admin@adoptaya.local` / `admin123`. Puerto/usuario de MySQL y
+`JWT_SECRET` se configuran en `server/.env` (no versionado; ver `server/.env.example`).
 
 ### 2.3 Android
 
@@ -119,13 +124,13 @@ escenarios UAT-01…UAT-16 y plantilla de registro). Tras llenar el CSV de resul
 línea base de tiempos se calcula y queda como evidencia:
 
 ```powershell
-npm run uat:medir      # lee docs/uat/resultados_simulacion_2026-10-13.csv
+npm run uat:medir      # lee el CSV de simulación más reciente (docs/uat/resultados_simulacion_*.csv)
                        # y genera docs/uat/linea_base_tiempos.json
 ```
 
 La sesión con el refugio es un paso humano pendiente; ya existe una **simulación** de opencode
-(`docs/uat/resultados_simulacion_2026-10-13.csv`, con los 16 escenarios) que valida el flujo y
-la medición, sin sustituir la prueba con usuarios reales.
+(`docs/uat/resultados_simulacion_2026-10-14.csv`, con los 16 escenarios contra MySQL) que valida
+el flujo y la medición, sin sustituir la prueba con usuarios reales.
 
 ## 3. Herramientas y versiones
 
@@ -135,7 +140,8 @@ la medición, sin sustituir la prueba con usuarios reales.
 | Empaquetado móvil | Capacitor (core/cli/android) | 8.5.2 |
 | Android | Gradle wrapper / compileSdk / minSdk | 8.14.3 / 36 / 24 |
 | Pruebas | Node.js + jsdom | 24.16 / 23.0.1 |
-| Base de datos (prevista) | MySQL local (SQLTools en VS Code) | puerto 3307 |
+| Base de datos | MySQL local (SQLTools en VS Code) | 8.4.9 · puerto 3307 |
+| Driver de BD | mysql2 | ^3.23.1 |
 | IDE | Visual Studio Code | — |
 
 ## 4. Correcciones aplicadas en esta revisión (08/10/2026)

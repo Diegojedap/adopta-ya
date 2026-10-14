@@ -42,7 +42,7 @@ Al pulsar «Quiero adoptar…» se muestra un mensaje y se registra una solicitu
 - **Funciona:** confirmación visual (P-06 ✅) y `POST /solicitudes` que crea la solicitud
   con estado «en_revision» (P-07 ✅).
 - **Limitación:** sin formulario de postulación ni datos del adoptante (M-11 pendiente);
-  la solicitud se guarda en el store en memoria de la API (o MySQL si está conectado).
+  la solicitud se guarda en la API (persistida en MySQL cuando está arrancado).
 - **Requisitos:** REQ-02 («Permitir iniciar una solicitud de adopción desde la mascota»)
 
 ### M-05 · Responsabilidad en la adopción (✅ Implementado)
@@ -84,7 +84,8 @@ Registro, login con hashing y control de acceso por JWT; roles administrador/ado
 - **Funciona:** hash con `bcryptjs` (10 rondas) y token `jsonwebtoken` (24 h); admin de demo
   `admin@adoptaya.local` / `admin123`; **cerrar sesión** (`#btn-salir`, visible solo con sesión
   activa) que borra el token de `localStorage` y vuelve a «Sin sesión iniciada».
-- **Limitación:** usuarios en memoria (no persisten en MySQL) y sin panel por rol todavía.
+- **Limitación:** sin login con Google (roadmap #11) ni recuperación de contraseña; el rol
+  veterinario está definido pero sin panel propio.
 - **Pruebas:** P-09 ✅
 - **Requisitos:** REQ-05
 
@@ -95,15 +96,20 @@ Servidor con el módulo `http` de Node (sin framework): `GET /health`, `GET /mas
 `POST/GET /solicitudes/:id/evidencias`, `GET /seguimiento/alertas` (admin) y
 `/auth/registro`, `/auth/login`, `/auth/perfil`; CORS habilitado.
 - **Archivos:** `server/index.js`; script `npm start`; config `server/.env.example`
-- **Funciona:** store en memoria con las mascotas de semilla; hook **opcional** a `mysql2`
-  (se activa si está instalado y hay conexión a MySQL).
+- **Archivos:** `server/index.js`; scripts `npm start`, `npm run db:*`; config `server/.env.example`
+- **Funciona:** usa **MySQL** si responde (`/health` → `fuente: "mysql"`) y persiste todas las
+  entidades; si no, cae a un store **en memoria** con aviso. Sirve también la web (`www/`).
 - **Pruebas:** P-05 ✅ · P-07 ✅
 - **Requisitos:** RNF-01 (parcial)
 
-### M-17 · Persistencia MySQL (◐ Esquema versionado)
-Esquema e inserción de datos de ejemplo para todas las entidades.
-- **Archivos:** `sql/schema.sql` (usuarios, mascotas, solicitudes, evidencias) y `sql/seed.sql`
-- **Limitación:** sin conexión activa en esta máquina (MySQL no confirmado); la API opera en memoria.
+### M-17 · Persistencia MySQL (✅ En uso)
+Esquema, semilla y acceso a datos de todas las entidades sobre MySQL local.
+- **Archivos:** `sql/schema.sql`, `sql/seed.sql`, `sql/servidor_mysql.js` (arranque/detención) y
+  `sql/preparar_bd.js` (aplica esquema y siembra; `--reset`).
+- **Funciona:** MySQL 8.4.9 portátil en `127.0.0.1:3307` (BD `adoptaya`); la API usa un pool de
+  `mysql2` y persiste usuarios, mascotas, solicitudes, historial, evidencias y alertas.
+- **Limitación:** MySQL es **local** (no hay servidor en la nube); si no está arrancado, la API
+  opera en memoria.
 - **Requisitos:** RNF-01
 
 ### M-11 · Formulario de postulación (◐ Parcial)
@@ -183,7 +189,7 @@ Panel de administración para registrar, editar y retirar mascotas, con ficha cl
 | ID | Módulo | Descripción (diseño Entregas 1-2) | Requisito | Estado |
 |---|---|---|---|---|
 | M-16 | API REST | Endpoints de mascotas, solicitudes, usuarios, evidencias y estados | RNF-01 | ◐ (mascotas, solicitudes, auth, evidencias) |
-| M-17 | Persistencia MySQL | Esquema y acceso a datos de todas las entidades | RNF-01 | ◐ (esquema versionado, sin conexión) |
+| M-17 | Persistencia MySQL | Esquema y acceso a datos de todas las entidades | RNF-01 | ✅ (MySQL local en uso) |
 | M-18 | Despliegue cloud | Publicación web (Vercel + Render free tier) y APK de producción | Viabilidad Entrega 1 | ✗ |
 
 > Evidencia indirecta de intención MySQL: `sql/adopta_ya.session.sql`
@@ -200,7 +206,7 @@ Panel de administración para registrar, editar y retirar mascotas, con ficha cl
 | REQ-03 · Seguimiento post-adopción y recordatorios | Alta | M-14, M-15 | P-15, P-16 | ◐ Evidencias cargadas por el adoptante y alertas 30/60/90 calculadas; falta notificación real |
 | REQ-04 · Interfaz responsive móvil/escritorio | Alta | M-06, M-07 | P-02, P-03, P-08, P-13, P-14 | ✅ Cumplido (APK regenerado 13/10/2026) |
 | REQ-05 · Hashing y autenticación de credenciales | Alta | M-09 | P-09 | ✅ bcrypt + JWT (usuarios en memoria) |
-| RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✗ Sin persistencia |
+| RNF-01 · Trazabilidad de solicitudes y estados | Alta | M-12, M-16, M-17 | — | ✅ Persistido en MySQL |
 | RNF-02 · Sin secretos en texto plano | Alta | — (higiene) | P-10 | ✅ Corregido en esta revisión |
 | RNF-03 · Pruebas automatizadas/repetibles | Media | M-08 | P-11, P-12, P-17 | ✅ `npm test` ejecutable + kit UAT |
 
@@ -214,7 +220,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 
 | # | Tarea | Módulo | Prioridad | Nota |
 |---|---|---|---|---|
-| 1 | Modelar el esquema MySQL (usuarios, mascotas, solicitudes, estados, evidencias) y versionarlo en SQL | M-17 | P0 | ✅ Hecho 08/10/2026 (`sql/schema.sql`, `sql/seed.sql`) |
+| 1 | Modelar el esquema MySQL (usuarios, mascotas, solicitudes, estados, evidencias) y versionarlo en SQL | M-17 | P0 | ✅ Hecho 08/10/2026 (`sql/schema.sql`, `sql/seed.sql`). MySQL local **en uso desde 14/10/2026** (scripts `db:*` + API con `mysql2`) |
 | 2 | API REST mínima: `GET /mascotas`, `POST /solicitudes` (estado «En revisión») | M-16 | P0 | ✅ Hecho 08/10/2026 (`server/index.js`; habilita P-05/P-07) |
 | 3 | Consumir la API en `script.js` (reemplazar catálogo hardcodeado y `alert`) | M-03, M-04 | P0 | ✅ Hecho 08/10/2026 (con reserva estática) |
 | 4 | Registro/login con bcrypt + JWT y roles | M-09 | P1 | ✅ Hecho 08/10/2026 (`server/index.js`; P-09) |
@@ -222,7 +228,7 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 | 6 | Regenerar APK con Android Studio y publicar demo web | M-18 | P1 | ✅ APK regenerado 13/10/2026 (JDK 21 + SDK local; cierra F-08). ◐ Falta publicar la demo web (Vercel + Render) |
 | 7 | Contrato PDF con plantilla | M-13 | P2 | ✅ Hecho 09/10/2026 (`server/contrato.js`, sin dependencias) |
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
-| 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación hechos 12/10/2026 (12 escenarios) y **ampliados a 16 con el CRUD de mascotas (UAT-13…UAT-16) el 13/10/2026**; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos de la simulación **D-001** (n.º de solicitud) y **D-002** (nota de rechazo en la tarjeta) corregidos 12/10/2026 |
+| 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación (16 escenarios) hechos 13/10/2026 y **re-ejecutados contra MySQL el 14/10/2026 (16/16)**; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos **D-001** y **D-002** corregidos 12/10/2026 |
 | 10 | CRUD de mascotas con ficha clínica para el refugio | M-10 | P1 | ✅ Hecho 12/10/2026 (`server/index.js` + panel `#gestion-mascotas`; P-18) |
 
 ---
@@ -238,5 +244,6 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 - **Se puede probar con evidencia:** `npm test` (tabla P-01…P-18), `resultados_pruebas.json`,
   la API local (`npm start`) y los artefactos UAT (`docs/04_UAT.md`, `docs/uat/`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy
-  es la capa de presentación con una API de prototipo (datos en memoria, notificaciones reales
-  pendientes) y la arquitectura/backlog definidos para completarlo.
+  es un prototipo full-stack local (web + API + MySQL local, notificaciones por correo
+  pendientes) con la arquitectura/backlog definidos para completarlo. Falta publicar la demo
+  web (M-18) y el login con Google (#11).

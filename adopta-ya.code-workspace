@@ -16,10 +16,10 @@
 				"server": "127.0.0.1",
 				"port": 3307,
 				"driver": "MySQL",
-				"name": "adopta_ya",
+				"name": "adoptaya",
 				"username": "root",
 				"password": "",
-				"database": "adopta_ya"
+				"database": "adoptaya"
 			}
 		]
 	}

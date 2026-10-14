@@ -112,8 +112,8 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 | Capa | Estado | Evidencia |
 |---|---|---|
 | Presentación | **Implementada (parcial)** — catálogo dinámico vía API con reserva estática, navegación, acceso, postulación, panel de evaluación, seguimiento y CRUD de mascotas | `www/` (P-02, P-03, P-04, P-06, P-08, P-15, P-16, P-18) |
-| Aplicación/API | **Implementada (prototipo)** — CRUD de mascotas, solicitudes, evaluación, evidencias y alertas sobre store en memoria (hook opcional a MySQL) | `server/index.js`, `npm start` (P-05, P-07, P-18) |
-| Persistencia | **Esquema versionado**, sin conexión activa (sin MySQL confirmado) | `sql/schema.sql`, `sql/seed.sql` |
+| Aplicación/API | **Implementada (prototipo)** — CRUD de mascotas, solicitudes, evaluación, evidencias y alertas; sirve también la web | `server/index.js`, `npm start` (P-05, P-07, P-18) |
+| Persistencia | **Implementada (MySQL local en uso)** — usuarios, mascotas, solicitudes, historial, evidencias y alertas | `sql/schema.sql`, `sql/seed.sql`, `sql/preparar_bd.js`, `sql/servidor_mysql.js` |
 | Seguridad | **Implementada (prototipo)** | auth con `bcryptjs` + JWT (P-09); sin secretos versionados (P-10) |
 | Servicios (PDF/alertas) | **Implementados (prototipo)** — contrato PDF sin dependencias (M-13) y alertas de seguimiento 30/60/90 calculadas (M-15, sin scheduler ni correo) | `server/contrato.js`, rutas `/contrato` y `/seguimiento/alertas` |
 | Empaquetado Android | **Implementado** — APK debug regenerado 13/10/2026 sobre la fuente corregida | `android/`, P-13, P-14 |
@@ -130,8 +130,8 @@ del modelo de datos, reglas de negocio, seguridad y trazabilidad).
 | Java | JDK del sistema; se requirió JDK 21 para compilar | 17.0.20.1 en `C:\Java` (se usó un JDK 21 portátil: Capacitor 8 exige 21) | `java -version` |
 | Pruebas | Node.js 24.16 + jsdom 23.0.1 | suite P-01…P-18 | `npm test` |
 | Paquetes | npm 11.13 | resolución offline (registro npmjs.org inaccesible) | `package-lock.json` |
-| Base de datos prevista | MySQL en 127.0.0.1:3307 (SQLTools) | esquema en `sql/schema.sql` + `sql/seed.sql`, sin conexión activa | `adopta-ya.code-workspace`, `server/index.js` |
-| API local | Node.js (módulo `http`, sin dependencias) | puerto 3000 · `npm start` | `server/index.js` |
+| Base de datos | MySQL 8.4.9 portátil en 127.0.0.1:3307 (SQLTools) | esquema en `sql/schema.sql` + `sql/seed.sql`; arranque con `npm run db:iniciar` | `adopta-ya.code-workspace`, `server/index.js` |
+| API local | Node.js (módulo `http`) + `mysql2` | puerto 3000 · `npm start` (web + API) | `server/index.js` |
 | IDE | Visual Studio Code | `launch.json` apunta a `http://localhost:8080` | `.vscode/` |
 
 ## 6. ¿Dónde está alojada la aplicación?
