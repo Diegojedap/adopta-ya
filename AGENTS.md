@@ -24,9 +24,10 @@ post-adopción y la reducción de abandonos.
 datos **MySQL local** (persistencia real de usuarios, mascotas, solicitudes, evidencias y
 alertas; contrato PDF). **NO está desplegado en la nube** ni es un sistema productivo: sin
 hosting, sin cuentas de producción y sin notificaciones reales por correo. El **login con
-Google (#11)** ya está **implementado y funcionando a nivel local** (web con Google Identity
-Services y APK con plugin nativo); solo falta **configurar las credenciales** (Web client ID)
-para probarlo de punta a punta (ver `docs/05_LOGIN_GOOGLE.md`).
+Google (#11)** está **funcionando en web a nivel local** (Google Identity Services + Web client
+ID ya configurado; usuario creado en MySQL); en **APK** falta **confirmar la credencial Android**
+(`com.adoptaya.app` + SHA-1) para probarlo (ver `docs/05_LOGIN_GOOGLE.md`). El **Panel CEO (M-19)**
+está implementado (vista de control solo para el administrador).
 
 ## 2. Estructura del repositorio
 
@@ -97,7 +98,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-13 contrato PDF (◐ generado sin dependencias para aprobadas) ·
   M-14 seguimiento (◐ evidencias de adopción aprobada, dueño o admin) ·
   M-15 alertas (◐ hitos 30/60/90 calculados, sin scheduler/correo) ·
-  M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (✅ en uso: esquema + scripts `db:*` + API).
+  M-16 API REST (◐ prototipo) · M-17 persistencia MySQL (✅ en uso: esquema + scripts `db:*` + API) ·
+  M-19 Panel CEO (✅ dashboard admin: KPIs, distribuciones, flujo y base de datos; 14/10/2026).
 - **UAT (kit):** `docs/04_UAT.md` + `docs/uat/` (16 escenarios UAT-01…UAT-16 y plantilla);
   línea base de tiempos reproducible con `npm run uat:medir`; **simulación EJECUTADA el
   13/10/2026** (en memoria, `docs/uat/resultados_simulacion_2026-10-13.csv`, acta
@@ -125,7 +127,14 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **Cerrar sesión (13/10/2026):** botón `#btn-salir` (visible solo con sesión activa; `#btn-entrar`
   se oculta entonces) que ejecuta `cerrarSesion()` → borra `localStorage.token`, `mostrarSesion(null)`
   y cierra `#modal-login`. `mostrarSesion()` alterna la visibilidad de ambos botones.
-- **Login con Google (14/10/2026, #11):** implementado web + APK (◐ falta el Web client ID).
+- **Login con Google (14/10/2026, #11):** **funcionando en web** (E2E con una cuenta Google real:
+  usuario creado en MySQL con `proveedor=google`); en APK queda ◐ (falta confirmar la credencial
+  Android `com.adoptaya.app` + SHA-1). Web client ID configurado en `server/.env` y
+  `www/js/script.js`. **Fix TLS duradero:** por la inspección corporativa, la verificación de
+  certificados de `googleapis.com` fallaba (`self-signed certificate in certificate chain`); ahora
+  `server/index.js` usa un `https.Agent` con `[...tls.rootCertificates, CAs extra]`, con las CAs
+  extra en `certs/windows-ca-bundle.pem` (gitignored; override con `CA_BUNDLE_PATH` /
+  `NODE_EXTRA_CA_CERTS`).
   Backend: `POST /auth/google` verifica el ID token con `google-auth-library@11.3.0`
   (audiencia = `GOOGLE_CLIENT_ID`), crea/vincula el usuario en MySQL y emite el JWT propio;
   el esquema `usuarios` ahora tiene `clave_hash NULL`, `proveedor` (`local`/`google`) y
@@ -139,6 +148,15 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   `android/app/src/main/res/xml/network_security_config.xml` (cleartext) referenciado en el
   manifest. Guía de credenciales en `docs/05_LOGIN_GOOGLE.md`. **P-11** amplió su allowlist con
   `google-auth-library` y `@capgo/capacitor-social-login`.
+- **Panel CEO (14/10/2026, M-19):** vista de control **solo para el administrador** distinta de
+  los paneles normales. Botón `#btn-ceo` («Panel CEO», gradiente teal→coral) que abre
+  `#modal-ceo` con 7 pestañas (Resumen, Flujo, Mascotas, Solicitudes, Usuarios, Seguimiento,
+  Base de datos). Backend: `GET /admin/resumen` (solo admin) → `resumenAdmin()` con KPIs,
+  distribuciones (rol/proveedor/estado/especie), `flujo`, `actividad` y `tablas` (usuarios
+  sanitizados, sin `clave_hash`). Frontend: `esAdmin()`, `abrirPanelCeo()`, `cargarResumenCeo()`,
+  `mostrarPestanaCeo()`, `renderCeo()`, helpers (`kpiCeo`/`barrasCeo`/`tablaObjetosCeo`/`cajaFlujo`/
+  `cajaBd`/`escaparCeo`) e i18n `ceo_*` ES/EN; `mostrarSesion()` muestra/oculta
+  `#btn-panel`/`#btn-gestion`/`#btn-ceo` según rol. Estilos `.ceo-*` en `www/css/style.css`.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
@@ -152,7 +170,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   `GET /solicitudes` y `POST /solicitudes/:id/estado` (solo admin),
   `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF),
   `POST/GET /solicitudes/:id/evidencias` (aprobada, admin o dueño) y
-  `GET /seguimiento/alertas` (solo admin),
+  `GET /seguimiento/alertas` (solo admin) y `GET /admin/resumen` (solo admin),
   `POST /auth/registro`, `POST /auth/login`, `POST /auth/google`, `GET /auth/perfil` (JWT Bearer).
   Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
@@ -172,9 +190,10 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8, #9 y #10 (esquema,
   API, consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de
   UAT, CRUD de mascotas). La **persistencia MySQL (M-17)** quedó implementada y en uso
-  (scripts `db:*`, API con `mysql2`, web servida por la API).
-  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; configurar las
-  credenciales y probar el login con Google (#11, ya implementado).
+  (scripts `db:*`, API con `mysql2`, web servida por la API). El **Panel CEO (M-19)** y el
+  **login con Google en web (#11)** quedaron implementados.
+  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; crear/confirmar la
+  **credencial Android** de Google para probar el login nativo del APK (#11).
 
 ## 4. Comandos clave
 

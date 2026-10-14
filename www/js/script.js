@@ -5,7 +5,7 @@ const API_BASE = esPlataformaNativa() ? API_HOST_ANDROID : "http://localhost:300
 
 // Web client ID de Google Cloud (dato público). Debe coincidir con GOOGLE_CLIENT_ID del backend.
 // Ver docs/05_LOGIN_GOOGLE.md. En el APK se usa además como webClientId del plugin nativo.
-const GOOGLE_CLIENT_ID = "";
+const GOOGLE_CLIENT_ID = "823605358525-ddd7eabhckt0ekj937npstkvnha3p8cl.apps.googleusercontent.com";
 
 let idiomaActual = "es";
 let usuarioActual = null;
@@ -63,6 +63,61 @@ const DICCIONARIO = {
         btn_registrarse: "Registrarse",
         acceso_o: "o",
         btn_google: "Continuar con Google",
+        google_cargando: "Cargando Google…",
+        google_error: "No se pudo iniciar con Google. Revisa la consola (F12).",
+
+        // Panel CEO (solo administrador)
+        nav_ceo: "Panel CEO",
+        ceo_etiqueta: "Dirección",
+        ceo_titulo: "Panel CEO · Control general del proyecto",
+        ceo_refrescar: "Actualizar datos",
+        ceo_tab_resumen: "Resumen",
+        ceo_tab_flujo: "Flujo",
+        ceo_tab_mascotas: "Mascotas",
+        ceo_tab_solicitudes: "Solicitudes",
+        ceo_tab_usuarios: "Usuarios",
+        ceo_tab_seguimiento: "Seguimiento",
+        ceo_tab_bd: "Base de datos",
+        ceo_cargando: "Cargando datos…",
+        ceo_sin_sesion: "Inicia sesión como administrador.",
+        ceo_sin_datos: "Sin datos",
+        ceo_fuente: "Fuente de datos",
+        ceo_generado: "Actualizado",
+        ceo_kpi_usuarios: "Usuarios",
+        ceo_kpi_mascotas: "Mascotas",
+        ceo_kpi_mascotas_disp: "Mascotas disponibles",
+        ceo_kpi_solicitudes: "Solicitudes",
+        ceo_kpi_adopciones: "Adopciones",
+        ceo_kpi_rechazadas: "Rechazadas",
+        ceo_kpi_evidencias: "Evidencias",
+        ceo_kpi_alertas: "Alertas de seguimiento",
+        ceo_kpi_tasa: "Tasa de aprobación",
+        ceo_seccion_usuarios_rol: "Usuarios por rol",
+        ceo_seccion_usuarios_prov: "Usuarios por origen",
+        ceo_seccion_mascotas_estado: "Mascotas por estado",
+        ceo_seccion_mascotas_especie: "Mascotas por especie",
+        ceo_seccion_solicitudes_estado: "Solicitudes por estado",
+        ceo_seccion_alertas_estado: "Alertas por estado",
+        ceo_flujo_titulo: "Flujo de adopción",
+        ceo_actividad_titulo: "Actividad reciente (últimas solicitudes)",
+        ceo_val_sin_dato: "Sin dato",
+        ceo_val_rol_administrador: "Administrador",
+        ceo_val_rol_adoptante: "Adoptante",
+        ceo_val_rol_veterinario: "Veterinario",
+        ceo_val_estado_disponible: "Disponible",
+        ceo_val_estado_en_revision: "En revisión",
+        ceo_val_estado_adoptado: "Adoptado",
+        ceo_val_estado_aprobada: "Aprobada",
+        ceo_val_estado_rechazada: "Rechazada",
+        ceo_val_proveedor_local: "Cuenta local",
+        ceo_val_proveedor_google: "Cuenta Google",
+        ceo_val_especie_perro: "Perro",
+        ceo_val_especie_gato: "Gato",
+        ceo_val_especie_otro: "Otro",
+        ceo_val_alerta_al_dia: "Al día",
+        ceo_val_alerta_vencida: "Vencida",
+        ceo_val_alerta_vencida_final: "Vencida (final)",
+        ceo_val_alerta_completada: "Completada",
 
         // Postulación
         postulacion_etiqueta: "Quiero adoptar",
@@ -219,6 +274,61 @@ const DICCIONARIO = {
         btn_registrarse: "Sign up",
         acceso_o: "or",
         btn_google: "Continue with Google",
+        google_cargando: "Loading Google…",
+        google_error: "Could not sign in with Google. Check the console (F12).",
+
+        // CEO panel (administrator only)
+        nav_ceo: "CEO Panel",
+        ceo_etiqueta: "Management",
+        ceo_titulo: "CEO Panel · Project-wide control",
+        ceo_refrescar: "Refresh data",
+        ceo_tab_resumen: "Overview",
+        ceo_tab_flujo: "Flow",
+        ceo_tab_mascotas: "Pets",
+        ceo_tab_solicitudes: "Applications",
+        ceo_tab_usuarios: "Users",
+        ceo_tab_seguimiento: "Follow-up",
+        ceo_tab_bd: "Database",
+        ceo_cargando: "Loading data…",
+        ceo_sin_sesion: "Sign in as administrator.",
+        ceo_sin_datos: "No data",
+        ceo_fuente: "Data source",
+        ceo_generado: "Updated",
+        ceo_kpi_usuarios: "Users",
+        ceo_kpi_mascotas: "Pets",
+        ceo_kpi_mascotas_disp: "Available pets",
+        ceo_kpi_solicitudes: "Applications",
+        ceo_kpi_adopciones: "Adoptions",
+        ceo_kpi_rechazadas: "Rejected",
+        ceo_kpi_evidencias: "Evidence",
+        ceo_kpi_alertas: "Follow-up alerts",
+        ceo_kpi_tasa: "Approval rate",
+        ceo_seccion_usuarios_rol: "Users by role",
+        ceo_seccion_usuarios_prov: "Users by origin",
+        ceo_seccion_mascotas_estado: "Pets by status",
+        ceo_seccion_mascotas_especie: "Pets by species",
+        ceo_seccion_solicitudes_estado: "Applications by status",
+        ceo_seccion_alertas_estado: "Alerts by status",
+        ceo_flujo_titulo: "Adoption flow",
+        ceo_actividad_titulo: "Recent activity (latest applications)",
+        ceo_val_sin_dato: "No data",
+        ceo_val_rol_administrador: "Administrator",
+        ceo_val_rol_adoptante: "Adopter",
+        ceo_val_rol_veterinario: "Veterinarian",
+        ceo_val_estado_disponible: "Available",
+        ceo_val_estado_en_revision: "Under review",
+        ceo_val_estado_adoptado: "Adopted",
+        ceo_val_estado_aprobada: "Approved",
+        ceo_val_estado_rechazada: "Rejected",
+        ceo_val_proveedor_local: "Local account",
+        ceo_val_proveedor_google: "Google account",
+        ceo_val_especie_perro: "Dog",
+        ceo_val_especie_gato: "Cat",
+        ceo_val_especie_otro: "Other",
+        ceo_val_alerta_al_dia: "Up to date",
+        ceo_val_alerta_vencida: "Overdue",
+        ceo_val_alerta_vencida_final: "Overdue (final)",
+        ceo_val_alerta_completada: "Completed",
 
         // Application
         postulacion_etiqueta: "I want to adopt",
@@ -393,6 +503,12 @@ function mostrarSesion(usuario) {
     if (entrar) entrar.hidden = !!usuario;
     const salir = document.getElementById("btn-salir");
     if (salir) salir.hidden = !usuario;
+
+    const esAdm = !!usuario && usuario.rol === "administrador";
+    ["btn-panel", "btn-gestion", "btn-ceo"].forEach(function (id) {
+        const boton = document.getElementById(id);
+        if (boton) boton.hidden = !esAdm;
+    });
 }
 
 function cerrarSesion() {
@@ -400,6 +516,7 @@ function cerrarSesion() {
     usuarioActual = null;
     mostrarSesion(null);
     cerrarModal("modal-login");
+    cerrarModal("modal-ceo");
 }
 
 function ingresar() {
@@ -450,11 +567,18 @@ function esPlataformaNativa() {
         typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform();
 }
 
+function googleEstado(mensaje) {
+    const etiqueta = document.getElementById("google-estado");
+    if (etiqueta) etiqueta.textContent = mensaje || "";
+}
+
 function cargarGoogleScript(callback) {
     if (window.google && window.google.accounts) return callback();
     const existente = document.getElementById("google-gsi");
     if (existente) {
+        if (existente.dataset.cargado === "1") return callback();
         existente.addEventListener("load", callback);
+        existente.addEventListener("error", function () { googleEstado(t("google_error")); });
         return;
     }
     const script = document.createElement("script");
@@ -462,7 +586,8 @@ function cargarGoogleScript(callback) {
     script.src = "https://accounts.google.com/gsi/client";
     script.async = true;
     script.defer = true;
-    script.onload = callback;
+    script.onload = function () { script.dataset.cargado = "1"; callback(); };
+    script.onerror = function () { googleEstado(t("google_error")); };
     document.head.appendChild(script);
 }
 
@@ -473,23 +598,29 @@ function procesarCredencialGoogle(idToken) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ idToken: idToken })
     })
-        .then(function (respuesta) { return respuesta.json(); })
-        .then(function (datos) {
-            if (datos && datos.token) {
-                try { localStorage.setItem("token", datos.token); } catch (e) {}
-                mostrarSesion(datos.usuario);
+        .then(function (respuesta) { return respuesta.json().then(function (d) { return { ok: respuesta.ok, datos: d }; }); })
+        .then(function (r) {
+            if (r.ok && r.datos && r.datos.token) {
+                try { localStorage.setItem("token", r.datos.token); } catch (e) {}
+                mostrarSesion(r.datos.usuario);
                 cerrarModal("modal-login");
             } else {
                 mostrarSesion(null);
+                googleEstado((r.datos && r.datos.error) ? r.datos.error : t("google_error"));
             }
         })
-        .catch(function () { mostrarSesion(null); });
+        .catch(function (e) {
+            mostrarSesion(null);
+            googleEstado(t("google_error") + " " + (e && e.message ? e.message : ""));
+        });
 }
 
 function inicializarGoogle() {
     if (!GOOGLE_CLIENT_ID || esPlataformaNativa()) return;
+    if (googleWebInicializado) return;
+    googleEstado(t("google_cargando"));
     cargarGoogleScript(function () {
-        if (!window.google || !window.google.accounts) return;
+        if (!window.google || !window.google.accounts) { googleEstado(t("google_error")); return; }
         const contenedor = document.getElementById("google-btn");
         window.google.accounts.id.initialize({
             client_id: GOOGLE_CLIENT_ID,
@@ -505,6 +636,7 @@ function inicializarGoogle() {
             const propio = document.getElementById("btn-google");
             if (propio) propio.hidden = true;
         }
+        googleEstado("");
         googleWebInicializado = true;
     });
 }
@@ -967,6 +1099,7 @@ function cargarMascotasAdmin() {
 function abrirModal(id) {
     const modal = document.getElementById(id);
     if (modal) modal.classList.add("abierto");
+    if (id === "modal-login") inicializarGoogle();
 }
 
 function cerrarModal(id) {
@@ -1033,6 +1166,9 @@ function aplicarIdioma(idioma) {
     }
     actualizarBotonIdioma();
     mostrarSesion(usuarioActual);
+
+    const modalCeo = document.getElementById("modal-ceo");
+    if (ceoDatos && modalCeo && modalCeo.classList.contains("abierto")) renderCeo();
 }
 
 function alternarIdioma() {
@@ -1047,11 +1183,183 @@ function inicializarIdioma() {
     aplicarIdioma(guardado === "en" ? "en" : "es");
 }
 
+// ===================== PANEL CEO (solo administrador) =====================
+
+function esAdmin() {
+    return !!usuarioActual && usuarioActual.rol === "administrador";
+}
+
+function abrirPanelCeo() {
+    if (!esAdmin()) return;
+    abrirModal("modal-ceo");
+    cargarResumenCeo();
+}
+
+let ceoDatos = null;
+let ceoPestana = "resumen";
+
+function escaparCeo(valor) {
+    return String(valor == null ? "" : valor)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+}
+
+function valorCeo(grupo, valor) {
+    const clave = "ceo_val_" + grupo + "_" + (valor == null ? "sin_dato" : valor);
+    const texto = t(clave);
+    return texto === clave ? escaparCeo(valor) : texto;
+}
+
+function cargarResumenCeo() {
+    const cont = document.getElementById("ceo-contenido");
+    const meta = document.getElementById("ceo-meta");
+    let token = null;
+    try { token = localStorage.getItem("token"); } catch (e) {}
+    if (!token) {
+        if (cont) cont.innerHTML = '<p class="ceo-vacio">' + t("ceo_sin_sesion") + '</p>';
+        return;
+    }
+    if (cont) cont.innerHTML = '<p class="ceo-vacio">' + t("ceo_cargando") + '</p>';
+    fetch(API_BASE + "/admin/resumen", { headers: { "Authorization": "Bearer " + token } })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (!datos || !datos.kpis) {
+                if (cont) cont.innerHTML = '<p class="ceo-vacio">' + t("panel_no_autorizado") + '</p>';
+                return;
+            }
+            ceoDatos = datos;
+            if (meta) {
+                const fecha = datos.generado_en ? new Date(datos.generado_en).toLocaleString() : "";
+                meta.textContent = t("ceo_fuente") + ": " + datos.fuente + " · " + t("ceo_generado") + ": " + fecha;
+            }
+            renderCeo();
+        })
+        .catch(function () {
+            if (cont) cont.innerHTML = '<p class="ceo-vacio">' + t("servidor_error") + '</p>';
+        });
+}
+
+function mostrarPestanaCeo(nombre) {
+    ceoPestana = nombre;
+    const tabs = document.querySelectorAll("#ceo-tabs .ceo-tab");
+    for (let i = 0; i < tabs.length; i++) {
+        tabs[i].classList.toggle("activa", tabs[i].getAttribute("data-tab") === nombre);
+    }
+    const secciones = document.querySelectorAll("#ceo-contenido .ceo-seccion");
+    for (let i = 0; i < secciones.length; i++) {
+        secciones[i].classList.toggle("activa", secciones[i].getAttribute("data-panel") === nombre);
+    }
+}
+
+function kpiCeo(etiqueta, valor, acento) {
+    return '<div class="ceo-kpi' + (acento ? " ceo-kpi--" + acento : "") + '">' +
+        '<span class="ceo-kpi-valor">' + escaparCeo(valor) + '</span>' +
+        '<span class="ceo-kpi-etiqueta">' + etiqueta + '</span></div>';
+}
+
+function barrasCeo(obj, grupo) {
+    const claves = Object.keys(obj || {});
+    if (!claves.length) return '<p class="ceo-vacio">' + t("ceo_sin_datos") + '</p>';
+    const total = claves.reduce(function (a, k) { return a + obj[k]; }, 0) || 1;
+    return claves.map(function (k) {
+        const pct = Math.round((obj[k] / total) * 100);
+        return '<div class="ceo-barra">' +
+            '<span class="ceo-barra-nombre">' + valorCeo(grupo, k) + '</span>' +
+            '<span class="ceo-barra-pista"><span class="ceo-barra-relleno" style="width:' + pct + '%"></span></span>' +
+            '<span class="ceo-barra-valor">' + obj[k] + ' (' + pct + '%)</span></div>';
+    }).join("");
+}
+
+function tablaObjetosCeo(filas) {
+    if (!filas || !filas.length) return '<p class="ceo-vacio">' + t("ceo_sin_datos") + '</p>';
+    const claves = Object.keys(filas[0]);
+    const cabecera = "<tr>" + claves.map(function (c) { return "<th>" + escaparCeo(c) + "</th>"; }).join("") + "</tr>";
+    const cuerpo = filas.map(function (fila) {
+        return "<tr>" + claves.map(function (c) {
+            let v = fila[c];
+            if (v == null) v = "";
+            else if (typeof v === "boolean") v = v ? "sí" : "no";
+            else if (typeof v === "object") v = JSON.stringify(v);
+            return "<td>" + escaparCeo(v) + "</td>";
+        }).join("") + "</tr>";
+    }).join("");
+    return '<div class="ceo-tabla-scroll"><table class="ceo-tabla"><thead>' + cabecera + '</thead><tbody>' + cuerpo + '</tbody></table></div>';
+}
+
+function cajaFlujo(titulo, valor, clase) {
+    return '<div class="ceo-flujo-caja ceo-flujo--' + clase + '">' +
+        '<span class="ceo-flujo-num">' + escaparCeo(valor) + '</span>' +
+        '<span class="ceo-flujo-txt">' + titulo + '</span></div>';
+}
+
+function cajaBd(titulo, filas) {
+    const n = (filas || []).length;
+    return '<div class="ceo-caja ceo-caja--bd"><h3>' + titulo +
+        ' <span class="ceo-badge">' + n + '</span></h3>' + tablaObjetosCeo(filas) + '</div>';
+}
+
+function renderCeo() {
+    const cont = document.getElementById("ceo-contenido");
+    if (!cont || !ceoDatos) return;
+    const d = ceoDatos;
+    const k = d.kpis;
+
+    const resumen =
+        '<section class="ceo-seccion" data-panel="resumen">' +
+            '<div class="ceo-kpis">' +
+                kpiCeo(t("ceo_kpi_usuarios"), k.usuarios) +
+                kpiCeo(t("ceo_kpi_mascotas"), k.mascotas) +
+                kpiCeo(t("ceo_kpi_mascotas_disp"), k.mascotas_disponibles) +
+                kpiCeo(t("ceo_kpi_solicitudes"), k.solicitudes) +
+                kpiCeo(t("ceo_kpi_adopciones"), k.adopciones, "ok") +
+                kpiCeo(t("ceo_kpi_rechazadas"), k.rechazadas, "mal") +
+                kpiCeo(t("ceo_kpi_evidencias"), k.evidencias) +
+                kpiCeo(t("ceo_kpi_alertas"), k.alertas) +
+                kpiCeo(t("ceo_kpi_tasa"), k.tasa_aprobacion + "%", "ok") +
+            '</div>' +
+            '<div class="ceo-grid">' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_usuarios_rol") + '</h3>' + barrasCeo(d.usuarios_por_rol, "rol") + '</div>' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_usuarios_prov") + '</h3>' + barrasCeo(d.usuarios_por_proveedor, "proveedor") + '</div>' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_mascotas_estado") + '</h3>' + barrasCeo(d.mascotas_por_estado, "estado") + '</div>' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_mascotas_especie") + '</h3>' + barrasCeo(d.mascotas_por_especie, "especie") + '</div>' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_solicitudes_estado") + '</h3>' + barrasCeo(d.solicitudes_por_estado, "estado") + '</div>' +
+                '<div class="ceo-caja"><h3>' + t("ceo_seccion_alertas_estado") + '</h3>' + barrasCeo(d.alertas_por_estado, "alerta") + '</div>' +
+            '</div>' +
+        '</section>';
+
+    const flujo =
+        '<section class="ceo-seccion" data-panel="flujo">' +
+            '<h3>' + t("ceo_flujo_titulo") + '</h3>' +
+            '<div class="ceo-flujo">' +
+                cajaFlujo(t("ceo_val_estado_en_revision"), d.flujo.en_revision, "rev") +
+                cajaFlujo(t("ceo_val_estado_aprobada"), d.flujo.aprobadas, "ok") +
+                cajaFlujo(t("ceo_val_estado_rechazada"), d.flujo.rechazadas, "mal") +
+            '</div>' +
+            '<h3>' + t("ceo_actividad_titulo") + '</h3>' +
+            tablaObjetosCeo(d.actividad.ultimas_solicitudes) +
+        '</section>';
+
+    const mascotas = '<section class="ceo-seccion" data-panel="mascotas"><h3>' + t("ceo_tab_mascotas") + '</h3>' + tablaObjetosCeo(d.tablas.mascotas) + '</section>';
+    const solicitudes = '<section class="ceo-seccion" data-panel="solicitudes"><h3>' + t("ceo_tab_solicitudes") + '</h3>' + tablaObjetosCeo(d.tablas.solicitudes) + '</section>';
+    const usuarios = '<section class="ceo-seccion" data-panel="usuarios"><h3>' + t("ceo_tab_usuarios") + '</h3>' + tablaObjetosCeo(d.tablas.usuarios) + '</section>';
+    const seguimiento = '<section class="ceo-seccion" data-panel="seguimiento"><h3>' + t("ceo_tab_seguimiento") + '</h3>' + tablaObjetosCeo(d.tablas.alertas) + '</section>';
+
+    const bd = '<section class="ceo-seccion" data-panel="bd">' +
+        cajaBd(t("ceo_tab_usuarios"), d.tablas.usuarios) +
+        cajaBd(t("ceo_tab_mascotas"), d.tablas.mascotas) +
+        cajaBd(t("ceo_tab_solicitudes"), d.tablas.solicitudes) +
+        cajaBd(t("ceo_kpi_evidencias"), d.tablas.evidencias) +
+        '</section>';
+
+    cont.innerHTML = resumen + flujo + mascotas + solicitudes + usuarios + seguimiento + bd;
+    mostrarPestanaCeo(ceoPestana);
+}
+
 function prepararInterfaz() {
     cargarMascotas();
     inicializarTema();
     inicializarIdioma();
-    inicializarGoogle();
     document.addEventListener("keydown", function (evento) {
         if (evento.key === "Escape") {
             const abiertos = document.querySelectorAll(".modal.abierto");

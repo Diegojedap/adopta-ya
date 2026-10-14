@@ -38,8 +38,9 @@
                 <a href="#mascotas" data-i18n="nav_mascotas">Mascotas</a>
                 <button type="button" class="menu-btn" onclick="abrirModal('modal-postulacion')" data-i18n="nav_postular">Postular</button>
                 <button type="button" class="menu-btn" onclick="abrirModal('modal-seguimiento')" data-i18n="nav_seguimiento">Seguimiento</button>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-panel')" data-i18n="nav_panel">Panel</button>
-                <button type="button" class="menu-btn" onclick="abrirModal('modal-gestion')" data-i18n="nav_gestion">Gestión</button>
+                <button type="button" id="btn-panel" class="menu-btn" onclick="abrirModal('modal-panel')" data-i18n="nav_panel" hidden>Panel</button>
+                <button type="button" id="btn-gestion" class="menu-btn" onclick="abrirModal('modal-gestion')" data-i18n="nav_gestion" hidden>Gestión</button>
+                <button type="button" id="btn-ceo" class="menu-btn menu-btn--ceo" onclick="abrirPanelCeo()" data-i18n="nav_ceo" hidden>Panel CEO</button>
                 <button type="button" id="btn-entrar" class="menu-btn menu-btn--acento" onclick="abrirModal('modal-login')" data-i18n="nav_sesion">Iniciar sesión</button>
                 <button type="button" id="btn-salir" class="menu-btn" onclick="cerrarSesion()" data-i18n="nav_salir" hidden>Cerrar sesión</button>
                 <button type="button" id="btn-idioma" class="menu-btn menu-btn--icono" onclick="alternarIdioma()" aria-label="Cambiar idioma / Change language">🌐 EN</button>
@@ -156,6 +157,7 @@
                     <div class="separador-acceso" aria-hidden="true"><span data-i18n="acceso_o">o</span></div>
                     <button type="button" id="btn-google" class="btn-google" onclick="ingresarConGoogle()" data-i18n="btn_google">Continuar con Google</button>
                     <div id="google-btn" class="google-btn"></div>
+                    <p id="google-estado" class="google-estado" role="status" aria-live="polite"></p>
                 </div>
             </section>
         </div>
@@ -284,6 +286,36 @@
 
                 <button onclick="cargarMascotasAdmin()" data-i18n="btn_cargar_mascotas">Cargar mascotas</button>
                 <div id="lista-mascotas-admin"></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal modal-ceo" id="modal-ceo" onclick="cerrarModalFondo(event, 'modal-ceo')">
+        <div class="modal-panel modal-panel--ceo" role="dialog" aria-modal="true" aria-labelledby="titulo-ceo">
+            <button type="button" class="modal-cerrar" onclick="cerrarModal('modal-ceo')" aria-label="Cerrar">✕</button>
+
+            <section id="ceo" class="ceo">
+                <header class="ceo-head">
+                    <span class="etiqueta" data-i18n="ceo_etiqueta">Dirección</span>
+                    <h2 id="titulo-ceo" data-i18n="ceo_titulo">Panel CEO · Control general del proyecto</h2>
+                    <p id="ceo-meta" class="ceo-meta"></p>
+
+                    <div class="ceo-acciones">
+                        <button type="button" onclick="cargarResumenCeo()" data-i18n="ceo_refrescar">Actualizar datos</button>
+                    </div>
+
+                    <nav class="ceo-tabs" id="ceo-tabs">
+                        <button type="button" class="ceo-tab activa" data-tab="resumen" onclick="mostrarPestanaCeo('resumen')" data-i18n="ceo_tab_resumen">Resumen</button>
+                        <button type="button" class="ceo-tab" data-tab="flujo" onclick="mostrarPestanaCeo('flujo')" data-i18n="ceo_tab_flujo">Flujo</button>
+                        <button type="button" class="ceo-tab" data-tab="mascotas" onclick="mostrarPestanaCeo('mascotas')" data-i18n="ceo_tab_mascotas">Mascotas</button>
+                        <button type="button" class="ceo-tab" data-tab="solicitudes" onclick="mostrarPestanaCeo('solicitudes')" data-i18n="ceo_tab_solicitudes">Solicitudes</button>
+                        <button type="button" class="ceo-tab" data-tab="usuarios" onclick="mostrarPestanaCeo('usuarios')" data-i18n="ceo_tab_usuarios">Usuarios</button>
+                        <button type="button" class="ceo-tab" data-tab="seguimiento" onclick="mostrarPestanaCeo('seguimiento')" data-i18n="ceo_tab_seguimiento">Seguimiento</button>
+                        <button type="button" class="ceo-tab" data-tab="bd" onclick="mostrarPestanaCeo('bd')" data-i18n="ceo_tab_bd">Base de datos</button>
+                    </nav>
+                </header>
+
+                <div id="ceo-contenido" class="ceo-contenido"></div>
             </section>
         </div>
     </div>

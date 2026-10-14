@@ -6,7 +6,51 @@
 
 ---
 
-## 2026-10-14 (Fase 14 — Login con Google #11, web + APK)
+## 2026-10-14 (Fase 15 — Login con Google funcionando en web + Panel CEO)
+
+### Login con Google (#11): cierre en web
+- **Credenciales configuradas:** Web client ID
+  `823605358525-ddd7eabhckt0ekj937npstkvnha3p8cl.apps.googleusercontent.com` puesto en
+  `server/.env` (`GOOGLE_CLIENT_ID`) y en `www/js/script.js` (`GOOGLE_CLIENT_ID`);
+  `server/.env` local con `JWT_SECRET` propio y `CLAVE_ADMIN` (gitignored). `npm run sync`
+  ejecutado.
+- **Diagnóstico en el flujo web:** `googleEstado()` + `#google-estado` (con CSS `.google-estado`)
+  y claves i18n `google_cargando`/`google_error`; `cargarGoogleScript` con `onerror` y
+  `dataset.cargado`; `procesarCredencialGoogle` reporta el error del servidor; `inicializarGoogle`
+  con guard y arranque al abrir `#modal-login`.
+- **Causa raíz del 401 «Token de Google inválido»:** la verificación de certificados de Google
+  fallaba por la **inspección TLS corporativa** (`self-signed certificate in certificate chain`)
+  al llamar a `https://www.googleapis.com/oauth2/v1/certs`.
+- **Fix TLS duradero (no depende del entorno):** `server/index.js` arma un `https.Agent` con
+  `[...tls.rootCertificates, ...CAs extra]`; las CAs extra se leen de `CA_BUNDLE_PATH` →
+  `NODE_EXTRA_CA_CERTS` → por defecto `certs/windows-ca-bundle.pem`. Se pasa como
+  `transporterOptions.agent` a `OAuth2Client`. `certs/` añadido a `.gitignore`; `CA_BUNDLE_PATH`
+  documentado en `server/.env.example`.
+- **Verificación E2E (web):** login real con `diegojedap@gmail.com` → usuario creado en MySQL
+  (`proveedor: google`, `rol: adoptante`, `id: 3`). `npm run sync` + `npm test` → **18/18**.
+- **P-10 ajustado:** ahora ignora el archivo `.env` local (gitignored, `**/.env`); sigue
+  escaneando `.env.example` y el resto. Evita la falsa alarma al existir `server/.env`.
+- **Pendiente en APK:** confirmar la **credencial Android** (paquete `com.adoptaya.app` + SHA-1)
+  en Google Cloud para probar el login nativo del APK.
+
+### Panel CEO (M-19) — vista de control solo para el administrador
+- **Backend (`server/index.js`):** `usuarioAdmin()` (sanitiza, sin `clave_hash`),
+  `listarUsuarios()`, `listarTodasEvidencias()`, `contarPor()` y `resumenAdmin()`
+  (KPIs, distribuciones por rol/proveedor/estado/especie, `flujo`, `actividad` y `tablas`).
+  Nueva ruta **`GET /admin/resumen`** (solo admin); `/admin` añadido a `prefijosApi`.
+- **Frontend:** botón **«Panel CEO»** (`#btn-ceo`, gradiente teal→coral) en la barra, visible solo
+  para admin; modal `#modal-ceo` con 7 pestañas (Resumen, Flujo, Mascotas, Solicitudes, Usuarios,
+  Seguimiento, Base de datos). En `script.js`: `esAdmin()`, `abrirPanelCeo()`,
+  `cargarResumenCeo()`, `mostrarPestanaCeo()`, `renderCeo()` y helpers (`kpiCeo`, `barrasCeo`,
+  `tablaObjetosCeo`, `cajaFlujo`, `cajaBd`, `escaparCeo`) + i18n `ceo_*` ES/EN. `mostrarSesion`
+  alterna `#btn-panel`, `#btn-gestion` y `#btn-ceo` según rol; al cambiar idioma con el panel
+  abierto se re-renderiza. Estilos del dashboard en `style.css` (`.ceo-*`).
+- **Verificación:** `GET /admin/resumen` con token admin → `fuente=mysql`, KPIs y tablas (usuarios
+  sin `clave_hash`); HTML/JS servidos contienen el modal y las funciones; `npm test` **18/18**.
+
+---
+
+
 
 - **Backend:** `POST /auth/google` verifica el ID token con `google-auth-library@11.3.0`
   (audiencia = `GOOGLE_CLIENT_ID`), crea/vincula el usuario y emite el JWT propio. `server/.env`

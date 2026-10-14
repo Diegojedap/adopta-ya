@@ -526,6 +526,18 @@ a:focus-visible {
     display: none;
 }
 
+.google-estado {
+    flex: 1 1 100%;
+    margin: 6px 0 0;
+    font-size: .85rem;
+    text-align: center;
+    color: #b91c1c;
+}
+
+.google-estado:empty {
+    display: none;
+}
+
 /* POSTULACIÓN, SEGUIMIENTO Y GESTIÓN (formulario en columna) */
 .postulacion .formulario,
 .seguimiento .formulario,
@@ -928,5 +940,295 @@ footer p {
     .tarjeta,
     .cuidados > div {
         animation: aparecer .5s ease;
+    }
+}
+
+/* ===================== PANEL CEO (administrador) ===================== */
+
+.menu-btn--ceo {
+    color: #fff;
+    background: linear-gradient(135deg, var(--teal-600), var(--coral-500));
+    border-color: transparent;
+}
+
+.menu-btn--ceo:hover {
+    filter: brightness(1.08);
+}
+
+.modal-ceo {
+    padding: 20px 14px;
+}
+
+.modal-panel--ceo {
+    max-width: 1120px;
+    padding: 36px 30px 30px;
+}
+
+.ceo-meta {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--suave);
+}
+
+.ceo-acciones {
+    margin: 14px 0 4px;
+}
+
+.ceo-acciones button {
+    padding: 9px 18px;
+    font-size: 14px;
+}
+
+.ceo-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--linea);
+}
+
+.ceo-tab {
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--texto);
+    background: var(--fondo);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-full);
+    box-shadow: none;
+    cursor: pointer;
+    transition: var(--transicion);
+}
+
+.ceo-tab:hover {
+    color: var(--tinta);
+    background: var(--linea);
+    transform: none;
+    box-shadow: none;
+}
+
+.ceo-tab.activa {
+    color: #fff;
+    background: linear-gradient(135deg, var(--teal-600), var(--teal-700));
+    border-color: transparent;
+    box-shadow: var(--sombra-sm);
+}
+
+.ceo-seccion {
+    display: none;
+}
+
+.ceo-seccion.activa {
+    display: block;
+    animation: aparecer .25s ease;
+}
+
+.ceo-seccion > h3 {
+    margin: 22px 0 12px;
+    color: var(--tinta);
+    font-size: 16px;
+}
+
+.ceo-seccion > h3:first-child {
+    margin-top: 0;
+}
+
+.ceo-kpis {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.ceo-kpi {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 18px;
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra-sm);
+}
+
+.ceo-kpi-valor {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--teal-700);
+}
+
+.ceo-kpi-etiqueta {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--suave);
+}
+
+.ceo-kpi--ok .ceo-kpi-valor {
+    color: var(--exito);
+}
+
+.ceo-kpi--mal .ceo-kpi-valor {
+    color: var(--peligro);
+}
+
+.ceo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.ceo-caja {
+    padding: 18px 20px;
+    background: var(--superficie);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-sm);
+    box-shadow: var(--sombra-sm);
+}
+
+.ceo-caja > h3 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 14px;
+    font-size: 14px;
+    color: var(--tinta);
+}
+
+.ceo-badge {
+    padding: 2px 9px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--teal-700);
+    border-radius: var(--radio-full);
+}
+
+.ceo-barra {
+    display: grid;
+    grid-template-columns: 130px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 9px;
+    font-size: 13px;
+}
+
+.ceo-barra-nombre {
+    color: var(--texto);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ceo-barra-pista {
+    height: 9px;
+    background: var(--fondo);
+    border: 1px solid var(--linea);
+    border-radius: var(--radio-full);
+    overflow: hidden;
+}
+
+.ceo-barra-relleno {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--teal-500), var(--coral-500));
+}
+
+.ceo-barra-valor {
+    min-width: 62px;
+    text-align: right;
+    color: var(--suave);
+    font-variant-numeric: tabular-nums;
+}
+
+.ceo-flujo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 8px;
+}
+
+.ceo-flujo-caja {
+    flex: 1 1 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 18px 20px;
+    border-radius: var(--radio-sm);
+    border: 1px solid var(--linea);
+    background: var(--superficie);
+    box-shadow: var(--sombra-sm);
+    border-left: 5px solid var(--linea);
+}
+
+.ceo-flujo--rev { border-left-color: var(--alerta); }
+.ceo-flujo--ok  { border-left-color: var(--exito); }
+.ceo-flujo--mal { border-left-color: var(--peligro); }
+
+.ceo-flujo-num {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--tinta);
+}
+
+.ceo-flujo-txt {
+    font-size: 13px;
+    color: var(--suave);
+}
+
+.ceo-caja--bd {
+    margin-bottom: 16px;
+}
+
+.ceo-tabla-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.ceo-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12.5px;
+}
+
+.ceo-tabla th,
+.ceo-tabla td {
+    padding: 8px 12px;
+    text-align: left;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--linea);
+}
+
+.ceo-tabla th {
+    color: var(--suave);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    background: var(--fondo);
+}
+
+.ceo-tabla tbody tr:hover {
+    background: var(--teal-50);
+}
+
+.ceo-vacio {
+    margin: 8px 0;
+    color: var(--suave);
+    font-size: 14px;
+}
+
+@media (max-width: 640px) {
+    .modal-panel--ceo {
+        padding: 30px 18px 24px;
+    }
+
+    .ceo-kpi-valor {
+        font-size: 23px;
+    }
+
+    .ceo-barra {
+        grid-template-columns: 90px 1fr auto;
     }
 }

@@ -14,6 +14,9 @@
 **/.env
 !server/.env.example
 
+# Certificados raíz locales (bundle de CAs para redes con inspección TLS)
+certs/
+
 # Sistema
 **/.DS_Store
 Thumbs.db

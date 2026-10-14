@@ -1,4 +1,6 @@
 const http = require('http');
+const https = require('https');
+const tls = require('tls');
 const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
@@ -23,7 +25,35 @@ const ESTADOS_REVISION = ['aprobada', 'rechazada'];
 const ESPECIES_MASCOTA = ['perro', 'gato', 'otro'];
 const ESTADOS_MASCOTA = ['disponible', 'en_revision', 'adoptado'];
 
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(opcionesGoogle()) : null;
+
+// En redes con inspección TLS corporativa, google-auth-library no puede descargar los
+// certificados de verificación (error "self-signed certificate in certificate chain").
+// Si se indica un bundle de CAs (CA_BUNDLE_PATH o NODE_EXTRA_CA_CERTS), se usa un agente
+// HTTPS que confía en esas raíces además de las del sistema.
+function agenteConCAs() {
+  const rutas = [
+    process.env['CA_BUNDLE_PATH'],
+    process.env['NODE_EXTRA_CA_CERTS'],
+    path.join(__dirname, '..', 'certs', 'windows-ca-bundle.pem')
+  ].filter(Boolean);
+  for (const ruta of rutas) {
+    try {
+      if (fs.existsSync(ruta)) {
+        const extra = fs.readFileSync(ruta);
+        return new https.Agent({ ca: [...tls.rootCertificates, extra], keepAlive: true });
+      }
+    } catch (e) { /* bundle ilegible: se ignora */ }
+  }
+  return null;
+}
+
+function opcionesGoogle() {
+  const opciones = { clientId: GOOGLE_CLIENT_ID };
+  const agente = agenteConCAs();
+  if (agente) opciones.transporterOptions = { agent: agente };
+  return opciones;
+}
 
 const mascotas = [
   { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible', salud: 'Sano. Vacunado y desparasitado.',    vacunas: 'Rabia, parvovirus', esterilizado: true  },
@@ -119,7 +149,7 @@ const TIPOS_MIME = {
 
 function servirEstatico(req, res, ruta) {
   if (req.method !== 'GET') return false;
-  const prefijosApi = ['/auth', '/mascotas', '/solicitudes', '/seguimiento'];
+  const prefijosApi = ['/auth', '/mascotas', '/solicitudes', '/seguimiento', '/admin'];
   if (ruta === '/health' || prefijosApi.some(p => ruta === p || ruta.startsWith(p + '/'))) return false;
   const relativa = ruta === '/' ? 'index.html' : decodeURIComponent(ruta).replace(/^\/+/, '');
   const destino = path.resolve(RUTA_WEB, relativa);
@@ -425,6 +455,101 @@ async function alertasSeguimiento() {
   return resultado;
 }
 
+// --- Agregados para el Panel CEO (M-19, solo administrador) ---
+
+function usuarioAdmin(u) {
+  return {
+    id: u.id,
+    nombre: u.nombre,
+    email: u.email,
+    rol: u.rol,
+    proveedor: u.proveedor || 'local',
+    google_sub: u.google_sub || null,
+    creado_en: u.creado_en || null
+  };
+}
+
+async function listarUsuarios() {
+  if (pool) {
+    const [filas] = await pool.query(
+      'SELECT id, nombre, email, rol, proveedor, google_sub, creado_en FROM usuarios ORDER BY id'
+    );
+    return filas.map(usuarioAdmin);
+  }
+  return usuarios.map(usuarioAdmin);
+}
+
+async function listarTodasEvidencias() {
+  if (pool) {
+    const [filas] = await pool.query(
+      'SELECT id, solicitud_id, url, descripcion, creado_en FROM evidencias ORDER BY id DESC LIMIT 200'
+    );
+    return filas;
+  }
+  return evidencias.slice().reverse();
+}
+
+function contarPor(lista, campo) {
+  return lista.reduce(function (acc, item) {
+    const clave = item && item[campo] != null ? String(item[campo]) : 'sin_dato';
+    acc[clave] = (acc[clave] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+async function resumenAdmin() {
+  const [listaUsuarios, listaMascotas, listaSolicitudes, listaEvidencias, listaAlertas] = await Promise.all([
+    listarUsuarios(),
+    listarMascotas(),
+    listarSolicitudes(),
+    listarTodasEvidencias(),
+    alertasSeguimiento()
+  ]);
+
+  const total = listaSolicitudes.length;
+  const aprobadas = listaSolicitudes.filter(s => s.estado === 'aprobada').length;
+  const rechazadas = listaSolicitudes.filter(s => s.estado === 'rechazada').length;
+  const enRevision = total - aprobadas - rechazadas;
+
+  return {
+    generado_en: new Date().toISOString(),
+    fuente: fuenteDatos,
+    kpis: {
+      usuarios: listaUsuarios.length,
+      mascotas: listaMascotas.length,
+      mascotas_disponibles: listaMascotas.filter(m => m.estado === 'disponible').length,
+      solicitudes: total,
+      adopciones: aprobadas,
+      rechazadas: rechazadas,
+      evidencias: listaEvidencias.length,
+      alertas: listaAlertas.length,
+      tasa_aprobacion: total ? Math.round((aprobadas / total) * 100) : 0
+    },
+    usuarios_por_rol: contarPor(listaUsuarios, 'rol'),
+    usuarios_por_proveedor: contarPor(listaUsuarios, 'proveedor'),
+    mascotas_por_estado: contarPor(listaMascotas, 'estado'),
+    mascotas_por_especie: contarPor(listaMascotas, 'especie'),
+    solicitudes_por_estado: contarPor(listaSolicitudes, 'estado'),
+    alertas_por_estado: contarPor(listaAlertas, 'estado_alerta'),
+    flujo: {
+      en_revision: enRevision,
+      aprobadas: aprobadas,
+      rechazadas: rechazadas
+    },
+    actividad: {
+      ultimas_solicitudes: listaSolicitudes.slice(0, 8),
+      ultimos_usuarios: listaUsuarios.slice(-5).reverse()
+    },
+    tablas: {
+      usuarios: listaUsuarios,
+      mascotas: listaMascotas,
+      solicitudes: listaSolicitudes,
+      evidencias: listaEvidencias,
+      alertas: listaAlertas
+    }
+  };
+}
+
 async function buscarUsuarioPorEmail(email) {
   if (pool) {
     const [filas] = await pool.query('SELECT * FROM usuarios WHERE email = ? LIMIT 1', [email]);
@@ -489,19 +614,20 @@ async function ingresar(datos) {
 
 async function ingresarConGoogle(datos) {
   const idToken = (datos && (datos.idToken || datos.credential)) || '';
-  if (!idToken) return { error: 'Falta el token de Google', codigo: 400 };
-  if (!googleClient) return { error: 'El login con Google no está configurado (GOOGLE_CLIENT_ID)', codigo: 500 };
+  if (!idToken) { console.log('[Google] solicitud sin token (400)'); return { error: 'Falta el token de Google', codigo: 400 }; }
+  if (!googleClient) { console.log('[Google] GOOGLE_CLIENT_ID no configurado (500)'); return { error: 'El login con Google no está configurado (GOOGLE_CLIENT_ID)', codigo: 500 }; }
 
   let payload;
   try {
     const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
     payload = ticket.getPayload();
   } catch (e) {
+    console.log('[Google] token invalido (401):', e && e.message ? e.message : '');
     return { error: 'Token de Google inválido', codigo: 401 };
   }
 
   const email = (payload.email || '').trim().toLowerCase();
-  if (!email) return { error: 'La cuenta de Google no tiene email', codigo: 400 };
+  if (!email) { console.log('[Google] cuenta sin email (400)'); return { error: 'La cuenta de Google no tiene email', codigo: 400 }; }
   const nombre = (payload.name || '').trim() || email.split('@')[0];
 
   let usuario = (await buscarUsuarioPorGoogleSub(payload.sub)) || (await buscarUsuarioPorEmail(email));
@@ -512,6 +638,7 @@ async function ingresarConGoogle(datos) {
     });
   }
   const token = jwt.sign({ id: usuario.id, email: usuario.email, rol: usuario.rol }, CLAVE_JWT, { expiresIn: '1d' });
+  console.log('[Google] ok:', email, '| proveedor:', usuario.proveedor, '| id:', usuario.id);
   return { token, usuario: publico(usuario) };
 }
 
@@ -673,6 +800,12 @@ const servidor = http.createServer(async (req, res) => {
       if (!sesion) return enviar(res, 401, { error: 'No autenticado' });
       if (sesion.rol !== 'administrador') return enviar(res, 403, { error: 'Solo administradores' });
       return enviar(res, 200, await alertasSeguimiento());
+    }
+
+    if (req.method === 'GET' && ruta === '/admin/resumen') {
+      const denegado = soloAdministrador();
+      if (denegado) return enviar(res, denegado.codigo, { error: denegado.error });
+      return enviar(res, 200, await resumenAdmin());
     }
 
     if (servirEstatico(req, res, ruta)) return;

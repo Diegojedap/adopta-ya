@@ -61,10 +61,13 @@ add('P-09', 'REQ-05', 'Existe librería de hashing/autenticación para credencia
 
 // P-10 secretos en claro
 const hallazgos = [];
+// El archivo .env local (gitignored, ver **/.env en .gitignore) contiene las credenciales
+// de desarrollo y no se versiona; .env.example (plantilla vacía) sí se escanea.
 (function walk(d) {
   for (const f of fs.readdirSync(d)) {
     const p = path.join(d, f);
     if (/node_modules|\.git$|[\\/]build$|[\\/]\.idea$/.test(p)) continue;
+    if (f === '.env') continue;
     const st = fs.statSync(p);
     if (st.isDirectory()) walk(p);
     else if (/\.(json|js|xml|properties|sql|code-workspace|env)$/.test(f) && st.size < 2e6) {
