@@ -1,4 +1,11 @@
-const API_BASE = "http://localhost:3000";
+// Host de la API local. En el APK, 10.0.2.2 es el PC anfitrión visto desde el emulador
+// (para un dispositivo físico, usa la IP LAN del PC, p. ej. http://192.168.1.50:3000).
+const API_HOST_ANDROID = "http://10.0.2.2:3000";
+const API_BASE = esPlataformaNativa() ? API_HOST_ANDROID : "http://localhost:3000";
+
+// Web client ID de Google Cloud (dato público). Debe coincidir con GOOGLE_CLIENT_ID del backend.
+// Ver docs/05_LOGIN_GOOGLE.md. En el APK se usa además como webClientId del plugin nativo.
+const GOOGLE_CLIENT_ID = "";
 
 let idiomaActual = "es";
 let usuarioActual = null;
@@ -54,6 +61,8 @@ const DICCIONARIO = {
         ph_acceso_clave: "Contraseña",
         btn_ingresar: "Ingresar",
         btn_registrarse: "Registrarse",
+        acceso_o: "o",
+        btn_google: "Continuar con Google",
 
         // Postulación
         postulacion_etiqueta: "Quiero adoptar",
@@ -208,6 +217,8 @@ const DICCIONARIO = {
         ph_acceso_clave: "Password",
         btn_ingresar: "Sign in",
         btn_registrarse: "Sign up",
+        acceso_o: "or",
+        btn_google: "Continue with Google",
 
         // Application
         postulacion_etiqueta: "I want to adopt",
@@ -428,6 +439,98 @@ function registrarse() {
             else mostrarSesion(null);
         })
         .catch(function () { mostrarSesion(null); });
+}
+
+// --- Login con Google (#11) ---
+let googleWebInicializado = false;
+let googleNativoInicializado = false;
+
+function esPlataformaNativa() {
+    return typeof window !== "undefined" && window.Capacitor &&
+        typeof window.Capacitor.isNativePlatform === "function" && window.Capacitor.isNativePlatform();
+}
+
+function cargarGoogleScript(callback) {
+    if (window.google && window.google.accounts) return callback();
+    const existente = document.getElementById("google-gsi");
+    if (existente) {
+        existente.addEventListener("load", callback);
+        return;
+    }
+    const script = document.createElement("script");
+    script.id = "google-gsi";
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = callback;
+    document.head.appendChild(script);
+}
+
+function procesarCredencialGoogle(idToken) {
+    if (!idToken) return;
+    fetch(API_BASE + "/auth/google", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: idToken })
+    })
+        .then(function (respuesta) { return respuesta.json(); })
+        .then(function (datos) {
+            if (datos && datos.token) {
+                try { localStorage.setItem("token", datos.token); } catch (e) {}
+                mostrarSesion(datos.usuario);
+                cerrarModal("modal-login");
+            } else {
+                mostrarSesion(null);
+            }
+        })
+        .catch(function () { mostrarSesion(null); });
+}
+
+function inicializarGoogle() {
+    if (!GOOGLE_CLIENT_ID || esPlataformaNativa()) return;
+    cargarGoogleScript(function () {
+        if (!window.google || !window.google.accounts) return;
+        const contenedor = document.getElementById("google-btn");
+        window.google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback: function (respuesta) { procesarCredencialGoogle(respuesta && respuesta.credential); }
+        });
+        if (contenedor) {
+            window.google.accounts.id.renderButton(contenedor, {
+                theme: "outline",
+                size: "large",
+                text: "continue_with",
+                locale: idiomaActual === "en" ? "en" : "es"
+            });
+            const propio = document.getElementById("btn-google");
+            if (propio) propio.hidden = true;
+        }
+        googleWebInicializado = true;
+    });
+}
+
+function ingresarConGoogleNativo() {
+    const SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
+    if (!SocialLogin) return;
+    Promise.resolve()
+        .then(function () {
+            if (googleNativoInicializado) return;
+            return SocialLogin.initialize({ google: { webClientId: GOOGLE_CLIENT_ID } })
+                .then(function () { googleNativoInicializado = true; });
+        })
+        .then(function () { return SocialLogin.login({ provider: "google", options: {} }); })
+        .then(function (res) {
+            const r = (res && res.result) || {};
+            const auth = r.authentication || {};
+            const idToken = r.idToken || auth.idToken;
+            if (idToken) procesarCredencialGoogle(idToken);
+        })
+        .catch(function () {});
+}
+
+function ingresarConGoogle() {
+    if (esPlataformaNativa()) return ingresarConGoogleNativo();
+    if (!googleWebInicializado) inicializarGoogle();
 }
 
 function enviarPostulacion() {
@@ -948,6 +1051,7 @@ function prepararInterfaz() {
     cargarMascotas();
     inicializarTema();
     inicializarIdioma();
+    inicializarGoogle();
     document.addEventListener("keydown", function (evento) {
         if (evento.key === "Escape") {
             const abiertos = document.querySelectorAll(".modal.abierto");

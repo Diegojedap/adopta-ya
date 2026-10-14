@@ -10,6 +10,10 @@
 # Configuración local (rutas de SDK propias de cada máquina)
 **/android/local.properties
 
+# Variables de entorno locales (nunca versionar credenciales)
+**/.env
+!server/.env.example
+
 # Sistema
 **/.DS_Store
 Thumbs.db

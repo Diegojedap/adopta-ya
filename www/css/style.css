@@ -478,6 +478,54 @@ a:focus-visible {
     flex: 1 1 200px;
 }
 
+/* Login con Google (#11) */
+.separador-acceso {
+    flex: 1 1 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--texto-suave, #6b7280);
+    font-size: 13px;
+    margin: 6px 0;
+}
+
+.separador-acceso::before,
+.separador-acceso::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--linea);
+}
+
+.btn-google {
+    flex: 1 1 200px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #fff;
+    color: #3c4043;
+    border: 1px solid var(--linea);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+    color: #202124;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, .16);
+}
+
+.google-btn {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 6px;
+}
+
+.google-btn:empty {
+    display: none;
+}
+
 /* POSTULACIÓN, SEGUIMIENTO Y GESTIÓN (formulario en columna) */
 .postulacion .formulario,
 .seguimiento .formulario,

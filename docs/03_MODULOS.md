@@ -84,8 +84,12 @@ Registro, login con hashing y control de acceso por JWT; roles administrador/ado
 - **Funciona:** hash con `bcryptjs` (10 rondas) y token `jsonwebtoken` (24 h); admin de demo
   `admin@adoptaya.local` / `admin123`; **cerrar sesión** (`#btn-salir`, visible solo con sesión
   activa) que borra el token de `localStorage` y vuelve a «Sin sesión iniciada».
-- **Limitación:** sin login con Google (roadmap #11) ni recuperación de contraseña; el rol
-  veterinario está definido pero sin panel propio.
+- **Login con Google (#11):** `POST /auth/google` verifica el ID token con `google-auth-library`
+  y emite el mismo JWT; web vía Google Identity Services y APK vía plugin nativo
+  (`@capgo/capacitor-social-login`). Funciona a nivel local; **falta configurar el Web client
+  ID** (`docs/05_LOGIN_GOOGLE.md`).
+- **Limitación:** sin recuperación de contraseña; el rol veterinario está definido pero sin
+  panel propio.
 - **Pruebas:** P-09 ✅
 - **Requisitos:** REQ-05
 
@@ -93,8 +97,8 @@ Registro, login con hashing y control de acceso por JWT; roles administrador/ado
 Servidor con el módulo `http` de Node (sin framework): `GET /health`, `GET /mascotas`,
 `GET /mascotas/:id`, `POST/PUT/DELETE /mascotas` (solo admin), `POST /solicitudes`,
 `GET /solicitudes` y `POST /solicitudes/:id/estado` (admin), `GET /solicitudes/:id/contrato`,
-`POST/GET /solicitudes/:id/evidencias`, `GET /seguimiento/alertas` (admin) y
-`/auth/registro`, `/auth/login`, `/auth/perfil`; CORS habilitado.
+  `POST/GET /solicitudes/:id/evidencias`, `GET /seguimiento/alertas` (admin) y
+  `/auth/registro`, `/auth/login`, `/auth/google`, `/auth/perfil`; CORS habilitado.
 - **Archivos:** `server/index.js`; script `npm start`; config `server/.env.example`
 - **Archivos:** `server/index.js`; scripts `npm start`, `npm run db:*`; config `server/.env.example`
 - **Funciona:** usa **MySQL** si responde (`/health` → `fuente: "mysql"`) y persiste todas las
@@ -230,20 +234,22 @@ línea base de tiempos con simulación (`docs/04_UAT.md`); falta la sesión con 
 | 8 | Seguimiento con evidencias y alertas a 30/60/90 días | M-14, M-15 | P2 | ✅ Hecho 12/10/2026 (evidencias + alertas; sin notificación real) |
 | 9 | UAT con el refugio y línea base de tiempos | — | P2 | ◐ Kit + simulación (16 escenarios) hechos 13/10/2026 y **re-ejecutados contra MySQL el 14/10/2026 (16/16)**; ejecución con el refugio pendiente (`docs/04_UAT.md`). Defectos **D-001** y **D-002** corregidos 12/10/2026 |
 | 10 | CRUD de mascotas con ficha clínica para el refugio | M-10 | P1 | ✅ Hecho 12/10/2026 (`server/index.js` + panel `#gestion-mascotas`; P-18) |
+| 11 | Login con Google (web + APK) | M-09 | P2 | ◐ Implementado 14/10/2026 (`POST /auth/google` + GIS web + plugin nativo; P-11). Falta **configurar el Web client ID** y probarlo (`docs/05_LOGIN_GOOGLE.md`) |
 
 ---
 
 ## 5. Resumen para sustentación
 
 - **Se puede demostrar:** interfaz responsive, catálogo dinámico desde la API, registro de
-  solicitud «en revisión», login/registro con JWT, panel de evaluación con descarga del
-  contrato de adopción en PDF, seguimiento post-adopción con evidencias (notas y fotos) y
-  alertas del refugio a los 30/60/90 días, CRUD de mascotas con ficha clínica, navegación,
-  empaquetado Android y 18 pruebas automatizadas en verde; además, el **kit de UAT con línea
-  base de tiempos** (16 escenarios y medición reproducible con `npm run uat:medir`).
+  solicitud «en revisión», login/registro con JWT (y **con Google** en local), panel de
+  evaluación con descarga del contrato de adopción en PDF, seguimiento post-adopción con
+  evidencias (notas y fotos) y alertas del refugio a los 30/60/90 días, CRUD de mascotas con
+  ficha clínica, navegación, empaquetado Android y 18 pruebas automatizadas en verde; además,
+  el **kit de UAT con línea base de tiempos** (16 escenarios y medición reproducible con
+  `npm run uat:medir`).
 - **Se puede probar con evidencia:** `npm test` (tabla P-01…P-18), `resultados_pruebas.json`,
   la API local (`npm start`) y los artefactos UAT (`docs/04_UAT.md`, `docs/uat/`).
 - **No se puede afirmar:** que exista un sistema integral de adopciones en producción; hoy
   es un prototipo full-stack local (web + API + MySQL local, notificaciones por correo
   pendientes) con la arquitectura/backlog definidos para completarlo. Falta publicar la demo
-  web (M-18) y el login con Google (#11).
+  web (M-18) y **configurar las credenciales para probar el login con Google (#11)**.

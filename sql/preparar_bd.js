@@ -34,6 +34,25 @@ async function contar(conexion, tabla, condicion, parametros) {
   return Number(filas[0].total);
 }
 
+async function existeColumna(conexion, tabla, columna) {
+  const [filas] = await conexion.query(
+    'SELECT COUNT(*) AS total FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?',
+    [tabla, columna]
+  );
+  return Number(filas[0].total) > 0;
+}
+
+// Migración idempotente para bases creadas antes del login con Google (#11).
+async function migrarUsuariosGoogle(conexion) {
+  await conexion.query('ALTER TABLE usuarios MODIFY COLUMN clave_hash VARCHAR(255) NULL');
+  if (!(await existeColumna(conexion, 'usuarios', 'proveedor'))) {
+    await conexion.query("ALTER TABLE usuarios ADD COLUMN proveedor ENUM('local','google') NOT NULL DEFAULT 'local'");
+  }
+  if (!(await existeColumna(conexion, 'usuarios', 'google_sub'))) {
+    await conexion.query('ALTER TABLE usuarios ADD COLUMN google_sub VARCHAR(64) NULL UNIQUE');
+  }
+}
+
 async function main() {
   const conexion = await mysql.createConnection({
     host: process.env.DB_HOST || '127.0.0.1',
@@ -46,6 +65,7 @@ async function main() {
   const esquema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf8');
   await conexion.query(esquema);
   await conexion.changeUser({ database: process.env.DB_NAME || 'adoptaya' });
+  await migrarUsuariosGoogle(conexion);
 
   if (process.argv.includes('--reset')) {
     await conexion.query('SET FOREIGN_KEY_CHECKS = 0');

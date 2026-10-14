@@ -23,8 +23,10 @@ post-adopción y la reducción de abandonos.
 **Alcance REAL hoy:** es un **prototipo full-stack local**: web + API REST propia y base de
 datos **MySQL local** (persistencia real de usuarios, mascotas, solicitudes, evidencias y
 alertas; contrato PDF). **NO está desplegado en la nube** ni es un sistema productivo: sin
-hosting, sin cuentas de producción y sin notificaciones reales por correo. El login con Google
-es roadmap (`docs/03_MODULOS.md` §4, #11).
+hosting, sin cuentas de producción y sin notificaciones reales por correo. El **login con
+Google (#11)** ya está **implementado y funcionando a nivel local** (web con Google Identity
+Services y APK con plugin nativo); solo falta **configurar las credenciales** (Web client ID)
+para probarlo de punta a punta (ver `docs/05_LOGIN_GOOGLE.md`).
 
 ## 2. Estructura del repositorio
 
@@ -34,8 +36,8 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── PROGRESO.md                    ← bitácora viva de avance (se actualiza en cada paso)
 ├── opencode.json                  ← config de opencode (autoupdate, instructions, share off)
 ├── README.md                      ← documento principal del entregable
-├── package.json                   ← deps: @capacitor/*, bcryptjs, jsonwebtoken, mysql2; dev: jsdom@23.0.1
-├── capacitor.config.json          ← appId com.adoptaya.app · webDir www
+├── package.json                   ← deps: @capacitor/*, @capgo/capacitor-social-login, bcryptjs, google-auth-library, jsonwebtoken, mysql2; dev: jsdom@23.0.1
+├── capacitor.config.json          ← appId com.adoptaya.app · webDir www · plugin SocialLogin (solo Google)
 ├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-18 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── adopta-ya.code-workspace       ← espacio VS Code (conexión SQLTools MySQL local)
@@ -47,6 +49,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 │   ├── 02_ARQUITECTURA.md         ← arquitectura actual vs. objetivo
 │   ├── 03_MODULOS.md              ← módulos M-01…M-18, trazabilidad REQ, backlog
 │   ├── 04_UAT.md                  ← plan de UAT con el refugio y línea base de tiempos
+│   ├── 05_LOGIN_GOOGLE.md         ← login con Google (#11): guía de credenciales y diseño
 │   ├── uat/                       ← guion, plantilla, actas, hojas por rol y checklist de sesión
 │   └── entregas/                  ← PDFs de Entrega 1 y Entrega 2
 ├── sql/
@@ -57,7 +60,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 │   └── adopta_ya.session.sql      ← evidencia de intención MySQL (SELECT de prueba)
 ├── server/
 │   ├── index.js                   ← API REST + MySQL (GET /mascotas, POST /solicitudes…) y sirve www/
-│   └── .env.example               ← config de la API (copiar a .env y completar en local)
+│   └── .env.example               ← config de la API (copiar a .env y completar en local; incluye GOOGLE_CLIENT_ID)
 ├── www/                           ← fuente web: index.html, css/, js/, img/
 ├── android/                       ← proyecto Capacitor/Android (incluye APK debug)
 └── node_modules/                  ← no versionada
@@ -87,7 +90,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   M-04 adopción (◐ crea solicitud «en_revision») · M-05 responsabilidad · M-06 responsivo
   (✅ rediseño teal + coral y tema claro/oscuro 13/10/2026) ·
   M-07 empaquetado Android (✅ APK regenerado 13/10/2026) · M-08 suite de pruebas ·
-  M-09 auth/roles (◐ login/registro/JWT/cerrar sesión, usuarios en memoria) · 
+  M-09 auth/roles (◐ login/registro/JWT/cerrar sesión/**Google**; usuarios en MySQL) · 
   M-10 CRUD mascotas (✅ panel + API + ficha clínica, solo admin) · 
   M-11 formulario postulación (◐ datos + consentimiento Ley 1581) · 
   M-12 panel de evaluación (◐ aprobar/rechazar con historial) ·
@@ -122,6 +125,20 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 - **Cerrar sesión (13/10/2026):** botón `#btn-salir` (visible solo con sesión activa; `#btn-entrar`
   se oculta entonces) que ejecuta `cerrarSesion()` → borra `localStorage.token`, `mostrarSesion(null)`
   y cierra `#modal-login`. `mostrarSesion()` alterna la visibilidad de ambos botones.
+- **Login con Google (14/10/2026, #11):** implementado web + APK (◐ falta el Web client ID).
+  Backend: `POST /auth/google` verifica el ID token con `google-auth-library@11.3.0`
+  (audiencia = `GOOGLE_CLIENT_ID`), crea/vincula el usuario en MySQL y emite el JWT propio;
+  el esquema `usuarios` ahora tiene `clave_hash NULL`, `proveedor` (`local`/`google`) y
+  `google_sub` (migración idempotente en `sql/preparar_bd.js`). `.env` se carga con
+  `process.loadEnvFile` (sin `dotenv`). Web: Google Identity Services (script dinámico, no
+  `<script src>` para no romper P-01) con botón «Continuar con Google» en `#modal-login`
+  (`inicializarGoogle`/`ingresarConGoogle`/`procesarCredencialGoogle`, i18n ES/EN). APK: plugin
+  `@capgo/capacitor-social-login@8.5.17` (Credential Manager; `webClientId` = Web client ID;
+  no requiere tocar `MainActivity`) y solo Google habilitado en `capacitor.config.json`.
+  `API_BASE` ahora es `http://10.0.2.2:3000` en nativo (resto: `localhost`) y se añadió
+  `android/app/src/main/res/xml/network_security_config.xml` (cleartext) referenciado en el
+  manifest. Guía de credenciales en `docs/05_LOGIN_GOOGLE.md`. **P-11** amplió su allowlist con
+  `google-auth-library` y `@capgo/capacitor-social-login`.
 - **Módulos NO implementados (diseñados):** M-18 cloud (publicación web; el APK ya no).
 - **Requisitos:** REQ-01 ✅ (CRUD mascotas) · REQ-04 ✅ (APK regenerado) ·
   REQ-05 ✅ (auth) · REQ-02 ◐ (con API) · REQ-03 ◐ (evidencias + alertas, sin notificación real) ·
@@ -136,25 +153,28 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   `GET /solicitudes/:id/contrato` (aprobada, admin o dueño, devuelve PDF),
   `POST/GET /solicitudes/:id/evidencias` (aprobada, admin o dueño) y
   `GET /seguimiento/alertas` (solo admin),
-  `POST /auth/registro`, `POST /auth/login`, `GET /auth/perfil` (JWT Bearer).
+  `POST /auth/registro`, `POST /auth/login`, `POST /auth/google`, `GET /auth/perfil` (JWT Bearer).
   Admin de demo: `admin@adoptaya.local` / `admin123` (cambiar en producción).
 - **Hallazgos corregidos en la auditoría:** F-01 rutas case-sensitive unificadas a
   minúsculas (`css/`, `js/`) · F-02 credenciales MySQL vaciadas · F-03 `package.json`
   higienizado · F-04 pruebas ejecutables · F-05 workspace fuera de `www/` ·
   **F-08 APK regenerado** (13/10/2026) · **F-11 `local.properties` ya apunta al SDK local**.
   Ningún hallazgo de auditoría queda pendiente.
-- **Entorno de build Android (verificado 13/10/2026):** el SDK **sí está** en `C:\Android`
+- **Entorno de build Android (reverificado 14/10/2026):** el SDK está en `C:\Android`
   (platform 36, build-tools 36.0.0, licencias aceptadas) y hay JDK 17 en
   `C:\Java\jdk-17.0.20.1+1`. Capacitor 8 exige **JDK 21** (compila con
-  `sourceCompatibility 21`), por lo que se usó un JDK 21 portátil en el temp. Para regenerar:
-  `npm run sync` y luego, en `android/`, `set JAVA_HOME=<JDK21>` +
-  `gradlew.bat assembleDebug` (la descarga TLS de `dl.google.com` requiere importar las CAs
-  raíz de Windows al truststore del JDK, por la inspección TLS corporativa).
+  `sourceCompatibility 21`), por lo que se usa un **JDK 21 portátil** en
+  `%TEMP%\opencode\jdk21\jdk-21.0.12.1+1`. Para regenerar: `npm run sync` y luego, en `android/`,
+  `set JAVA_HOME=<JDK21>` + `gradlew.bat assembleDebug` (**~3m25s** con código y caché de
+  Gradle 8.14.3; el APK quedó en 8.33 MB). Por la **inspección TLS corporativa** hay que
+  **importar las CAs raíz de Windows al truststore del JDK 21** (`lib\security\cacerts`,
+  `keytool -importcert`) antes de compilar, o el build falla con `SELF_SIGNED_CERT_IN_CHAIN`.
 - **Backlog (Entrega 3):** ver `docs/03_MODULOS.md` §4. Hechos #1-5, #7, #8, #9 y #10 (esquema,
   API, consumir API, auth, formularios/evaluación, contrato PDF, seguimiento + alertas, kit de
   UAT, CRUD de mascotas). La **persistencia MySQL (M-17)** quedó implementada y en uso
   (scripts `db:*`, API con `mysql2`, web servida por la API).
-  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; login con Google (#11).
+  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; configurar las
+  credenciales y probar el login con Google (#11, ya implementado).
 
 ## 4. Comandos clave
 
@@ -183,13 +203,16 @@ Verificación rápida de integridad: comparar hashes de `www/index.html`,
    mayúsculas; `CSS/` o `JS/` dejan la app sin estilos ni JS.
 2. **Nunca versionar credenciales**: ni en `.vscode/settings.json`, ni workspace, ni
    `.env`. La contraseña de MySQL (puerto 3307, usuario root) se configura localmente.
-3. **npm**: en la **máquina Windows original** registry.npmjs.org no es accesible y por eso
-   `package.json` fija `psl@1.9.0`, `ws@8.20.1` y `tough-cookie@4.1.3` vía `overrides`
-   (versiones en caché local). En el **codespace de opencode** el registro **sí** es accesible:
-   `npm install` normal instala la cadena completa (`node_modules/` está en `.gitignore`). Los
-   `overrides` siguen siendo válidos con conexión y no estorban.
-   Las dependencias de auth (`bcryptjs@2.4.3`, `jsonwebtoken@9.0.3`) y de base de datos
-   (`mysql2@^3.23.1`) también están en `dependencies`.
+3. **npm**: en la **máquina Windows original** el registro está detrás de **inspección TLS
+   corporativa**: `npm install` (y `gradle`) fallan con `SELF_SIGNED_CERT_IN_CHAIN` salvo que
+   se confíe en las CAs raíz de Windows. Para instalar, exportar las raíces de Windows a un
+   `.pem` y ejecutar con `$env:NODE_EXTRA_CA_CERTS="<bundle>.pem"` (así se instalaron
+   `google-auth-library` y `@capgo/capacitor-social-login`). `package.json` sigue fijando
+   `psl@1.9.0`, `ws@8.20.1` y `tough-cookie@4.1.3` vía `overrides` (versiones en caché local)
+   para no romper builds sin red. Los `overrides` no estorban con conexión.
+   Dependencias directas actuales (`dependencies`): `@capacitor/{core,cli,android}`,
+   `@capgo/capacitor-social-login`, `bcryptjs@2.4.3`, `google-auth-library@11.3.0`,
+   `jsonwebtoken@9.0.3`, `mysql2@^3.23.1` (el allowlist de **P-11** debe listarlas todas).
 4. **APK**: el único binario versionado es `android/app/build/outputs/apk/debug/app-debug.apk`
    (excepción deliberada en `.gitignore`, como evidencia). No borrar.
 5. **Datos legales**: al capturar datos reales de adoptantes aplica la **Ley 1581 de 2012**
@@ -204,6 +227,7 @@ Verificación rápida de integridad: comparar hashes de `www/index.html`,
 | Arquitectura actual vs. objetivo, cliente, alojamiento | `docs/02_ARQUITECTURA.md` |
 | Módulos, trazabilidad de requisitos, backlog | `docs/03_MODULOS.md` |
 | Plan de UAT, escenarios y línea base de tiempos | `docs/04_UAT.md`, `docs/uat/` |
+| Login con Google (#11): credenciales y diseño | `docs/05_LOGIN_GOOGLE.md` |
 | Entregas 1 y 2 (PDF oficiales) | `docs/entregas/` |
 | Instrucciones de uso y estructura | `README.md` |
 

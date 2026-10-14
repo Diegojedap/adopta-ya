@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Permite tráfico HTTP (cleartext) hacia la API local de ¡ADOPTA YA! durante el desarrollo.
+     10.0.2.2 = el PC anfitrión visto desde el emulador de Android.
+     Para un dispositivo físico, agrega aquí la IP LAN del PC (p. ej. 192.168.1.50). -->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.0.2.2</domain>
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">127.0.0.1</domain>
+    </domain-config>
+</network-security-config>

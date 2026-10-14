@@ -20,7 +20,9 @@
     "@capacitor/android": "^8.5.2",
     "@capacitor/cli": "^8.5.2",
     "@capacitor/core": "^8.5.2",
+    "@capgo/capacitor-social-login": "^8.5.17",
     "bcryptjs": "^2.4.3",
+    "google-auth-library": "^11.3.0",
     "jsonwebtoken": "^9.0.3",
     "mysql2": "^3.23.1"
   },

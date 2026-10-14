@@ -3,14 +3,27 @@ const fs = require('fs');
 const path = require('path');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { OAuth2Client } = require('google-auth-library');
 const { generarContrato } = require('./contrato');
+
+// Carga server/.env (o .env en la raíz) sin dependencias externas (Node >= 20.6).
+(function cargarEnv() {
+  const candidatos = [path.join(__dirname, '.env'), path.join(__dirname, '..', '.env')];
+  const ruta = candidatos.find(p => fs.existsSync(p));
+  if (ruta && typeof process.loadEnvFile === 'function') {
+    try { process.loadEnvFile(ruta); } catch (e) { /* .env inválido: se ignoran esas variables */ }
+  }
+})();
 
 const PUERTO = Number(process.env['PORT'] || 3000);
 const CLAVE_JWT = process.env['JWT_SECRET'] || 'adopta-ya-desarrollo';
+const GOOGLE_CLIENT_ID = process.env['GOOGLE_CLIENT_ID'] || '';
 const ROLES = ['administrador', 'adoptante', 'veterinario'];
 const ESTADOS_REVISION = ['aprobada', 'rechazada'];
 const ESPECIES_MASCOTA = ['perro', 'gato', 'otro'];
 const ESTADOS_MASCOTA = ['disponible', 'en_revision', 'adoptado'];
+
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 const mascotas = [
   { id: 1, nombre: 'Max',   especie: 'perro', edad: '2 años', descripcion: 'Amigable, cariñoso y lleno de energía.',        emoji: '🐶', estado: 'disponible', salud: 'Sano. Vacunado y desparasitado.',    vacunas: 'Rabia, parvovirus', esterilizado: true  },
@@ -428,15 +441,26 @@ async function buscarUsuarioPorId(id) {
   return usuarios.find(u => u.id === id) || null;
 }
 
+async function buscarUsuarioPorGoogleSub(sub) {
+  if (pool) {
+    const [filas] = await pool.query('SELECT * FROM usuarios WHERE google_sub = ? LIMIT 1', [sub]);
+    return filas.length ? filas[0] : null;
+  }
+  return usuarios.find(u => u.google_sub === sub) || null;
+}
+
 async function crearUsuario(datos) {
+  const proveedor = datos.proveedor || 'local';
+  const googleSub = datos.google_sub || null;
+  const claveHash = datos.clave_hash != null ? datos.clave_hash : null;
   if (pool) {
     const [resultado] = await pool.query(
-      'INSERT INTO usuarios (nombre, email, clave_hash, rol) VALUES (?,?,?,?)',
-      [datos.nombre, datos.email, datos.clave_hash, datos.rol]
+      'INSERT INTO usuarios (nombre, email, clave_hash, rol, proveedor, google_sub) VALUES (?,?,?,?,?,?)',
+      [datos.nombre, datos.email, claveHash, datos.rol, proveedor, googleSub]
     );
-    return { id: resultado.insertId, nombre: datos.nombre, email: datos.email, rol: datos.rol };
+    return { id: resultado.insertId, nombre: datos.nombre, email: datos.email, rol: datos.rol, proveedor, google_sub: googleSub };
   }
-  const usuario = { id: siguienteUsuario++, ...datos };
+  const usuario = { id: siguienteUsuario++, ...datos, proveedor, google_sub: googleSub, clave_hash: claveHash };
   usuarios.push(usuario);
   return usuario;
 }
@@ -456,8 +480,36 @@ async function ingresar(datos) {
   const email = (datos.email || '').trim().toLowerCase();
   const clave = datos.clave || '';
   const usuario = await buscarUsuarioPorEmail(email);
-  if (!usuario || !bcrypt.compareSync(clave, usuario.clave_hash)) {
+  if (!usuario || !usuario.clave_hash || !bcrypt.compareSync(clave, usuario.clave_hash)) {
     return { error: 'Credenciales inválidas', codigo: 401 };
+  }
+  const token = jwt.sign({ id: usuario.id, email: usuario.email, rol: usuario.rol }, CLAVE_JWT, { expiresIn: '1d' });
+  return { token, usuario: publico(usuario) };
+}
+
+async function ingresarConGoogle(datos) {
+  const idToken = (datos && (datos.idToken || datos.credential)) || '';
+  if (!idToken) return { error: 'Falta el token de Google', codigo: 400 };
+  if (!googleClient) return { error: 'El login con Google no está configurado (GOOGLE_CLIENT_ID)', codigo: 500 };
+
+  let payload;
+  try {
+    const ticket = await googleClient.verifyIdToken({ idToken, audience: GOOGLE_CLIENT_ID });
+    payload = ticket.getPayload();
+  } catch (e) {
+    return { error: 'Token de Google inválido', codigo: 401 };
+  }
+
+  const email = (payload.email || '').trim().toLowerCase();
+  if (!email) return { error: 'La cuenta de Google no tiene email', codigo: 400 };
+  const nombre = (payload.name || '').trim() || email.split('@')[0];
+
+  let usuario = (await buscarUsuarioPorGoogleSub(payload.sub)) || (await buscarUsuarioPorEmail(email));
+  if (!usuario) {
+    usuario = await crearUsuario({
+      nombre, email, clave_hash: null, rol: 'adoptante',
+      proveedor: 'google', google_sub: payload.sub
+    });
   }
   const token = jwt.sign({ id: usuario.id, email: usuario.email, rol: usuario.rol }, CLAVE_JWT, { expiresIn: '1d' });
   return { token, usuario: publico(usuario) };
@@ -482,6 +534,12 @@ const servidor = http.createServer(async (req, res) => {
 
     if (req.method === 'POST' && ruta === '/auth/login') {
       const resultado = await ingresar(await leerCuerpo(req));
+      if (resultado.error) return enviar(res, resultado.codigo, { error: resultado.error });
+      return enviar(res, 200, resultado);
+    }
+
+    if (req.method === 'POST' && ruta === '/auth/google') {
+      const resultado = await ingresarConGoogle(await leerCuerpo(req));
       if (resultado.error) return enviar(res, resultado.codigo, { error: resultado.error });
       return enviar(res, 200, resultado);
     }

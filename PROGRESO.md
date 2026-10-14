@@ -6,6 +6,35 @@
 
 ---
 
+## 2026-10-14 (Fase 14 — Login con Google #11, web + APK)
+
+- **Backend:** `POST /auth/google` verifica el ID token con `google-auth-library@11.3.0`
+  (audiencia = `GOOGLE_CLIENT_ID`), crea/vincula el usuario y emite el JWT propio. `server/.env`
+  se carga con `process.loadEnvFile` (sin `dotenv`). Esquema `usuarios` migrado de forma
+  idempotente en `sql/preparar_bd.js`: `clave_hash` → NULL, `proveedor` (`local`/`google`) y
+  `google_sub` (único). `.env` añadido a `.gitignore` (se conserva `.env.example`).
+- **Web:** botón «Continuar con Google» en `#modal-login` con Google Identity Services
+  (script cargado dinámicamente para no romper P-01); `inicializarGoogle`/`ingresarConGoogle`/
+  `procesarCredencialGoogle` y textos i18n ES/EN (`btn_google`, `acceso_o`).
+- **APK:** plugin nativo `@capgo/capacitor-social-login@8.5.17` (Credential Manager; solo Google
+  en `capacitor.config.json`; no requiere tocar `MainActivity`). `API_BASE` ahora es
+  `http://10.0.2.2:3000` en nativo y se añadió `android/.../res/xml/network_security_config.xml`
+  (cleartext) referenciado en el manifest. APK regenerado: **8.33 MB** (`assembleDebug`,
+  ~3m25s con JDK 21 portátil).
+- **Pruebas/verificación:** `npm test` → **18/18** (P-11 amplió su allowlist con
+  `google-auth-library` y `@capgo/capacitor-social-login`); E2E de `/auth/google` contra MySQL:
+  400 sin token, 500 sin `GOOGLE_CLIENT_ID`, 401 con token inválido; login propio admin OK.
+- **Documentación:** nuevo `docs/05_LOGIN_GOOGLE.md` (guía de credenciales Web/Android + SHA-1
+  `EC:57:87:...:E5:BF`, diseño del flujo y pasos); `AGENTS.md` y `docs/03_MODULOS.md` (M-09, #11).
+- **Entorno:** por la inspección TLS corporativa, `npm install` requiere
+  `NODE_EXTRA_CA_CERTS` (bundle de CAs raíz de Windows) y el build Android requiere importar
+  esas CAs al truststore del JDK 21. Quedó documentado en `AGENTS.md` §3/§5.
+- **Pendiente (humano):** crear las credenciales de Google Cloud y aportar el **Web client ID**
+  (ponerlo en `server/.env` y `www/js/script.js`, `npm run sync`, recompilar) para probar el
+  login real de punta a punta en web y APK.
+
+---
+
 ## 2026-10-14 (Fase 13 — MySQL local, API persistente y web servida por la API)
 
 - **MySQL local funcionando** (portátil, sin permisos de administrador): MySQL 8.4.9 en

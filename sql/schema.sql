@@ -11,10 +11,18 @@ CREATE TABLE IF NOT EXISTS usuarios (
   id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
   nombre        VARCHAR(120)  NOT NULL,
   email         VARCHAR(160)  NOT NULL UNIQUE,
-  clave_hash    VARCHAR(255)  NOT NULL,
+  clave_hash    VARCHAR(255)  NULL COMMENT 'NULL para cuentas creadas con Google (#11)',
   rol           ENUM('administrador','adoptante','veterinario') NOT NULL DEFAULT 'adoptante',
+  proveedor     ENUM('local','google') NOT NULL DEFAULT 'local' COMMENT 'Origen de la cuenta (#11)',
+  google_sub    VARCHAR(64)   NULL UNIQUE COMMENT 'Identificador "sub" de Google (#11)',
   creado_en     TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
+
+-- Bases ya creadas antes del login con Google (#11): migrar usuarios (ejecutar una vez, o usar
+-- `npm run db:preparar`, que lo hace de forma idempotente).
+-- ALTER TABLE usuarios MODIFY COLUMN clave_hash VARCHAR(255) NULL;
+-- ALTER TABLE usuarios ADD COLUMN proveedor ENUM('local','google') NOT NULL DEFAULT 'local';
+-- ALTER TABLE usuarios ADD COLUMN google_sub VARCHAR(64) NULL UNIQUE;
 
 CREATE TABLE IF NOT EXISTS mascotas (
   id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
