@@ -6,6 +6,38 @@
 
 ---
 
+## 2026-10-14/15 (Fase 16 — Login con Google en el APK nativo: diagnóstico y desbloqueo TLS)
+
+Objetivo: cerrar la **Fase E** del login con Google (#11) probando el flujo **nativo** en el APK
+(emulador `adopta_ya`), que nunca se había verificado.
+
+Resultado: **verificado hasta el paso de la cuenta**; el único faltante es que el emulador tenga
+una **cuenta Google**. Detalle completo en `docs/05_LOGIN_GOOGLE.md` §9.
+
+- **Credencial Android confirmada:** log de GMS
+  `[GoogleSignIn_flowRunner] Flow step completed: GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true`
+  → paquete `com.adoptaya.app` + SHA-1 registrados correctamente (no `ApiException:10`).
+- **Plugin nativo OK:** `GoogleProvider initialize/login` con `webClientId=…` y
+  `signingSha1=EC:57:87:…:E5:BF`; `SocialLogin.login({provider:"google"})` se ejecuta.
+- **Bloqueo raíz = inspección TLS de Kaspersky** en el emulador
+  (`Trust anchor for certification path not found`; `onReceivedSslError … CN=*.gstatic.com`).
+- **Fix (entorno, no código):** emulador con `-writable-system` → `adb root` → `adb remount` →
+  CA raíz de Kaspersky exportada de Windows (`LocalMachine\Root`, thumbprint
+  `771FB6BDB2F80FA6F4D8B9F65729DC5A8F10689B`) → `openssl x509 -subject_hash_old` = `9aafb596`
+  → `/system/etc/security/cacerts/9aafb596.0` → reboot. Verificado por CDP:
+  `fetch("https://ssl.gstatic.com/generate_204")` y `https://play.google.com` → `TLS_OK`.
+- **Tras el fix:** el asistente de Google (`MinuteMaidActivity`, `accounts.google.com/embedded/…`)
+  carga sin error; sin cuentas, el plugin responde
+  `NoCredentialException: No credentials available`.
+- **API/MySQL (para la demo pendiente):** seguían arriba MySQL (3307) y la API; usuarios 1-4
+  (incluye 2 de Google creados por la web) y mascotas Max/Luna/Rocky.
+
+Pendiente (mañana): iniciar sesión con una cuenta Google en el emulador → tocar «Continuar con
+Google» en el APK → confirmar `[Google] …` en el API y la fila en `usuarios`; luego la **demo del
+Panel CEO (M-19) + CRUD** viendo cambiar la base de datos.
+
+---
+
 ## 2026-10-14 (Fase 15 — Login con Google funcionando en web + Panel CEO)
 
 ### Login con Google (#11): cierre en web

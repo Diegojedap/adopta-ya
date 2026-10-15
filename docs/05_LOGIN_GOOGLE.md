@@ -150,8 +150,67 @@ Datos de este proyecto:
 - [x] Fase C (APK Android): plugin `@capgo/capacitor-social-login@8.5.17`, `API_BASE` a `10.0.2.2`,
   `network_security_config.xml`; APK regenerado (8.33 MB).
 - [x] Fase D (parcial): `npm test` 18/18 y E2E de `/auth/google` contra MySQL (400/500/401).
-- [ ] Fase E (login real de punta a punta).
+- [x] Fase E (**web**): login real de punta a punta con una cuenta Google (usuario en MySQL con
+  `proveedor='google'`).
+- [x] Fase E (**APK nativo**, parcial): credencial Android **confirmada** por Google Play Services
+  (`GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true`), plugin `SocialLogin.login` ejecutándose y
+  **TLS del emulador resuelto** (ver §9). **Solo falta que el emulador tenga una cuenta Google**
+  para cerrar el E2E; sin cuentas el plugin devuelve `NoCredentialException: No credentials available`.
 
-**Pendiente del responsable:** crear las credenciales (§4) y aportar el **Web client ID**;
-luego ponerlo en `server/.env` y en `www/js/script.js` (`GOOGLE_CLIENT_ID`), `npm run sync` y
-regenerar/instalar el APK para probar.
+**Hecho por el responsable:** credenciales creadas (§4) y **Web client ID** aportado (en
+`server/.env` y en `www/js/script.js`); la **credencial Android** (paquete + SHA-1) quedó validada
+indirectamente porque Google verificó al llamador. Para cerrar el login nativo: iniciar sesión con
+una cuenta Google **dentro del emulador** (ver §9) y tocar «Continuar con Google» en el APK.
+
+## 9. Prueba del login nativo en el emulador (14-15/10/2026)
+
+Máquina corporativa con **inspección TLS de Kaspersky Endpoint Security**: los certificados de
+`ssl.gstatic.com`, `play.google.com`, etc. llegan firmados por
+`CN=Kaspersky Endpoint Security Personal Certification Authority, O=AO Kaspersky Lab`, cuya raíz
+**no** está en el trust store del emulador → los flujos que descargan esos recursos fallan con
+`CertPathValidatorException: Trust anchor for certification path not found`.
+
+Emulador: AVD `adopta_ya` (`tag.id=google_apis`, API 36, x86_64). Es **userdebug** → se puede
+`adb root`.
+
+### 9.1 Hallazgos (en orden)
+1. **APK regenerado e instalado** (`npm run sync` + `gradlew assembleDebug` con JDK 21). El plugin
+   nativo arranca: `GoogleProvider initialize/login package=com.adoptaya.app
+   signingSha1=EC:57:87:…:E5:BF webClientId=…`.
+2. **Credencial Android OK:** log de GMS
+   `[GoogleSignIn_flowRunner] Flow step completed: GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true`
+   → **paquete + SHA-1 bien registrados** (no hay `ApiException:10`/`DEVELOPER_ERROR`).
+3. **Bloqueo TLS:** el flujo caía en `…addaccount.ErrorActivity` con «There was a problem
+   connecting to ssl.gstatic.com»; en logcat:
+   `Failed to validate the certificate chain … Trust anchor … not found` y
+   `[BrowserAuthFragment] onReceivedSslError … Issued to: CN=*.gstatic.com`.
+4. **Fix aplicado (solo entorno, NO código):** instalar la **CA raíz de Kaspersky** en el trust
+   store **del sistema** del emulador:
+   - Emulador arrancado con **`-writable-system`**; `adb root`; `adb remount` (overlayfs);
+   - CA exportada del almacén de Windows (`Cert:\LocalMachine\Root`, thumbprint
+     `771FB6BDB2F80FA6F4D8B9F65729DC5A8F10689B`) → PEM;
+     `openssl x509 -subject_hash_old` = **`9aafb596`** → archivo **`9aafb596.0`** copiado a
+     `/system/etc/security/cacerts/`; reinicio del guest.
+   - **Verificación:** desde el WebView del APK, `fetch("https://ssl.gstatic.com/generate_204")` y
+     `https://play.google.com` → `TLS_OK`/`OK opaque` (el emulador ya confía).
+5. **Tras el fix:** el asistente de Google (`MinuteMaidActivity`,
+   `https://accounts.google.com/embedded/setup/v2/android?…`) **carga sin error TLS** (botones
+   SKIP/NEXT y formulario de inicio de sesión). El login nativo queda pendiente **solo** de que el
+   emulador tenga una cuenta Google.
+
+### 9.2 Cómo retomar mañana
+- Añadir una **cuenta Google** al emulador
+  (*Settings → Passwords & accounts → Add account → Google*, o desde el propio botón del APK, que
+  ya abre el asistente) y completar el inicio de sesión (correo + contraseña + 2FA).
+- Luego tocar «Continuar con Google» en el APK y confirmar:
+  - log del API (`server/index.js`): `[Google] ok: <correo> | proveedor: google | id: <n>`;
+  - fila en MySQL: `SELECT id,correo,proveedor FROM usuarios WHERE proveedor='google';`
+  - sesión mostrada en la app (sin `#modal-login`).
+- **Alternativa más simple:** probar en una red **sin** inspección TLS (doméstica/hotspot), donde
+  el asistente de Google funciona sin tocar el trust store.
+- Notas de entorno:
+  - El AVD arrancó con **`-writable-system`**; el `remount` usa overlayfs. Si el emulador se
+    reinicia **sin** ese flag, la CA `9aafb596.0` se pierde y hay que volver a aplicarla.
+  - El emulador (`google_apis`) sufrió ANR de `systemui` un par de veces; se recupera.
+  - Inspección de la app: `adb forward tcp:9222 localabstract:webview_devtools_remote_<pid>` y
+    CDP (`Runtime.evaluate`) sobre `http://127.0.0.1:9222/json`.

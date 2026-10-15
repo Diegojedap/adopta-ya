@@ -25,9 +25,10 @@ datos **MySQL local** (persistencia real de usuarios, mascotas, solicitudes, evi
 alertas; contrato PDF). **NO está desplegado en la nube** ni es un sistema productivo: sin
 hosting, sin cuentas de producción y sin notificaciones reales por correo. El **login con
 Google (#11)** está **funcionando en web a nivel local** (Google Identity Services + Web client
-ID ya configurado; usuario creado en MySQL); en **APK** falta **confirmar la credencial Android**
-(`com.adoptaya.app` + SHA-1) para probarlo (ver `docs/05_LOGIN_GOOGLE.md`). El **Panel CEO (M-19)**
-está implementado (vista de control solo para el administrador).
+ID ya configurado; usuario creado en MySQL); en **APK** está **verificado hasta el paso de la
+cuenta** (credencial Android `com.adoptaya.app` + SHA-1 confirmada por Google y TLS del emulador
+resuelto; falta iniciar sesión con una cuenta Google en el emulador) — ver `docs/05_LOGIN_GOOGLE.md`
+§9. El **Panel CEO (M-19)** está implementado (vista de control solo para el administrador).
 
 ## 2. Estructura del repositorio
 
@@ -128,9 +129,15 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   se oculta entonces) que ejecuta `cerrarSesion()` → borra `localStorage.token`, `mostrarSesion(null)`
   y cierra `#modal-login`. `mostrarSesion()` alterna la visibilidad de ambos botones.
 - **Login con Google (14/10/2026, #11):** **funcionando en web** (E2E con una cuenta Google real:
-  usuario creado en MySQL con `proveedor=google`); en APK queda ◐ (falta confirmar la credencial
-  Android `com.adoptaya.app` + SHA-1). Web client ID configurado en `server/.env` y
-  `www/js/script.js`. **Fix TLS duradero:** por la inspección corporativa, la verificación de
+  usuario creado en MySQL con `proveedor=google`). En **APK nativo** (14-15/10/2026) queda ◐
+  **verificado hasta el paso de la cuenta**: la **credencial Android está confirmada** (log de GMS
+  `GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true` → paquete `com.adoptaya.app` + SHA-1 OK, sin
+  `ApiException:10`), el plugin `SocialLogin.login` se ejecuta y el **TLS del emulador se resolvió**
+  (se instaló la CA raíz de **Kaspersky** en `/system/etc/security/cacerts/` del emulador; ver
+  `docs/05_LOGIN_GOOGLE.md` §9). **Falta solo iniciar sesión con una cuenta Google en el emulador**;
+  sin cuentas el plugin devuelve `NoCredentialException: No credentials available`. Web client ID
+  configurado en `server/.env` y `www/js/script.js`. **Fix TLS duradero:** por la inspección
+  corporativa, la verificación de
   certificados de `googleapis.com` fallaba (`self-signed certificate in certificate chain`); ahora
   `server/index.js` usa un `https.Agent` con `[...tls.rootCertificates, CAs extra]`, con las CAs
   extra en `certs/windows-ca-bundle.pem` (gitignored; override con `CA_BUNDLE_PATH` /
@@ -192,8 +199,10 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   UAT, CRUD de mascotas). La **persistencia MySQL (M-17)** quedó implementada y en uso
   (scripts `db:*`, API con `mysql2`, web servida por la API). El **Panel CEO (M-19)** y el
   **login con Google en web (#11)** quedaron implementados.
-  Siguiente: publicar la demo web (M-18) → ejecutar la UAT real con el refugio; crear/confirmar la
-  **credencial Android** de Google para probar el login nativo del APK (#11).
+  Siguiente: **cerrar el login nativo del APK (#11)** —la credencial Android ya está confirmada y el
+  TLS del emulador resuelto; solo falta iniciar sesión con una cuenta Google en el emulador— y hacer
+  la **demo del Panel CEO (M-19) + CRUD** viendo cambiar la base de datos. Después: publicar la demo
+  web (M-18) → ejecutar la UAT real con el refugio.
 
 ## 4. Comandos clave
 
