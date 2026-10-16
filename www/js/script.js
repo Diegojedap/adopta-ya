@@ -65,6 +65,7 @@ const DICCIONARIO = {
         btn_google: "Continuar con Google",
         google_cargando: "Cargando Google…",
         google_error: "No se pudo iniciar con Google. Revisa la consola (F12).",
+        google_sin_cuenta: "No hay cuentas de Google en el dispositivo. Agrega una en Ajustes → Cuentas.",
 
         // Panel CEO (solo administrador)
         nav_ceo: "Panel CEO",
@@ -276,6 +277,7 @@ const DICCIONARIO = {
         btn_google: "Continue with Google",
         google_cargando: "Loading Google…",
         google_error: "Could not sign in with Google. Check the console (F12).",
+        google_sin_cuenta: "No Google accounts on this device. Add one in Settings → Accounts.",
 
         // CEO panel (administrator only)
         nav_ceo: "CEO Panel",
@@ -643,7 +645,11 @@ function inicializarGoogle() {
 
 function ingresarConGoogleNativo() {
     const SocialLogin = window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.SocialLogin;
-    if (!SocialLogin) return;
+    if (!SocialLogin) {
+        googleEstado(t("google_error"));
+        return;
+    }
+    googleEstado(t("google_cargando"));
     Promise.resolve()
         .then(function () {
             if (googleNativoInicializado) return;
@@ -655,9 +661,17 @@ function ingresarConGoogleNativo() {
             const r = (res && res.result) || {};
             const auth = r.authentication || {};
             const idToken = r.idToken || auth.idToken;
-            if (idToken) procesarCredencialGoogle(idToken);
+            if (idToken) {
+                googleEstado("");
+                procesarCredencialGoogle(idToken);
+            } else {
+                googleEstado(t("google_error"));
+            }
         })
-        .catch(function () {});
+        .catch(function (e) {
+            const msg = (e && (e.message || e.errorMessage || e.code)) ? (e.message || e.errorMessage || e.code) : "";
+            googleEstado(/NoCredential/i.test(msg) ? t("google_sin_cuenta") : t("google_error") + (msg ? " (" + msg + ")" : ""));
+        });
 }
 
 function ingresarConGoogle() {

@@ -153,9 +153,10 @@ Datos de este proyecto:
 - [x] Fase E (**web**): login real de punta a punta con una cuenta Google (usuario en MySQL con
   `proveedor='google'`).
 - [x] Fase E (**APK nativo**, parcial): credencial Android **confirmada** por Google Play Services
-  (`GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true`), plugin `SocialLogin.login` ejecutándose y
-  **TLS del emulador resuelto** (ver §9). **Solo falta que el emulador tenga una cuenta Google**
-  para cerrar el E2E; sin cuentas el plugin devuelve `NoCredentialException: No credentials available`.
+  (`GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true`), plugin `SocialLogin.login` ejecutándose
+  (ver §9). **Falta cerrar el E2E**: además de que el emulador tenga una cuenta Google, el proxy
+  corporativo sirve un certificado **no confiable** para `play.google.com` que rompe el asistente
+  (ver §10), por lo que el nativo **no puede completarse en esta red corporativa**.
 
 **Hecho por el responsable:** credenciales creadas (§4) y **Web client ID** aportado (en
 `server/.env` y en `www/js/script.js`); la **credencial Android** (paquete + SHA-1) quedó validada
@@ -214,3 +215,65 @@ Emulador: AVD `adopta_ya` (`tag.id=google_apis`, API 36, x86_64). Es **userdebug
   - El emulador (`google_apis`) sufrió ANR de `systemui` un par de veces; se recupera.
   - Inspección de la app: `adb forward tcp:9222 localabstract:webview_devtools_remote_<pid>` y
     CDP (`Runtime.evaluate`) sobre `http://127.0.0.1:9222/json`.
+
+## 10. Continuación (15/10/2026): bug de contenido mixto y bloqueo del proxy
+
+### 10.1 Bug corregido: contenido mixto (CÓDIGO)
+
+El WebView del APK **corre sobre `https://localhost`** (scheme por defecto de Capacitor 8). Por
+eso, todo `fetch` a la API local `http://10.0.2.2:3000` era bloqueado por **Mixed Content** y el
+APK **nunca había podido consumir la API** (con independencia de Google). Log del WebView:
+
+```
+Mixed Content: The page at 'https://localhost/' was loaded over HTTPS, but requested an insecure
+resource 'http://10.0.2.2:3000/health'. This request has been blocked; the content must be served
+over HTTPS.
+```
+
+**Fix** en `capacitor.config.json`:
+
+```json
+"android": { "allowMixedContent": true }
+```
+
+Capacitor lo traduce a `WebSettings.MIXED_CONTENT_ALWAYS_ALLOW` (`CapConfig.java`:
+`android.allowMixedContent`). Desplegado con `npm run sync` + `gradlew assembleDebug` + `adb install`.
+Verificado por CDP **desde dentro del APK**:
+`fetch(API_BASE+'/health')` → `OK {"ok":true,"fuente":"mysql"}` y `GET /mascotas` → 200.
+
+### 10.2 Mejora: el login nativo ya no falla en silencio (CÓDIGO)
+
+`ingresarConGoogleNativo()` mostraba `.catch(function () {})`, así que cualquier error era
+invisible. Ahora muestra estado y errores:
+- estado «Cargando Google…» (`google_cargando`);
+- si el error es `NoCredentialException` → `google_sin_cuenta`
+  («No hay cuentas de Google en el dispositivo…»);
+- cualquier otro error → `google_error (mensaje)`.
+Claves i18n ES/EN nuevas: `google_sin_cuenta`, `google_cancelado`.
+
+### 10.3 Bloqueo de red: `play.google.com` con certificado no confiable (ENTORNO)
+
+En esta sesión el asistente de Google **no** completó: cae en
+`com.google.android.gms/.auth.uiflows.addaccount.ErrorActivity` con
+*«There was a problem connecting to play.google.com.»*. Diagnóstico:
+
+- `openssl s_client -connect play.google.com:443 -servername play.google.com -showcerts` →
+  **1 solo certificado**, `subject=CN=*.google.com` e `issuer=CN=*.google.com` (**autofirmado,
+  sin extensiones** — sin `basicConstraints` ni `subjectAltName`). Es un cert **de intercepción**
+  del proxy corporativo (Kaspersky), no emitido por la CA de Kaspersky.
+- En contraste, `accounts.google.com` presenta un cert **legítimo** (`issuer=C=US, O=Google Trust
+  Services, CN=WE2`) y `ssl.gstatic.com`/`www.google.com` sí van firmados por la CA de Kaspersky
+  (la que se instaló en §9.1).
+- Log de GMS: `[MinuteMaidFragment] SSL error while trying to connect to play.google.com`.
+
+**Intento:** se instaló ese cert autofirmado como CA del sistema del emulador
+(`openssl x509 -subject_hash_old` = `d7378b6e` → `/system/etc/security/cacerts/d7378b6e.0` +
+reboot) y **no ayudó** (Google pinea sus certificados y/o el proxy interviene el dominio);
+se revirtió. El emulador **sigue sin cuenta Google** (`dumpsys account` → `Accounts: 0`).
+
+### 10.4 Conclusión y ruta
+
+El login nativo **no puede cerrarse en la red corporativa** por el MITM no confiable de
+`play.google.com`. Ruta recomendada (§9.2): ejecutar en una **red sin inspección TLS**
+(casa/hotspot), agregar una cuenta Google en el emulador y tocar «Continuar con Google»; con el
+fix de §10.1 la app ya alcanza la API y con §10.2 mostrará cualquier error en pantalla.

@@ -26,9 +26,10 @@ alertas; contrato PDF). **NO está desplegado en la nube** ni es un sistema prod
 hosting, sin cuentas de producción y sin notificaciones reales por correo. El **login con
 Google (#11)** está **funcionando en web a nivel local** (Google Identity Services + Web client
 ID ya configurado; usuario creado en MySQL); en **APK** está **verificado hasta el paso de la
-cuenta** (credencial Android `com.adoptaya.app` + SHA-1 confirmada por Google y TLS del emulador
-resuelto; falta iniciar sesión con una cuenta Google en el emulador) — ver `docs/05_LOGIN_GOOGLE.md`
-§9. El **Panel CEO (M-19)** está implementado (vista de control solo para el administrador).
+cuenta** (credencial Android `com.adoptaya.app` + SHA-1 confirmada por Google; el APK ya consume
+la API tras corregir el *mixed content*) pero **no cierra en la red corporativa** porque el proxy
+sirve un cert no confiable para `play.google.com` — ver `docs/05_LOGIN_GOOGLE.md` §9-§10.
+El **Panel CEO (M-19)** está implementado (vista de control solo para el administrador).
 
 ## 2. Estructura del repositorio
 
@@ -39,7 +40,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 ├── opencode.json                  ← config de opencode (autoupdate, instructions, share off)
 ├── README.md                      ← documento principal del entregable
 ├── package.json                   ← deps: @capacitor/*, @capgo/capacitor-social-login, bcryptjs, google-auth-library, jsonwebtoken, mysql2; dev: jsdom@23.0.1
-├── capacitor.config.json          ← appId com.adoptaya.app · webDir www · plugin SocialLogin (solo Google)
+├── capacitor.config.json          ← appId com.adoptaya.app · webDir www · android.allowMixedContent · plugin SocialLogin (solo Google)
 ├── test_estatico_adopta_ya.js     ← suite de pruebas P-01…P-18 (única copia)
 ├── resultados_pruebas.json        ← resultados de la última ejecución de npm test
 ├── adopta-ya.code-workspace       ← espacio VS Code (conexión SQLTools MySQL local)
@@ -68,7 +69,7 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
 └── node_modules/                  ← no versionada
 ```
 
-## 3. Estado verificado (14/10/2026)
+## 3. Estado verificado (14-15/10/2026)
 
 - **Pruebas:** `npm test` → **PASA 18 / FALLA 0** de 18 (tras `npm run sync`).
   - P-05 (catálogo vía API) y P-07 (solicitud persistida vía API) pasan; la suite corre con
@@ -134,8 +135,18 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   `GOOGLE_SIGN_IN_VERIFY_CALLER; successful=true` → paquete `com.adoptaya.app` + SHA-1 OK, sin
   `ApiException:10`), el plugin `SocialLogin.login` se ejecuta y el **TLS del emulador se resolvió**
   (se instaló la CA raíz de **Kaspersky** en `/system/etc/security/cacerts/` del emulador; ver
-  `docs/05_LOGIN_GOOGLE.md` §9). **Falta solo iniciar sesión con una cuenta Google en el emulador**;
-  sin cuentas el plugin devuelve `NoCredentialException: No credentials available`. Web client ID
+  `docs/05_LOGIN_GOOGLE.md` §9). **Falta iniciar sesión con una cuenta Google en el emulador**;
+  sin cuentas el plugin devuelve `NoCredentialException: No credentials available`.
+  **Bug corregido (15/10/2026):** el WebView del APK corre sobre `https://localhost`, así que los
+  `fetch` a `http://10.0.2.2:3000` eran bloqueados por **Mixed Content** (el APK no podía consumir
+  la API); se corrigió con `"android": { "allowMixedContent": true }` en `capacitor.config.json`
+  (verificado por CDP: `fetch(API_BASE+'/health')` → `OK {"ok":true,"fuente":"mysql"}`). Además
+  `ingresarConGoogleNativo()` ya no traga el error: muestra `google_sin_cuenta`/`google_error`
+  (claves i18n ES/EN). **El nativo no puede cerrarse en la red corporativa:** el proxy sirve un
+  cert **autofirmado `CN=*.google.com`** para `play.google.com` (no emitido por la CA de Kaspersky;
+  instalar ese cert como CA del sistema **no ayudó**), y el asistente de Google falla con
+  *"There was a problem connecting to play.google.com"*. Ruta: probar en una **red sin inspección
+  TLS** (`docs/05_LOGIN_GOOGLE.md` §10). Web client ID
   configurado en `server/.env` y `www/js/script.js`. **Fix TLS duradero:** por la inspección
   corporativa, la verificación de
   certificados de `googleapis.com` fallaba (`self-signed certificate in certificate chain`); ahora
@@ -199,8 +210,9 @@ ADOPTA-YA 1.0/                     ← raíz (proyecto aplanado, sin carpetas an
   UAT, CRUD de mascotas). La **persistencia MySQL (M-17)** quedó implementada y en uso
   (scripts `db:*`, API con `mysql2`, web servida por la API). El **Panel CEO (M-19)** y el
   **login con Google en web (#11)** quedaron implementados.
-  Siguiente: **cerrar el login nativo del APK (#11)** —la credencial Android ya está confirmada y el
-  TLS del emulador resuelto; solo falta iniciar sesión con una cuenta Google en el emulador— y hacer
+  Siguiente: **cerrar el login nativo del APK (#11) en una red sin inspección TLS** —el mix content
+  ya está corregido y el APK consume la API; la credencial Android ya está confirmada; falta el
+  asistente de Google (bloqueado en la red corporativa por el MITM de `play.google.com`)— y hacer
   la **demo del Panel CEO (M-19) + CRUD** viendo cambiar la base de datos. Después: publicar la demo
   web (M-18) → ejecutar la UAT real con el refugio.
 

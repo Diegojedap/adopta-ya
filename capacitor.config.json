@@ -2,6 +2,9 @@
   "appId": "com.adoptaya.app",
   "appName": "Adopta Ya",
   "webDir": "www",
+  "android": {
+    "allowMixedContent": true
+  },
   "plugins": {
     "SocialLogin": {
       "providers": {

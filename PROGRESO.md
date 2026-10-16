@@ -6,6 +6,47 @@
 
 ---
 
+## 2026-10-15 (Fase 17 — Login nativo del APK: bug de contenido mixto y bloqueo por proxy corporativo)
+
+Continuación de la Fase E del login con Google (#11) en el APK. Se corrigieron **dos bugs reales**
+y se precisó el bloqueo de red.
+
+**1) Bug corregido (CÓDIGO): contenido mixto impedía que el APK hablara con la API.**
+El WebView del APK corre sobre `https://localhost`, así que todo `fetch` a `http://10.0.2.2:3000`
+(la API local) era bloqueado por *Mixed Content* — el APK **no había podido consumir la API**.
+Log del WebView: *"Mixed Content … requested an insecure resource 'http://10.0.2.2:3000/…' … has
+been blocked; the content must be served over HTTPS"*. **Fix:** `capacitor.config.json` →
+`"android": { "allowMixedContent": true }` (Capacitor lo traduce a
+`WebSettings.MIXED_CONTENT_ALWAYS_ALLOW`). Verificado por CDP en el APK reinstalado:
+`fetch(API_BASE+'/health')` → `OK {"ok":true,"fuente":"mysql"}`.
+
+**2) Mejora (CÓDIGO): el login nativo ya no se traga el error.** `ingresarConGoogleNativo()` ahora
+muestra `google_cargando` y, ante fallo, `google_sin_cuenta` (si es `NoCredentialException`) o
+`google_error (mensaje)`; antes era `.catch(function(){})` silencioso. Nuevas claves i18n ES/EN
+`google_sin_cuenta` y `google_cancelado`.
+
+**3) Bloqueo de red preciso (ENTORNO): el proxy corporativo sirve un cert autofirmado para
+`play.google.com`.** `play.google.com:443` presenta un certificado **autofirmado `CN=*.google.com`
+sin extensiones** (cadena de 1 cert, no emitido por la CA de Kaspersky). El asistente de Google
+falla con `[MinuteMaidFragment] SSL error … play.google.com` → pantalla *"There was a problem
+connecting to play.google.com"*. Se probó **instalar ese cert** como CA del sistema del emulador
+(`/system/etc/security/cacerts/d7378b6e.0`) y **no ayudó** (Google pinea sus certificados y/o el
+proxy bloquea el dominio); se revirtió. `accounts.google.com` sí presenta un cert legítimo
+(Google Trust Services WE2). El emulador **sigue sin cuenta Google** (`Accounts: 0`).
+
+**Conclusión:** el login nativo **no puede completarse en la red corporativa** (MITM no confiable de
+`play.google.com`). Ruta recomendada (`docs/05_LOGIN_GOOGLE.md` §9.2): probar en una **red sin
+inspección TLS** (casa/hotspot); ahí basta agregar una cuenta Google y tocar «Continuar con Google».
+
+**Verificación:** `npm test` → **18/18**; APK regenerado (`assembleDebug`, JDK 21) e instalado;
+`npm run sync` al día (P-13). MySQL (3307 en `127.0.0.1`) + API en `http://localhost:3000`
+(`fuente: mysql`).
+
+Archivos tocados: `capacitor.config.json`, `www/js/script.js`, `docs/05_LOGIN_GOOGLE.md`,
+`AGENTS.md`, `PROGRESO.md`, APK debug.
+
+---
+
 ## 2026-10-14/15 (Fase 16 — Login con Google en el APK nativo: diagnóstico y desbloqueo TLS)
 
 Objetivo: cerrar la **Fase E** del login con Google (#11) probando el flujo **nativo** en el APK
